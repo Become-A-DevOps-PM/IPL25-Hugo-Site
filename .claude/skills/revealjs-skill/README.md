@@ -105,6 +105,34 @@ weight = 5
 **[Öppna presentationen](/presentations/my-presentation.html)**
 ```
 
+## Google Analytics & Search Indexing
+
+The template includes two important meta configurations:
+
+### 1. Search Engine Blocking
+```html
+<meta name="robots" content="noindex, nofollow">
+```
+Prevents search engines from indexing the presentations.
+
+### 2. Google Analytics Tracking
+```html
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-50TPJY0FZH"></script>
+```
+
+**⚠️ WARNING: Project-Specific Tracking ID**
+
+The template includes a hardcoded Google Analytics Measurement ID (`G-50TPJY0FZH`) that is specific to the IPL25 course project.
+
+**When using this skill in another project:**
+1. Create a new GA4 property at [analytics.google.com](https://analytics.google.com)
+2. Get your new Measurement ID (format: `G-XXXXXXXXXX`)
+3. Update the tracking ID in:
+   - `example-template.html`
+   - Any existing presentations in `static/presentations/`
+
+If you see `G-50TPJY0FZH` in your presentations and you're not working on the IPL25 project, you need to replace it with your own tracking ID or remove the Google Analytics script entirely.
+
 ## Color Scheme
 
 | Color | Hex | Usage |
