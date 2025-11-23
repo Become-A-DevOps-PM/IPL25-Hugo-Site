@@ -16,3 +16,23 @@
 <script type="text/javascript" src="{{"js/auto-complete.js" | relURL}}"></script>
 <script type="text/javascript" src="{{"js/search.js" | relURL}}"></script>
 <script src="{{(printf "theme-%s/script.js" (.Site.Params.themeStyle| default "flex")) | relURL}}"></script>
+
+<!-- Override menu collapse behavior to keep active section expanded -->
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    // Remove the default click handler and add our custom one
+    jQuery('#sidebar .category-icon').off('click').on('click', function() {
+        var menuItem = jQuery(this).parent().parent();
+
+        // If this section contains the active page, don't allow collapse
+        if (menuItem.hasClass('parent') || menuItem.hasClass('active')) {
+            return false;
+        }
+
+        // Otherwise, toggle as normal
+        jQuery(this).toggleClass("fa-angle-down fa-angle-right");
+        menuItem.children('ul').toggle();
+        return false;
+    });
+});
+</script>
