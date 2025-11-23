@@ -8,294 +8,15 @@
     <!-- Reveal.js Core CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.css">
 
-    <style>
-        /* Swedish Tech Template for Reveal.js Presentations */
-        :root {
-            --swedish-blue: #006AA7;
-            --swedish-blue-light: #0090E3;
-            --swedish-blue-dark: #004B79;
-            --swedish-yellow: #FECC00;
-            --tech-cyan: #00D9FF;
-            --dark-background: #0A0E27;
-            --dark-gradient: #1a1f3a;
-            --muted-text: #94A3B8;
-            --white: #ffffff;
-            --font-primary: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-            --weight-normal: 400;
-            --weight-bold: 700;
-            --weight-heavy: 800;
-            --space-xs: 10px;
-            --space-sm: 15px;
-            --space-md: 20px;
-            --space-lg: 30px;
-            --space-xl: 40px;
-        }
-
-        .reveal {
-            font-family: var(--font-primary);
-            background: var(--dark-background);
-            background-image: linear-gradient(135deg, var(--dark-background) 0%, var(--dark-gradient) 100%);
-        }
-
-        .reveal .slides { text-align: left; }
-        .reveal .progress { color: var(--swedish-yellow); height: 3px; }
-        .reveal .controls { color: var(--tech-cyan); }
-
-        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
-            font-family: var(--font-primary);
-            color: var(--white);
-            text-transform: uppercase;
-            letter-spacing: -0.02em;
-            line-height: 1;
-            font-weight: var(--weight-heavy);
-            margin-bottom: var(--space-md);
-        }
-
-        .reveal h1 { font-size: 5em; }
-        .reveal h2 { font-size: 28em; }
-        .reveal h3 { font-size: 2.8em; }
-
-        .reveal p {
-            color: var(--white);
-            line-height: 1.5;
-            margin-bottom: var(--space-sm);
-        }
-
-        /* Title Slide */
-        .title-slide {
-            position: relative;
-            height: 100vh;
-            display: flex !important;
-            flex-direction: column;
-            justify-content: center;
-            padding: var(--space-xl);
-        }
-
-        .geometric-bg {
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 45%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--swedish-blue) 0%, var(--swedish-blue-light) 100%);
-            clip-path: polygon(25% 0, 100% 0, 100% 100%, 0% 100%);
-            opacity: 0.25;
-            z-index: -1;
-        }
-
-        .course-badge {
-            display: inline-block;
-            border-left: 4px solid var(--swedish-yellow);
-            padding-left: var(--space-md);
-            margin-bottom: var(--space-md);
-        }
-
-        .course-badge span {
-            font-size: 0.9em;
-            font-weight: var(--weight-bold);
-            color: var(--swedish-yellow);
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-        }
-
-        .main-title {
-            font-size: 5em !important;
-            font-weight: var(--weight-heavy);
-            line-height: 1.3 !important;
-            letter-spacing: -0.02em;
-            margin: 0 0 25px 0;
-            text-transform: uppercase;
-            color: var(--white);
-        }
-
-        .subtitle {
-            font-size: 2.4em;
-            color: var(--tech-cyan);
-            font-weight: 300;
-            margin: 0 0 25px 0;
-            letter-spacing: 0.05em;
-        }
-
-        .course-info {
-            font-size: 1.7em;
-            color: var(--muted-text);
-            font-weight: var(--weight-normal);
-            margin: 0;
-        }
-
-        /* Content Slide */
-        .content-slide {
-            padding: var(--space-xl);
-            height: 100vh;
-            display: flex !important;
-            flex-direction: column;
-        }
-
-        .content-slide h2 {
-            color: var(--swedish-yellow);
-            font-size: 3.6em;
-            margin-bottom: var(--space-lg);
-            border-left: 4px solid var(--swedish-yellow);
-            padding-left: var(--space-md);
-        }
-
-        .content-slide ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .content-slide li {
-            margin: var(--space-sm) 0;
-            padding-left: var(--space-lg);
-            position: relative;
-            font-size: 1.9em;
-            color: var(--white);
-            line-height: 1.5;
-        }
-
-        .content-slide li::before {
-            content: "▶";
-            position: absolute;
-            left: 0;
-            color: var(--tech-cyan);
-            font-size: 0.8em;
-        }
-
-        /* Timeline */
-        .timeline {
-            display: flex;
-            justify-content: space-between;
-            margin: var(--space-xl) 0;
-            position: relative;
-        }
-
-        .timeline::before {
-            content: "";
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: var(--swedish-blue);
-            z-index: -1;
-        }
-
-        .timeline-item {
-            text-align: center;
-            background: var(--dark-background);
-            padding: 0 var(--space-xs);
-            flex: 1;
-            max-width: 100px;
-        }
-
-        .timeline-week {
-            display: inline-block;
-            width: 45px;
-            height: 45px;
-            background: var(--swedish-blue);
-            color: var(--white);
-            border-radius: 50%;
-            line-height: 45px;
-            font-size: 1.1em;
-            font-weight: var(--weight-bold);
-            margin-bottom: var(--space-xs);
-            transition: all 0.3s ease;
-        }
-
-        .timeline-item:hover .timeline-week {
-            background: var(--swedish-yellow);
-            color: var(--dark-background);
-            transform: scale(1.15);
-        }
-
-        .timeline-label {
-            font-size: 1.5em;
-            color: var(--white);
-            font-weight: 500;
-        }
-
-        /* Decorative Elements */
-        .corner-accent {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            width: 50px;
-            height: 50px;
-            border-top: 2px solid var(--tech-cyan);
-            border-right: 2px solid var(--tech-cyan);
-            opacity: 0.5;
-            animation: pulse 3s ease-in-out infinite;
-        }
-
-        .bottom-accent {
-            position: absolute;
-            bottom: 20px;
-            left: 20px;
-            width: 200px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--swedish-yellow) 0%, transparent 100%);
-        }
-
-        /* Highlight text */
-        .highlight {
-            color: var(--swedish-yellow);
-        }
-
-        /* Info Box */
-        .info-box {
-            background: rgba(254, 204, 0, 0.1);
-            border-left: 4px solid var(--swedish-yellow);
-            padding: var(--space-md);
-            margin: var(--space-md) 0;
-        }
-
-        .info-box p {
-            color: var(--white);
-            font-size: 0.9em;
-            margin: 0;
-        }
-
-        /* Section Divider */
-        .section-divider {
-            background: linear-gradient(135deg, var(--swedish-blue) 0%, var(--swedish-blue-dark) 100%);
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-        }
-
-        .section-divider h2 {
-            color: var(--swedish-yellow);
-            font-size: 3em;
-            border: none;
-            padding: 0;
-        }
-
-        /* Animations */
-        @keyframes pulse {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 0.2; }
-        }
-
-        .reveal .slides section .fragment {
-            transition: all 0.5s ease;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .reveal h1 { font-size: 2em; }
-            .reveal h2 { font-size: 1.5em; }
-            .timeline { flex-direction: column; }
-        }
-    </style>
+    <!-- Swedish Tech Slides CSS -->
+    <link rel="stylesheet" href="swedish-tech-slides.css">
 </head>
 <body>
     <div class="reveal">
         <div class="slides">
 
-            <!-- SLIDE 1: Title -->
-            <section class="title-slide" data-background-color="#0A0E27">
+            <!-- SLIDE 1: Hero Slide -->
+            <section class="hero-slide" data-background-color="#0A0E27">
                 <div class="geometric-bg"></div>
                 <div class="corner-accent"></div>
 
@@ -310,26 +31,25 @@
                 </h1>
 
                 <p class="subtitle">Molninfrastruktur på Azure</p>
-
                 <p class="course-info">30 YHP • 6 veckor • VT 2025</p>
 
                 <div class="bottom-accent"></div>
             </section>
 
-            <!-- SLIDE 2: Instructor Introduction -->
-            <section class="title-slide" data-background-color="#0A0E27">
+            <!-- SLIDE 2: Profile Card Slide (Instructor) -->
+            <section class="profile-card-slide" data-background-color="#0A0E27">
                 <div class="geometric-bg"></div>
                 <div class="corner-accent"></div>
 
-                <h2 style="color: var(--swedish-yellow); font-size: 3.6em; margin-bottom: 30px; border-left: 4px solid var(--swedish-yellow); padding-left: 20px;">Vem är jag?</h2>
+                <h2 class="slide-header">Vem är jag?</h2>
 
-                <div style="display: flex; justify-content: flex-end; align-items: center; flex: 1;">
-                    <div style="background: rgba(106, 133, 167, 0.8); border-radius: 15px; padding: 50px; width: 500px; text-align: center;">
-                        <div style="width: 180px; height: 180px; border-radius: 50%; margin: 0 auto 30px; overflow: hidden;">
-                            <img src="lars-appel.jpg" alt="Lars Appel" style="width: 100%; height: 100%; object-fit: cover;">
+                <div class="card-container">
+                    <div class="profile-card">
+                        <div class="profile-image">
+                            <img src="lars-appel.jpg" alt="Lars Appel">
                         </div>
-                        <h3 style="color: var(--white); font-size: 3.5em; margin-bottom: 25px; text-transform: none;">Lars Appel</h3>
-                        <p style="font-size: 1.6em; line-height: 1.7; color: var(--white);">
+                        <h3 class="profile-name">Lars Appel</h3>
+                        <p class="profile-roles">
                             Utvecklare, Teamledare,<br>
                             <span class="highlight">Projektledare</span>, Teknikchef,<br>
                             Testledare, Solution Architect,<br>
@@ -343,61 +63,51 @@
                 <div class="bottom-accent"></div>
             </section>
 
-            <!-- SLIDE 3: Student Introduction -->
-            <section class="title-slide" data-background-color="#0A0E27">
+            <!-- SLIDE 3: Profile Card Slide (Students) -->
+            <section class="profile-card-slide" data-background-color="#0A0E27">
                 <div class="geometric-bg"></div>
                 <div class="corner-accent"></div>
 
-                <h2 style="color: var(--swedish-yellow); font-size: 3.6em; margin-bottom: 30px; border-left: 4px solid var(--swedish-yellow); padding-left: 20px;">Vem är du?</h2>
+                <h2 class="slide-header">Vem är du?</h2>
 
-                <div style="display: flex; justify-content: flex-end; align-items: center; flex: 1;">
-                    <div style="background: rgba(106, 133, 167, 0.8); border-radius: 15px; padding: 50px; width: 500px; text-align: center;">
-                        <div style="font-size: 10em; color: var(--white); margin-bottom: 20px;">?</div>
-                        <p style="font-size: 2em; color: var(--white);">Presentera dig själv</p>
+                <div class="card-container">
+                    <div class="profile-card">
+                        <div class="question-mark">?</div>
+                        <p class="question-text">Presentera dig själv</p>
                     </div>
                 </div>
 
                 <div class="bottom-accent"></div>
             </section>
 
-            <!-- SLIDE 4: Course Structure -->
-            <section class="content-slide" data-background-color="#0A0E27">
-                <h2>Kursens Upplägg</h2>
+            <!-- SLIDE 4: Bullet Slide -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Kursens Upplägg</h2>
 
-                <div class="fragment info-box" style="margin-bottom: 20px;">
-                    <p style="font-size: 1.9em; margin: 0;">
-                        Vi ska <span class="highlight">steg-för-steg</span> bygga en <span class="highlight">IT-miljö</span> för en enkel webbapplikation och samtidigt följa en <span class="highlight">agil</span> utvecklingsmetodik
-                    </p>
-                </div>
-
-                <div class="fragment info-box" style="margin-bottom: 20px;">
-                    <p style="font-size: 1.9em; margin: 0;">
-                        Vi kommer att ha <span class="highlight">sprintar</span> på 1 vecka, som avslutas varje fredag med en <span class="highlight">demo</span>. (Demon redovisas gruppvis)
-                    </p>
-                </div>
-
-                <div class="fragment info-box" style="margin-bottom: 20px;">
-                    <p style="font-size: 1.9em; margin: 0;">
-                        Kursen är mycket <span class="highlight">praktiskt orienterad</span>. Fokus är på att faktiskt kunna sätta upp en <span class="highlight">fungerande</span> IT-miljö.
-                    </p>
-                </div>
-
-                <div class="fragment info-box" style="margin-bottom: 20px;">
-                    <p style="font-size: 1.9em; margin: 0;">
-                        Alla praktiska <span class="highlight">övningar</span> genomförs på molnplattformen <span class="highlight">Azure</span>.
-                    </p>
+                <div class="fragment info-box">
+                    <p>Vi ska <span class="highlight">steg-för-steg</span> bygga en <span class="highlight">IT-miljö</span> för en enkel webbapplikation och samtidigt följa en <span class="highlight">agil</span> utvecklingsmetodik</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p style="font-size: 1.9em; margin: 0;">
-                        Ni kommer att få ett <span class="highlight">projektledaruppdrag</span>, som ska lösas under kursens gång.
-                    </p>
+                    <p>Vi kommer att ha <span class="highlight">sprintar</span> på 1 vecka, som avslutas varje fredag med en <span class="highlight">demo</span>. (Demon redovisas gruppvis)</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Kursen är mycket <span class="highlight">praktiskt orienterad</span>. Fokus är på att faktiskt kunna sätta upp en <span class="highlight">fungerande</span> IT-miljö.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Alla praktiska <span class="highlight">övningar</span> genomförs på molnplattformen <span class="highlight">Azure</span>.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Ni kommer att få ett <span class="highlight">projektledaruppdrag</span>, som ska lösas under kursens gång.</p>
                 </div>
             </section>
 
-            <!-- SLIDE 4: Weekly Timeline -->
-            <section class="content-slide" data-background-color="#0A0E27">
-                <h2>Vecka för Vecka</h2>
+            <!-- SLIDE 5: Timeline Slide -->
+            <section class="timeline-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Vecka för Vecka</h2>
 
                 <div class="timeline">
                     <div class="timeline-item fragment" data-fragment-index="1">
@@ -425,16 +135,37 @@
                         <div class="timeline-label">Överlämning</div>
                     </div>
                 </div>
+
+                <div class="description-container">
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="1">
+                        <p><span class="highlight">Vecka 1 - Server:</span> Vi skapar vår första virtuella maskin i Azure och lär oss grunderna i Linux-administration via SSH.</p>
+                    </div>
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="2">
+                        <p><span class="highlight">Vecka 2 - Nätverk:</span> Vi konfigurerar nätverk och security groups för att göra vår server säkert tillgänglig på internet.</p>
+                    </div>
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="3">
+                        <p><span class="highlight">Vecka 3 - Lagring:</span> Vi installerar och konfigurerar PostgreSQL-databas för att lagra applikationsdata.</p>
+                    </div>
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="4">
+                        <p><span class="highlight">Vecka 4 - Skalbarhet:</span> Vi lär oss om lastbalansering och hur man skalar infrastruktur för ökad trafik.</p>
+                    </div>
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="5">
+                        <p><span class="highlight">Vecka 5 - IT-säkerhet:</span> Vi implementerar HTTPS med SSL-certifikat och härdar servern mot attacker.</p>
+                    </div>
+                    <div class="fragment fade-in description-box" data-fragment-index="6">
+                        <p><span class="highlight">Vecka 6 - Överlämning:</span> Vi dokumenterar vår lösning och förbereder för överlämning till drift.</p>
+                    </div>
+                </div>
             </section>
 
-            <!-- SLIDE 6: Questions -->
-            <section class="title-slide" data-background-color="#0A0E27">
+            <!-- SLIDE 6: Closing Slide -->
+            <section class="closing-slide" data-background-color="#0A0E27">
                 <div class="geometric-bg"></div>
                 <div class="corner-accent"></div>
 
-                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; text-align: center; padding-right: 40%;">
-                    <div style="font-size: 20em; color: var(--white); margin-bottom: 30px;">?</div>
-                    <p style="color: var(--swedish-yellow); font-size: 5em; font-weight: 800; text-transform: uppercase;">Frågor</p>
+                <div class="centered-content">
+                    <div class="big-symbol">?</div>
+                    <p class="big-text">Frågor</p>
                 </div>
 
                 <div class="bottom-accent"></div>
@@ -456,8 +187,6 @@
             backgroundTransition: 'fade',
             slideNumber: 'c/t',
             history: true,
-
-            // Scaling constraints
             width: 1920,
             height: 1080,
             margin: 0.04,

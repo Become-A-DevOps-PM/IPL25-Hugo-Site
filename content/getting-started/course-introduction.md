@@ -1,19 +1,18 @@
 +++
-title = "Kursintroduktion"
-description = "Introduktionspresentation för kursen Server, Nätverk och IT-Säkerhet"
+title = "Course Introduction"
+description = "Introduction presentation for the Server, Network and IT Security course"
 weight = 5
 +++
 
-# Kursintroduktion
+# Course Introduction
 
-Introduktionspresentation för kursen Server, Nätverk och IT-Säkerhet.
+Introduction presentation for the Server, Network and IT Security course.
 
-**[Öppna presentationen](/presentations/course-introduction.html)**
+**[Open presentation](/presentations/course-introduction.html)**
 
-## Innehåll
+## Contents
 
-- Kursens upplägg och metodik
-- Veckoschema (Server → Nätverk → Lagring → Skalbarhet → IT-säkerhet → Överlämning)
-- Praktisk orientering med Azure
-
-*Presentationen använder reveal.js med Swedish Tech-tema.*
+- Course structure and agile methodology
+- Weekly schedule (Server → Network → Storage → Scalability → IT Security → Handover)
+- Hands-on approach with Azure cloud platform
+- Sprint-based learning with weekly demos
