@@ -94,34 +94,79 @@ CI/CD:         GitHub Actions
 
 ```
 content/
-├── _index.md              # Homepage
-├── getting-started/       # Introduction chapter
-│   ├── _index.md
-│   └── introduction.md
-└── slides/                # Reveal.js presentations
-    ├── _index.md
-    └── example-presentation.md
+├── _index.md                      # Homepage
+├── getting-started/               # Course introduction
+│   ├── course-introduction.md     # Course overview
+│   └── project-assignment.md      # Project requirements
+├── tutorials/                     # Setup guides
+│   └── setup/                     # Modular setup tutorials
+│       ├── azure/                 # Azure account setup
+│       ├── development/           # Development tools
+│       ├── github/                # GitHub setup
+│       └── ai-tools/              # AI tools setup
+├── infrastructure-fundamentals/   # Core concepts
+│   ├── compute/                   # Server and VM basics
+│   ├── network/                   # Networking concepts
+│   └── storage/                   # Storage concepts
+├── exercises/                     # Hands-on exercises
+│   ├── server-foundation/         # Week 1 exercises
+│   ├── application-layer/         # Week 2 exercises
+│   ├── database-automation/       # Week 3 exercises
+│   └── security-production/       # Week 4 exercises
+├── application/                   # Flask application content
+├── it-security/                   # Security content
+└── presentations/                 # Presentation index
 
 layouts/
-└── partials/              # Theme overrides for Hugo compatibility
-    ├── header.html
-    ├── language-selector.html
-    ├── flex/
-    │   ├── body-aftercontent.html
-    │   └── scripts.html
-    └── original/
-        └── scripts.html
+└── partials/                      # Theme overrides for Hugo compatibility
 
 static/
-└── CNAME                  # Custom domain for GitHub Pages
+├── CNAME                          # Custom domain for GitHub Pages
+└── presentations/                 # Standalone reveal.js presentations
+    ├── course-introduction.html   # Course introduction slides
+    ├── project-assignment.html    # Project assignment slides
+    └── swedish-tech-slides.css    # Swedish Tech theme
+
+.claude/
+└── skills/                        # Claude Code skills
+    ├── create-exercise/           # Exercise creation framework
+    └── revealjs-skill/            # Swedish Tech presentation skill
 
 docs/
-└── hugo-github-pages-setup.md  # Setup tutorial
+└── hugo-github-pages-setup.md     # Setup tutorial
 ```
+
+### Claude Skills (This Project)
+
+This project includes Claude Code skills for content creation:
+
+**Exercise Creation Skill (`create-exercise`):**
+- Framework for creating consistent educational exercises
+- Includes GUIDE.md, TEMPLATE.md, EXAMPLE.md
+- Use: `/skill create-exercise` or reference when creating exercises
+
+**Swedish Tech Presentation Skill (`revealjs-skill`):**
+- Creates standalone reveal.js presentations with Swedish Tech branding
+- Blue/yellow color scheme, professional styling
+- Outputs to `static/presentations/` as HTML files
+- Use: Reference SKILL.md for presentation creation guidelines
 
 ### Creating Presentations
 
-Use reveal.js slides with `type = "slide"` in frontmatter:
+**Preferred: Swedish Tech Standalone Presentations**
+
+Create standalone HTML presentations in `static/presentations/` using the Swedish Tech style:
+- Use `swedish-tech-slides.css` for consistent branding
+- Reference `.claude/skills/revealjs-skill/SKILL.md` for full guidelines
+- Link from `content/presentations/_index.md`
+
+**Current Presentations:**
+1. `course-introduction.html` - Course overview and instructor introduction
+2. `project-assignment.html` - Project requirements and deliverables
+
+**Alternative: DocDock Inline Slides**
+
+For simple slides integrated with Hugo content, use `type = "slide"` in frontmatter:
 
 ```markdown
 +++
@@ -236,6 +281,10 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 | `.github/workflows/hugo.yaml` | Deployment workflow |
 | `layouts/partials/` | Theme compatibility overrides |
 | `docs/hugo-github-pages-setup.md` | Setup tutorial |
+| `.claude/skills/create-exercise/` | Exercise creation skill |
+| `.claude/skills/revealjs-skill/` | Swedish Tech presentation skill |
+| `static/presentations/` | Standalone reveal.js presentations |
+| `content/presentations/_index.md` | Presentations index page |
 
 ## Course Context
 
