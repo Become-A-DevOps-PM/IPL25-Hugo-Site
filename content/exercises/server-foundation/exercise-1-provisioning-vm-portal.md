@@ -3,6 +3,7 @@ title = "1. Provisioning a VM via Azure Portal"
 weight = 1
 date = 2024-11-25
 draft = false
+hidden = true
 +++
 
 ## Overview

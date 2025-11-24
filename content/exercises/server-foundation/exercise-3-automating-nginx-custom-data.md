@@ -3,6 +3,7 @@ title = "3. Automating Nginx Installation with Custom Data Scripts"
 weight = 3
 date = 2024-11-25
 draft = false
+hidden = true
 +++
 
 ## Overview

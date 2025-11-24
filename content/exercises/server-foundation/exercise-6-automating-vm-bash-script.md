@@ -3,6 +3,7 @@ title = "6. Automating VM Creation, Nginx Installation, and Port Configuration U
 weight = 6
 date = 2024-11-25
 draft = false
+hidden = true
 +++
 
 ## Overview

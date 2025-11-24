@@ -3,6 +3,7 @@ title = "2. Provisioning a VM with SSH Keys and Exploring Linux"
 weight = 2
 date = 2024-11-25
 draft = false
+hidden = true
 +++
 
 ## Overview

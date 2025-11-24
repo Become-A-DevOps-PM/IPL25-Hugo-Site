@@ -3,6 +3,7 @@ title = "5. Provisioning a VM Using AZ CLI, Configuring Nginx, and Allowing HTTP
 weight = 5
 date = 2024-11-25
 draft = false
+hidden = true
 +++
 
 ## Overview
