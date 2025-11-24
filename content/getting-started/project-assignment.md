@@ -12,8 +12,8 @@ Your first project manager assignment at CM Corp - building infrastructure for a
 
 ## Resources
 
-- [Demo Instructions]({{< relref "/resources/demo-instructions" >}}) - Guidelines for weekly presentations
-- [Retrospective Template]({{< relref "/resources/retrospective-template" >}}) - Weekly self-reflection template
+- [Demo Instructions]({{< relref "/project-templates/demo-instructions" >}}) - Guidelines for weekly presentations
+- [Retrospective Template]({{< relref "/project-templates/retrospective-template" >}}) - Weekly self-reflection template
 
 ## Contents
 

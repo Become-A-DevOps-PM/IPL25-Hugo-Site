@@ -1,7 +1,7 @@
 +++
 title = "Course Introduction"
 description = "Introduction presentation for the Server, Network and IT Security course"
-weight = 5
+weight = 1
 +++
 
 # Course Introduction

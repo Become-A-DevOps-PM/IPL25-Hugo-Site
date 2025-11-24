@@ -1,7 +1,7 @@
 +++
 title = "Setup Overview"
 description = "Complete setup checklist and verification"
-weight = 1
+weight = 20
 +++
 
 # Setup Overview
