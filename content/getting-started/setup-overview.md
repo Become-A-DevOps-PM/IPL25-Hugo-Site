@@ -10,6 +10,12 @@ Complete installation checklist for the DevOps PM course. Follow the tutorials i
 
 **Time Estimate:** 60-90 minutes total
 
+> 💡 **Cloud-Based Alternative Available**
+>
+> If you prefer a cloud-based development environment instead of local installation, you can use [Firebase Studio](/tutorials/setup/firebase-studio/) - Google's browser-based IDE with all tools pre-configured. This eliminates local setup entirely and works from any device with a browser.
+>
+> The instructions below are for **local installation** on your own computer.
+
 ---
 
 ## Installation Order
