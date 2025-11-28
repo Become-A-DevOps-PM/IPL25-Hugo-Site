@@ -5,8 +5,6 @@ date = 2024-12-05
 draft = false
 +++
 
-# Virtual Network with Enhanced Security
-
 ## Goal
 
 Build a complete three-tier network infrastructure on Azure to enable secure communication between application components while protecting them from unauthorized access.

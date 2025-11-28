@@ -5,8 +5,6 @@ date = 2024-12-02
 draft = false
 +++
 
-# Creating a Virtual Network
-
 ## Goal
 
 Build a secure cloud network infrastructure with three specialized servers to demonstrate network segmentation, security groups, and the principle of least privilege in Azure.
@@ -373,6 +371,7 @@ Apply Network Security Groups (NSGs) to implement firewall rules that enforce th
 > Network Security Groups (NSGs) act as virtual firewalls controlling inbound and outbound traffic. Each NSG contains security rules that allow or deny traffic based on source, destination, port, and protocol. Rules are evaluated by priority number (lower numbers first).
 >
 > This exercise implements a layered security model:
+>
 > - **WebServer**: No public access (no SSH, no HTTP) - completely internal
 > - **ReverseProxy**: HTTP only (no SSH) - serves web traffic
 > - **BastionHost**: SSH only (no HTTP) - administrative access point
