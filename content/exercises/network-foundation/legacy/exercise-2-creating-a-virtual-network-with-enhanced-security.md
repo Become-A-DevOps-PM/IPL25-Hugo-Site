@@ -3,6 +3,7 @@ title = "2. Creating a Virtual Network with Enhanced Security"
 weight = 2
 date = 2024-12-02
 draft = false
+hidden = true
 +++
 
 ## Overview

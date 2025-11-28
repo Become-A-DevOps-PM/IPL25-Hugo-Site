@@ -3,6 +3,7 @@ title = "3. Creating a Virtual Network with Enhanced Security using Azure CLI"
 weight = 3
 date = 2024-12-05
 draft = false
+hidden = true
 +++
 
 ## Overview
