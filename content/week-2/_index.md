@@ -9,14 +9,14 @@ chapter = true
 
 This week covers how devices communicate across networks. You will learn about IP addressing and subnets, how firewalls control traffic flow, and how to create isolated virtual networks in Azure.
 
-## Concepts
+## Theory
 
-Understand the theory behind network infrastructure:
+Understand the concepts behind network infrastructure:
 
 - [Network](/infrastructure-fundamentals/network/) - IP addresses, routing, firewalls, and network architecture
 
-## Exercises
+## Practice
 
-Put theory into practice with virtual network provisioning exercises:
+Put theory into practice:
 
 - [Network Foundation Exercises](/exercises/network-foundation/) - From portal-based VNet creation to command-line automation

@@ -9,23 +9,18 @@ chapter = true
 
 This week introduces the fundamental building blocks of server infrastructure. You will learn what servers are, how they work both physically and virtually, and how to securely connect to and manage them.
 
-## Concepts
+## Theory
 
-Understand the theory behind compute infrastructure and secure remote access:
+Understand the concepts behind compute infrastructure and secure remote access:
 
 - [Compute](/infrastructure-fundamentals/compute/) - What servers are, common server roles, and how physical and virtual servers work
 - [Understanding SSH](/it-security/understanding-ssh/) - How to securely access and manage virtual machines remotely
 
-## Exercises
+## Practice
 
-Put theory into practice with progressive server provisioning exercises:
+Put theory into practice:
 
 - [Server Foundation Exercises](/exercises/server-foundation/) - From portal-based VM creation to command-line automation
-
-## Tutorials
-
-Hands-on guides to practice what you've learned:
-
 - [Deploy Files with SCP](/tutorials/deploying-with-scp/) - Transfer files from your local machine to a remote server
 
 ## Recap
