@@ -5,9 +5,11 @@ date = 2024-11-19
 draft = false
 +++
 
-[Watch the presentation]({{< relref "the-osi-model-slides.md" >}})
+[Watch the presentation](/presentations/infrastructure-fundamentals/network/5-the-osi-model.html)
 
-[Se presentationen på svenska]({{< relref "the-osi-model-slides-swe.md" >}})
+[Se presentationen på svenska](/presentations/infrastructure-fundamentals/network/5-the-osi-model-swe.html)
+
+---
 
 Network communication requires coordination across multiple independent concerns: physical signal transmission, routing between networks, reliable delivery, and application-level protocols. The **OSI Model** (Open Systems Interconnection Model) organizes these concerns into seven distinct layers, each handling a specific aspect of network communication. Understanding this layered architecture clarifies how protocols interact and where different network components operate.
 

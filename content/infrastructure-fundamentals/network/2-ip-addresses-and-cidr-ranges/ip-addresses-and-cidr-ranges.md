@@ -5,9 +5,11 @@ date = 2024-11-19
 draft = false
 +++
 
-[Watch the presentation]({{< relref "ip-addresses-and-cidr-ranges-slides.md" >}})
+[Watch the presentation](/presentations/infrastructure-fundamentals/network/2-ip-addresses-and-cidr-ranges.html)
 
-[Se presentationen på svenska]({{< relref "ip-addresses-and-cidr-ranges-slides-swe.md" >}})
+[Se presentationen på svenska](/presentations/infrastructure-fundamentals/network/2-ip-addresses-and-cidr-ranges-swe.html)
+
+---
 
 Network communication requires a system for uniquely identifying devices and organizing them into manageable groups. IP addresses provide device identification, while CIDR notation enables flexible network organization. Understanding how these elements work together forms the foundation for designing and managing network infrastructure, whether in local environments or cloud platforms like Azure.
 

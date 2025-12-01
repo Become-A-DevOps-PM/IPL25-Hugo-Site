@@ -5,9 +5,11 @@ date = 2024-11-24
 draft = false
 +++
 
-[Watch the presentation]({{< relref "firewalls-slides.md" >}})
+[Watch the presentation](/presentations/infrastructure-fundamentals/network/4-firewalls.html)
 
-[Se presentationen på svenska]({{< relref "firewalls-slides-swe.md" >}})
+[Se presentationen på svenska](/presentations/infrastructure-fundamentals/network/4-firewalls-swe.html)
+
+---
 
 # Firewalls
 

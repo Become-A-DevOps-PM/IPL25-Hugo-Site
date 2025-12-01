@@ -5,9 +5,11 @@ date = 2024-11-19
 draft = false
 +++
 
-[Watch the presentation]({{< relref "private-and-public-networks-slides.md" >}})
+[Watch the presentation](/presentations/infrastructure-fundamentals/network/3-private-and-public-networks.html)
 
-[Se presentationen på svenska]({{< relref "private-and-public-networks-slides-swe.md" >}})
+[Se presentationen på svenska](/presentations/infrastructure-fundamentals/network/3-private-and-public-networks-swe.html)
+
+---
 
 Connecting every device directly to the internet would exhaust available addresses and expose internal systems to unnecessary risk. Network architecture solves this by distinguishing between addresses meant for internal communication and those meant for global connectivity. Understanding how **private networks** and **public networks** differ—and how they connect—reveals fundamental patterns in how infrastructure is organized.
 

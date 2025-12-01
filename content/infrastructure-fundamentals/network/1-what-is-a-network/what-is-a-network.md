@@ -5,9 +5,11 @@ date = 2024-11-19
 draft = false
 +++
 
-[Watch the presentation]({{< relref "what-is-a-network-slides.md" >}})
+[Watch the presentation](/presentations/infrastructure-fundamentals/network/1-what-is-a-network.html)
 
-[Se presentationen på svenska]({{< relref "what-is-a-network-slides-swe.md" >}})
+[Se presentationen på svenska](/presentations/infrastructure-fundamentals/network/1-what-is-a-network-swe.html)
+
+---
 
 Communication between computing devices requires infrastructure that connects them and manages the flow of data. The **network** provides this infrastructure, enabling everything from web browsing to distributed application architectures. Understanding networks involves recognizing both the physical and logical components that move data reliably and securely between systems.
 

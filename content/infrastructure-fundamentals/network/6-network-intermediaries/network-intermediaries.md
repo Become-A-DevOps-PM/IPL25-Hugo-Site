@@ -5,9 +5,11 @@ date = 2024-11-19
 draft = false
 +++
 
-[Watch the presentation]({{< relref "network-intermediaries-slides.md" >}})
+[Watch the presentation](/presentations/infrastructure-fundamentals/network/6-network-intermediaries.html)
 
-[Se presentationen på svenska]({{< relref "network-intermediaries-slides-swe.md" >}})
+[Se presentationen på svenska](/presentations/infrastructure-fundamentals/network/6-network-intermediaries-swe.html)
+
+---
 
 Network traffic between clients and servers rarely flows directly. Intermediary systems intercept, route, and manage this traffic to improve security, performance, and reliability. Understanding these intermediaries—proxies, reverse proxies, load balancers, and bastion hosts—enables informed decisions about network architecture and traffic management.
 
