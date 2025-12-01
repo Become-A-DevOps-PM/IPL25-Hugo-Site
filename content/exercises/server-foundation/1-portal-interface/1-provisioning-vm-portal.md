@@ -103,7 +103,7 @@ Creating the VM is the core of this exercise. You'll configure compute resources
 > ☁️ **Cloud Concept: On-Demand**
 >
 > Notice how you just created a server in minutes? This is **on-demand provisioning** - a fundamental characteristic of cloud computing. In traditional IT, ordering a physical server could take weeks: procurement, shipping, rack installation, cabling, OS installation. With cloud, compute resources are available instantly, billed by the hour or minute, and can be deleted when no longer needed. This changes how organizations think about infrastructure - from capital expenditure to operational expenditure, from planning months ahead to responding in real-time.
-
+>
 > ✓ **Quick check:** Ensure the VM status is "Running" in the Virtual Machines overview
 
 ### **Step 4:** Connect to the VM Using Azure Cloud Shell
