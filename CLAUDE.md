@@ -164,9 +164,6 @@ content/                                   (118 markdown files, 744KB)
 │   ├── demo-instruktioner.md             # Swedish
 │   ├── retrospective-template.md         # English
 │   └── retrospective-template-sv.md      # Swedish
-├── devops-fundamentals/                   (2 files)
-│   ├── _index.md
-│   └── introduction-to-automation.md
 ├── presentations/                         (1 file)
 │   └── _index.md                         # Links to standalone HTML
 ├── application/                           # Placeholder (_index only)
@@ -604,13 +601,9 @@ server-foundation/
 - ✅ Retrospective template (bilingual)
 - ⚠️ Minimal but functional
 
-**9. DevOps Fundamentals** (2 files)
-- ⚠️ Only "Introduction to Automation"
-- ⚠️ Needs expansion
-
 ### Placeholder Sections (5 sections)
 
-**10-12. Exercise Sections** (_index only):
+**9-11. Exercise Sections** (_index only):
 - ⚠️ application-layer
 - ⚠️ database-automation
 - ⚠️ security-production
@@ -692,15 +685,14 @@ When migrating content from the 2024 project:
 **⚠️ Partially Complete:**
 7. **Cheat Sheets** - Bash, Cloud-init, Linux (could expand: Git, Azure CLI, PostgreSQL)
 8. **Project Templates** - Demo instructions + retrospectives (bilingual)
-9. **DevOps Fundamentals** - Only "Introduction to Automation"
 
 **❌ Placeholder Sections (Need Development):**
-10. **Exercises - Application Layer** - Flask exercises, Python development
-11. **Exercises - Database Automation** - PostgreSQL setup, automation
-12. **Exercises - Security Production** - HTTPS, hardening, production deployment
-13. **Application Content** - Flask, Python, web development tutorials
-14. **IT Security Content** - Security concepts, GDPR, risk analysis
-15. **Presentations Index** - Update to include compute standalone HTML links
+9. **Exercises - Application Layer** - Flask exercises, Python development
+10. **Exercises - Database Automation** - PostgreSQL setup, automation
+11. **Exercises - Security Production** - HTTPS, hardening, production deployment
+12. **Application Content** - Flask, Python, web development tutorials
+13. **IT Security Content** - Security concepts, GDPR, risk analysis
+14. **Presentations Index** - Update to include compute standalone HTML links
 
 ## Git Workflow
 
