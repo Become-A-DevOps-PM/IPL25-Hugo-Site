@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>From Intent to Code: Abstraction Levels in Planning</title>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-50TPJY0FZH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-50TPJY0FZH');
+    </script>
+
+    <!-- Reveal.js Core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.css">
+
+    <!-- Swedish Tech Slides CSS -->
+    <link rel="stylesheet" href="swedish-tech-slides.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Hero Slide -->
+            <section class="hero-slide" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+
+                <div class="course-badge">
+                    <span>DEVOPS PROJECT MANAGEMENT</span>
+                </div>
+
+                <h1 class="main-title">
+                    FROM INTENT<br>
+                    TO CODE
+                </h1>
+
+                <p class="subtitle">Navigating the abstraction hierarchy in software planning</p>
+                <p class="course-info">Understanding probabilistic vs deterministic representations</p>
+
+                <div class="bottom-accent"></div>
+            </section>
+
+            <!-- The Abstraction Hierarchy -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">The Abstraction Hierarchy</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">1. Business Intent</span> - Strategic objectives and value propositions</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">2. Requirements Specification</span> - Stakeholder needs and system constraints</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">3. Product Requirements Document (PRD)</span> - Feature definitions and success criteria</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">4. User Stories and Epics</span> - User-centric functionality descriptions</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">5. Backlog Items</span> - Specific, prioritized work units</p>
+                </div>
+            </section>
+
+            <!-- Hierarchy continued -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">The Abstraction Hierarchy (continued)</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">6. Definition of Done</span> - Acceptance criteria and completion standards</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">7. Code</span> - Executable implementation (the only deterministic level)</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Each level provides <span class="highlight">greater specificity</span> than its predecessor while remaining <span class="highlight">incomplete</span> until code executes</p>
+                </div>
+            </section>
+
+            <!-- Probabilistic vs Deterministic -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Nature of Abstraction Levels</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Probabilistic Nature (Levels 1-6):</span> Higher levels operate in the realm of possibility and probability—they leave implementation space open</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Deterministic Reality (Level 7):</span> Code transitions from probabilistic to deterministic—it produces specific, measurable behavior</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">"Code is Truth":</span> Running code is the only artifact that unambiguously describes what the system actually does</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>This incompleteness is not a flaw but a <span class="highlight">fundamental characteristic</span> of the planning process</p>
+                </div>
+            </section>
+
+            <!-- Why Intermediate Levels Matter -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Why Intermediate Levels Matter</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">1. Shared Understanding Across Stakeholders</span> - Different groups engage at different levels, each bringing specialized knowledge that applies most effectively at specific altitudes</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">2. Progressive Risk Reduction</span> - Each step down the hierarchy reduces uncertainty, revealing risks at stages where course correction costs less</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">3. Managing Complexity Through Decomposition</span> - Breaks large systems into tractable units without requiring anyone to hold the entire system in mind</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">4. Preserving Intent Through Implementation</span> - Maintains the reasoning thread from strategic vision through thousands of micro-decisions</p>
+                </div>
+            </section>
+
+            <!-- AI as Translation Layer -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">AI as a Translation Layer</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Pattern Recognition:</span> AI systems learn relationships between abstraction levels from vast software artifacts</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Bidirectional Translation:</span> AI can generate requirements from intent, or extract documentation from code—working in both directions</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Probabilistic Output:</span> AI translations represent possibilities, not certainties—they provide starting points that accelerate translation but require validation</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Contextual Intelligence:</span> AI with organizational knowledge generates proposals aligned with existing systems, architecture, and team capabilities</p>
+                </div>
+            </section>
+
+            <!-- Human-AI Complementarity -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Human-AI Complementarity</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">AI Excels Upward (Concrete → Abstract):</span> Given code, AI identifies patterns, extracts functionality, generates documentation—remarkable at recognizing what implementations represent</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Humans Excel Downward (Abstract → Concrete):</span> From nebulous objectives, humans imagine specific features, envision experiences, exercise judgment about what matters</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Complementary Partnership:</span> Humans drive intent into specification; AI generates drafts and maintains alignment; together they navigate the hierarchy more effectively</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Bidirectional Feedback Loop:</span> Human intent drives downward while AI maintains upward coherence—creating alignment neither could achieve alone</p>
+                </div>
+            </section>
+
+            <!-- Practical Implications -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Practical Implications for PM</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Perfection Less Critical:</span> Since higher levels are inherently probabilistic, investing effort to eliminate all ambiguity wastes resources</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Iteration Cycles Shorten:</span> Translation between levels accelerates—moving from intent to backlog in hours rather than weeks</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Documentation Maintenance Automated:</span> AI propagates changes through abstraction levels, keeping specifications aligned with reality</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Tighter Strategic Coupling:</span> AI-assisted translation maintains connection between business vision and daily implementation</p>
+                </div>
+            </section>
+
+            <!-- Key Takeaway -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Key Takeaway</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">The Progression:</span> Software moves through abstraction levels from business intent to executable code</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">The Reality:</span> Each level operates probabilistically until code produces deterministic behavior</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">The Collaboration:</span> AI translates between levels (excelling upward) while humans guide direction (excelling downward)</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">The Outcome:</span> Faster iteration, better alignment, and more sustainable planning practices across the abstraction hierarchy</p>
+                </div>
+            </section>
+
+            <!-- Closing Slide -->
+            <section class="closing-slide" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+
+                <div class="centered-content">
+                    <div class="big-symbol">?</div>
+                    <p class="big-text">Questions</p>
+                </div>
+
+                <div class="bottom-accent"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Core JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: false,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            slideNumber: 'c/t',
+            history: true,
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 1.0
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Structuring Your Demo Around a User Journey</title>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-50TPJY0FZH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-50TPJY0FZH');
+    </script>
+
+    <!-- Reveal.js Core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.css">
+
+    <!-- Swedish Tech Slides CSS -->
+    <link rel="stylesheet" href="swedish-tech-slides.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- Hero Slide -->
+            <section class="hero-slide" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+
+                <div class="course-badge">
+                    <span>PROJECT DEMONSTRATION</span>
+                </div>
+
+                <h1 class="main-title">
+                    STRUCTURING<br>
+                    YOUR DEMO
+                </h1>
+
+                <p class="subtitle">Around a User Journey</p>
+                <p class="course-info">DevOps PM IPL25 • Project Presentations</p>
+
+                <div class="bottom-accent"></div>
+            </section>
+
+            <!-- Slide 2: What is a User Journey -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">What is a User Journey?</h2>
+
+                <div class="fragment info-box">
+                    <p>A <span class="highlight">narrative path</span> through your system from a user's perspective</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Follows a specific <span class="highlight">scenario from initiation to completion</span></p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Reveals how different system parts <span class="highlight">interact to produce an outcome</span></p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Shows <span class="highlight">cause and effect</span> rather than isolated components</p>
+                </div>
+            </section>
+
+            <!-- Slide 3: Why This Approach -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Why Structure Demos Around User Journeys?</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Storytelling Capability:</span> Humans process narratives more effectively than lists. A story with beginning, middle, and end creates a mental framework.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Value Demonstration:</span> Shows outcomes, not just features. The audience sees why the work matters.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Integration Visibility:</span> Proves that components work together by exercising the connections in real time.</p>
+                </div>
+            </section>
+
+            <!-- Slide 4: The Framework -->
+            <section class="timeline-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">The User Journey Framework</h2>
+
+                <div class="timeline">
+                    <div class="timeline-item fragment" data-fragment-index="1">
+                        <div class="timeline-week">1</div>
+                        <div class="timeline-label">Setup</div>
+                    </div>
+                    <div class="timeline-item fragment" data-fragment-index="2">
+                        <div class="timeline-week">2</div>
+                        <div class="timeline-label">Trigger</div>
+                    </div>
+                    <div class="timeline-item fragment" data-fragment-index="3">
+                        <div class="timeline-week">3</div>
+                        <div class="timeline-label">Flow</div>
+                    </div>
+                    <div class="timeline-item fragment" data-fragment-index="4">
+                        <div class="timeline-week">4</div>
+                        <div class="timeline-label">Outcome</div>
+                    </div>
+                </div>
+
+                <div class="description-container">
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="1">
+                        <p><span class="highlight">Setup - Establishing the Starting State:</span> Brief context (1-2 sentences) explaining current system state and what change will occur.</p>
+                    </div>
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="2">
+                        <p><span class="highlight">Trigger - The Action That Starts the Journey:</span> Specific user action that initiates automation (commit code, merge PR, deploy). Show it happening live.</p>
+                    </div>
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="3">
+                        <p><span class="highlight">Flow - The Automated Response Sequence:</span> Narrate the cascade of events—pipeline runs, tests pass, container builds, deployment executes. Show visual evidence.</p>
+                    </div>
+                    <div class="fragment fade-in description-box" data-fragment-index="4">
+                        <p><span class="highlight">Outcome - The Result That Matters:</span> Demonstrate the end state. Verify the goal was achieved. Connect to business value or user benefit.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide 5: Example Journey -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Example: Code Push to Production</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Setup:</span> Application runs in Azure, serving users with healthy metrics.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Trigger:</span> Developer commits "Add email validation" and pushes to main branch.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Flow:</span> GitHub Actions → tests pass → Docker image builds → Azure deploys → 3 minutes total.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Outcome:</span> Registration page validates emails in production. Feature works. No manual intervention.</p>
+                </div>
+            </section>
+
+            <!-- Slide 6: Common Mistakes -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Common Mistakes to Avoid</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Isolated Feature Showcases:</span> Presenting components separately instead of showing how they connect breaks the narrative.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Technical Tangents Without Context:</span> Diving into YAML/Bicep details without connecting to the journey disorients the audience.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Missing Business Impact:</span> Completing technical tasks without explaining why they matter fails to demonstrate value.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Remember:</span> Save technical details for Q&A. The journey shows <span class="highlight">what</span> the system does; questions explore <span class="highlight">how</span>.</p>
+                </div>
+            </section>
+
+            <!-- Slide 7: Key Takeaway -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Key Takeaway</h2>
+
+                <div class="info-box">
+                    <p>Structure your demonstration as a <span class="highlight">coherent narrative</span> that shows integration and delivers value.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Follow the framework: <span class="highlight">Setup → Trigger → Flow → Outcome</span></p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Prove your system works by <span class="highlight">showing it respond to real actions</span> with coordinated automation.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>A working demonstration that shows genuine capability carries far more impact than slides describing theoretical architecture.</p>
+                </div>
+            </section>
+
+            <!-- Closing Slide -->
+            <section class="closing-slide" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+
+                <div class="centered-content">
+                    <div class="big-symbol">?</div>
+                    <p class="big-text">Questions</p>
+                </div>
+
+                <div class="bottom-accent"></div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Reveal.js Core JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: false,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            slideNumber: 'c/t',
+            history: true,
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 1.0
+        });
+    </script>
+</body>
+</html>

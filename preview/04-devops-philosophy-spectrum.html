@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>DevOps Philosophy Spectrum</title>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-50TPJY0FZH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-50TPJY0FZH');
+    </script>
+
+    <!-- Reveal.js Core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.css">
+
+    <!-- Swedish Tech Slides CSS -->
+    <link rel="stylesheet" href="swedish-tech-slides.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Hero Slide -->
+            <section class="hero-slide" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+
+                <div class="course-badge">
+                    <span>DEVOPS PM IPL25</span>
+                </div>
+
+                <h1 class="main-title">
+                    DEVOPS<br>
+                    PHILOSOPHY<br>
+                    SPECTRUM
+                </h1>
+
+                <p class="subtitle">From Infrastructure as Code to GitOps</p>
+                <p class="course-info">Understanding the "As Code" Paradigm</p>
+
+                <div class="bottom-accent"></div>
+            </section>
+
+            <!-- Timeline Slide: The Spectrum -->
+            <section class="timeline-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">THE "AS CODE" EVOLUTION</h2>
+
+                <div class="timeline">
+                    <div class="timeline-item fragment" data-fragment-index="1">
+                        <div class="timeline-week">1</div>
+                        <div class="timeline-label">IaC</div>
+                    </div>
+                    <div class="timeline-item fragment" data-fragment-index="2">
+                        <div class="timeline-week">2</div>
+                        <div class="timeline-label">Config</div>
+                    </div>
+                    <div class="timeline-item fragment" data-fragment-index="3">
+                        <div class="timeline-week">3</div>
+                        <div class="timeline-label">Docs</div>
+                    </div>
+                    <div class="timeline-item fragment" data-fragment-index="4">
+                        <div class="timeline-week">4</div>
+                        <div class="timeline-label">Everything</div>
+                    </div>
+                    <div class="timeline-item fragment" data-fragment-index="5">
+                        <div class="timeline-week">5</div>
+                        <div class="timeline-label">GitOps</div>
+                    </div>
+                </div>
+
+                <div class="description-container">
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="1">
+                        <p><span class="highlight">Infrastructure as Code:</span> Define infrastructure in text files instead of clicking through portals</p>
+                    </div>
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="2">
+                        <p><span class="highlight">Configuration as Code:</span> Application settings in version control, not databases</p>
+                    </div>
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="3">
+                        <p><span class="highlight">Documentation as Code:</span> Docs in the same repository as code, using Markdown</p>
+                    </div>
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="4">
+                        <p><span class="highlight">Everything as Code:</span> Policies, security rules, and CI/CD pipelines defined as code</p>
+                    </div>
+                    <div class="fragment fade-in description-box" data-fragment-index="5">
+                        <p><span class="highlight">GitOps:</span> Git becomes the single source of truth for all system state</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bullet Slide: Why "As Code" Matters -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">WHY TREAT INFRASTRUCTURE "AS CODE"?</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Version Control:</span> Git tracks every change—who, what, when, and why</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Code Review:</span> Team members examine proposed changes before they go live</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Automated Testing:</span> Validate configurations meet security and policy requirements</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Reproducibility:</span> Create identical infrastructure from text files, not from memory</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Audit Trail:</span> Complete history of infrastructure evolution for compliance and debugging</p>
+                </div>
+            </section>
+
+            <!-- Bullet Slide: Infrastructure as Code -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">INFRASTRUCTURE AS CODE (IaC)</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Declarative Definitions:</span> Describe desired state, not step-by-step instructions</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Text Files Are Authoritative:</span> The file defines infrastructure, not portal configurations</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Student Example:</span> Bash scripts with Azure CLI commands replace portal clicking</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Cloud-Init:</span> Define VM configuration—software, settings, services—in YAML files</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Foundation Pattern:</span> Infrastructure changes happen by editing files and reapplying</p>
+                </div>
+            </section>
+
+            <!-- Bullet Slide: Configuration as Code -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">CONFIGURATION AS CODE</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Application Settings:</span> Database connections, API endpoints, feature flags in version control</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Environment Parity:</span> Development, staging, and production use the same configuration structure</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Secrets Separation:</span> Configuration files reference secrets without exposing values</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Deploy Together:</span> Configuration deploys alongside application code</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Secret Management:</span> Azure Key Vault stores sensitive values, environment variables inject them</p>
+                </div>
+            </section>
+
+            <!-- Bullet Slide: Documentation as Code -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">DOCUMENTATION AS CODE</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Same Repository:</span> Documentation lives with code, written in Markdown or reStructuredText</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Same Workflow:</span> Edit files, commit, submit for review, merge when approved</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Synchronized Updates:</span> Code changes and documentation updates happen in the same pull request</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Automation:</span> Build websites or PDFs, validate links, test code examples</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Living Documentation:</span> Stays current because updating is part of the development workflow</p>
+                </div>
+            </section>
+
+            <!-- Bullet Slide: Everything as Code -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">EVERYTHING AS CODE</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Policy as Code:</span> Organizational rules and compliance as automated tests</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Security as Code:</span> Security controls embedded in development pipeline, not separate manual review</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Pipeline as Code:</span> CI/CD workflows in YAML files (GitHub Actions, GitLab CI)</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Automated Validation:</span> Static analysis, dependency checks, configuration validation run on every commit</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Version Controlled Processes:</span> Deployment procedures documented and reviewable</p>
+                </div>
+            </section>
+
+            <!-- Bullet Slide: GitOps -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">GITOPS: THE COMPLETE PICTURE</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Single Source of Truth:</span> Git contains complete desired state of infrastructure and applications</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Continuous Reconciliation:</span> Automated systems keep production in sync with Git repository</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Change Process:</span> To change production, commit to Git—automation applies the change</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Audit and Rollback:</span> Every change is a Git commit; rollback is a git revert</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Disaster Recovery:</span> Point new environment at Git repo, controller recreates entire system</p>
+                </div>
+            </section>
+
+            <!-- Bullet Slide: Student Project Application -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">APPLYING TO STUDENT PROJECTS</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Week 1-2:</span> Portal → Azure CLI scripts → Bash automation (IaC foundation)</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Week 2-3:</span> Cloud-init for VM configuration, Flask config files in Git</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Week 3-4:</span> Markdown documentation in repository, validation scripts for infrastructure</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">GitOps Principles:</span> Use Git as single source, make changes through version control</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Progressive Learning:</span> Understand the spectrum, practice fundamental techniques</p>
+                </div>
+            </section>
+
+            <!-- Bullet Slide: Key Takeaways -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">KEY TAKEAWAYS</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Progression, Not Checklist:</span> Move along the spectrum based on project needs and maturity</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Engineering Practices:</span> Code review, testing, CI/CD apply to infrastructure and operations</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Text Files Enable:</span> Version control, reproducibility, automation, and collaboration</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Start Simple:</span> Scripts and cloud-init provide significant benefits without complexity</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Foundation Building:</span> Understanding the philosophy prepares you for sophisticated approaches</p>
+                </div>
+            </section>
+
+            <!-- Closing Slide -->
+            <section class="closing-slide" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+
+                <div class="centered-content">
+                    <div class="big-symbol">?</div>
+                    <p class="big-text">Questions</p>
+                </div>
+
+                <div class="bottom-accent"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Core JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: false,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            slideNumber: 'c/t',
+            history: true,
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 1.0
+        });
+    </script>
+</body>
+</html>
