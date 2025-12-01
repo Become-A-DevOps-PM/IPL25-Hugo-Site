@@ -950,6 +950,67 @@ Track visitor analytics using Google Analytics 4. This requires a GA4 property a
 >
 > ✓ **Quick check:** Real-Time report in GA4 shows your visit when browsing the site
 
+### **Step 12:** Add Mermaid Diagram Support (Optional)
+
+Add support for Mermaid diagrams in your markdown content. Mermaid allows you to create flowcharts, sequence diagrams, and other visualizations using text-based syntax.
+
+1. **Create** the markup directory for render hooks:
+
+   ```bash
+   mkdir -p layouts/_default/_markup
+   ```
+
+2. **Create** the Mermaid code block render hook:
+
+   > `layouts/_default/_markup/render-codeblock-mermaid.html`
+
+   ```html
+   <div class="mermaid">
+   {{- .Inner | safeHTML }}
+   </div>
+   ```
+
+   This tells Hugo to wrap any code block marked as `mermaid` in a div that the Mermaid library will find and render.
+
+3. **Add** Mermaid.js to your scripts partial:
+
+   > `layouts/partials/flex/scripts.html` (add at the end)
+
+   ```html
+   <!-- Mermaid diagram support -->
+   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+   <script>
+       mermaid.initialize({ startOnLoad: true });
+   </script>
+   ```
+
+4. **Use** Mermaid in your markdown content:
+
+   ````markdown
+   ```mermaid
+   sequenceDiagram
+       participant A as Client
+       participant B as Server
+       A->>B: Request
+       B->>A: Response
+   ```
+   ````
+
+   This will render as an SVG diagram in the browser.
+
+> ℹ **Concept Deep Dive**
+>
+> Hugo's render hooks allow you to customize how specific markdown elements are rendered. The `render-codeblock-mermaid.html` hook intercepts fenced code blocks with the `mermaid` language identifier and outputs them as HTML divs instead of `<pre><code>` blocks. The Mermaid JavaScript library then finds these divs on page load and converts the text content into SVG diagrams. This approach keeps your markdown portable (standard fenced code blocks) while enabling rich visualizations.
+>
+> ⚠ **Common Mistakes**
+>
+> - Forgetting to create the `_markup` directory (Hugo won't find the render hook)
+> - Using a shortcode syntax when fenced code blocks work better for portability
+> - Not testing diagrams locally before deploying (syntax errors show as error messages)
+> - Using very complex diagrams that don't render well on mobile screens
+>
+> ✓ **Quick check:** Create a test page with a simple Mermaid diagram and verify it renders in `hugo server`
+
 ---
 
 ## Common Issues
@@ -990,7 +1051,7 @@ You've successfully set up a Hugo documentation site with DocDock theme on GitHu
 > - Add more reveal.js themes by exploring <https://revealjs.com/themes/>
 > - Configure multilingual support in `hugo.toml`
 > - Set up a custom 404 page at `layouts/404.html`
-> - Add Mermaid diagram support with DocDock's built-in shortcodes
+> - Explore more Mermaid diagram types at <https://mermaid.js.org/intro/>
 > - Create custom shortcodes for repeated content patterns
 > - Set up branch previews with GitHub Actions for pull requests
 
