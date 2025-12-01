@@ -1,7 +1,7 @@
 +++
 title = "Infrastructure Fundamentals"
 description = "Core infrastructure concepts: Compute, Network, Storage"
-weight = 3
+weight = 20
 chapter = true
 head = "<label>Theory</label>"
 +++

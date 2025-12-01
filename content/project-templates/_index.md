@@ -1,7 +1,7 @@
 +++
 title = "Project Templates"
 description = "Templates for demos and retrospectives"
-weight = 10
+weight = 27
 +++
 
 # Project Templates
