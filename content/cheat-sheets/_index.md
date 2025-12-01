@@ -1,7 +1,7 @@
 +++
 title = "Cheat Sheets"
 description = "Quick reference guides for commands and syntax"
-weight = 8
+weight = 9
 +++
 
 # Cheat Sheets

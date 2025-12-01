@@ -1,7 +1,7 @@
 +++
 title = "Application"
 description = "Web application concepts and architecture"
-weight = 3
+weight = 4
 chapter = true
 +++
 

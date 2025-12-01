@@ -1,7 +1,7 @@
 +++
 title = "Tutorials"
 description = "Supporting how-to guides"
-weight = 6
+weight = 7
 chapter = true
 +++
 

@@ -1,7 +1,7 @@
 +++
 title = "Presentations"
 description = "Course presentations and slides"
-weight = 7
+weight = 8
 chapter = true
 head = "<label>Resources</label>"
 +++

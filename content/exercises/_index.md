@@ -1,7 +1,7 @@
 +++
 title = "Exercises"
 description = "Hands-on curriculum exercises"
-weight = 5
+weight = 6
 chapter = true
 head = "<label>Practice</label>"
 +++
