@@ -70,6 +70,20 @@ The 2024 project contains the complete course development materials:
 - Example Flask application code
 - Models, forms, templates
 
+## Related Repository - DemoDice
+
+**Location:** `/Users/lasse/Developer/IPL_Development/DemoDice`
+
+**Important:** This is a READ-ONLY reference. Never modify files in this directory.
+
+The DemoDice project contains the "Presenter-Tron 3000" - a steampunk-themed lottery ball machine for randomizing presentation order during demos.
+
+**Copied to this project:**
+- `DemoDice/src/index-presenter-tron-canvas-sprite.html` → `static/tools/demo-dice/index.html`
+- `DemoDice/src/assets/ball-{1-6}.png` → `static/tools/demo-dice/assets/`
+
+**Check for updates:** If the DemoDice application is updated, the source files are in `DemoDice/src/`. Copy updated files to `static/tools/demo-dice/` as needed.
+
 ## Working Guidelines
 
 ### Content Development

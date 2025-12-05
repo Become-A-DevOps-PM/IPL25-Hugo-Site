@@ -1,0 +1,1531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DemoDice: The Presenter-Tron 3000</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cinzel', serif;
+            background: linear-gradient(180deg, #1a1612 0%, #2d2420 50%, #1a1612 100%);
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .game-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* UI Overlays */
+        .ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+        }
+
+        .header {
+            position: absolute;
+            top: 2%;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 0 5%;
+            pointer-events: auto;
+        }
+
+        .title {
+            color: #d4a853;
+            font-size: clamp(14px, 4vmin, 24px);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .subtitle {
+            color: #a08050;
+            font-size: clamp(10px, 2.5vmin, 14px);
+            font-style: italic;
+        }
+
+
+
+
+        .keyboard-hints {
+            position: absolute;
+            bottom: 2%;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgba(160, 128, 80, 0.5);
+            font-size: clamp(8px, 1.5vmin, 10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="game-wrapper">
+        <canvas id="gameCanvas"></canvas>
+
+        <div class="ui-layer">
+            <div class="header">
+                <div>
+                    <div class="title">DemoDice:</div>
+                    <div class="subtitle">The Presenter-Tron 3000</div>
+                </div>
+            </div>
+
+            <div class="keyboard-hints">Enter/Green Lever: Start/Reset | Space/Red Lever: Spin</div>
+        </div>
+
+    </div>
+
+    <script>
+        // =====================================
+        // CANVAS SETUP
+        // =====================================
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height, scale;
+
+        function resizeCanvas() {
+            const wrapper = canvas.parentElement;
+            const rect = wrapper.getBoundingClientRect();
+
+            // Use higher resolution for crisp rendering
+            scale = window.devicePixelRatio || 1;
+            width = rect.width;
+            height = rect.height;
+
+            canvas.width = width * scale;
+            canvas.height = height * scale;
+            canvas.style.width = width + 'px';
+            canvas.style.height = height + 'px';
+
+            ctx.scale(scale, scale);
+
+            // Recalculate layout
+            calculateLayout();
+        }
+
+        // =====================================
+        // SPRITE LOADING
+        // =====================================
+        const ballSprites = {};
+        let spritesLoaded = 0;
+        const totalSprites = 6;
+
+        function loadSprites() {
+            for (let i = 1; i <= 6; i++) {
+                const img = new Image();
+                img.onload = () => {
+                    spritesLoaded++;
+                    console.log(`Loaded ball-${i}.png (${spritesLoaded}/${totalSprites})`);
+                };
+                img.onerror = () => {
+                    console.warn(`Failed to load ball-${i}.png, using fallback`);
+                    spritesLoaded++;
+                };
+                img.src = `assets/ball-${i}.png`;
+                ballSprites[i] = img;
+            }
+        }
+
+        // =====================================
+        // LAYOUT CALCULATIONS
+        // =====================================
+        let layout = {};
+
+        function calculateLayout() {
+            const cx = width / 2;
+            const cy = height / 2;
+
+            // Use a "game unit" based on the smaller dimension to keep proportions
+            // This ensures the game looks good on any aspect ratio
+            const gameHeight = Math.min(width * 1.33, height); // 3:4 aspect ratio max
+            const gameWidth = gameHeight * 0.75;
+            const unit = gameHeight;
+
+            // Store game area for reference
+            layout.gameArea = {
+                x: cx - gameWidth / 2,
+                y: cy - gameHeight / 2,
+                width: gameWidth,
+                height: gameHeight,
+                cx: cx,
+                cy: cy
+            };
+
+            // Machine base position - this is the foundation (centered in game area)
+            layout.machineBase = {
+                x: cx,
+                y: cy - gameHeight * 0.04,
+                width: unit * 0.38,
+                height: unit * 0.09
+            };
+
+            // Dome (glass bubble) - sits directly on the machine base brass ring
+            const domeRadius = layout.machineBase.width * 0.46;
+            // Position dome so its bottom edge sits on the machine base top
+            layout.dome = {
+                x: cx,
+                y: layout.machineBase.y - layout.machineBase.height * 0.35 - domeRadius * 0.15,
+                radius: domeRadius,
+                innerRadius: domeRadius * 0.92
+            };
+
+            // Funnel on top of dome
+            layout.funnel = {
+                x: cx,
+                y: layout.dome.y - layout.dome.radius,
+                topWidth: unit * 0.05,
+                bottomWidth: unit * 0.018,
+                height: unit * 0.038
+            };
+
+            // Upper pipe (horizontal, feeds into funnel)
+            // We need to calculate ball positions first to know where pipe should start
+            const tempBallRadius = unit * 0.021;
+            const tempBallSpacing = tempBallRadius * 2.3;
+            const tempEndX = cx - layout.funnel.topWidth * 0.8;
+            const tempRightmostBallX = tempEndX - tempBallRadius * 3;
+            const tempLeftmostBallX = tempRightmostBallX - (tempBallSpacing * 5);
+
+            layout.upperPipe = {
+                startX: tempLeftmostBallX - tempBallRadius * 3,  // Start left of leftmost ball
+                endX: tempEndX,  // End before funnel with some gap
+                y: layout.funnel.y - layout.funnel.height * 0.4,
+                radius: unit * 0.015
+            };
+
+            // Lower pipe - starts from dome's right lower corner, curves down to tray
+            // The entry point is at the bottom-right edge of the dome
+            const domeBottomY = layout.dome.y + layout.dome.radius * 0.15;
+            layout.lowerPipe = {
+                // Start at right edge of dome base
+                startX: layout.dome.x + layout.dome.radius * 0.85,
+                startY: domeBottomY,
+                radius: unit * 0.015
+            };
+
+            // Tray (horizontal at bottom) - centered
+            const trayWidth = gameWidth * 0.9;
+            layout.tray = {
+                x: cx - trayWidth / 2,
+                y: cy + gameHeight * 0.38,
+                width: trayWidth,
+                height: unit * 0.055,
+                slotWidth: trayWidth / 6
+            };
+
+            // Ball size
+            layout.ballRadius = unit * 0.021;
+
+            // Upper pipe ball positions - rightmost ball (6) is first to enter
+            // Position balls to the left of the funnel with some gap
+            layout.pipePositions = [];
+            const ballSpacing = layout.ballRadius * 2.3;
+            // Ball 6 (rightmost) should be left of funnel with a gap
+            const rightmostBallX = layout.upperPipe.endX - layout.ballRadius * 3;
+            for (let i = 0; i < 6; i++) {
+                // Ball 1 is leftmost (index 0), Ball 6 is rightmost (index 5)
+                layout.pipePositions.push({
+                    x: rightmostBallX - (ballSpacing * (5 - i)),
+                    y: layout.upperPipe.y
+                });
+            }
+
+            // Tray slot positions (centered in each slot)
+            layout.trayPositions = [];
+            for (let i = 0; i < 6; i++) {
+                layout.trayPositions.push({
+                    x: layout.tray.x + layout.tray.slotWidth * (i + 0.5),
+                    y: layout.tray.y
+                });
+            }
+
+            // Lever position and hitbox - on the right side of machine
+            layout.lever = {
+                x: cx + layout.machineBase.width * 0.58,
+                y: layout.machineBase.y - layout.machineBase.height * 0.1,
+                length: unit * 0.07,
+                hitRadius: unit * 0.04
+            };
+
+            // Start lever - small lever near the funnel to release balls
+            layout.startLever = {
+                x: layout.funnel.x + layout.funnel.topWidth * 1.5,
+                y: layout.funnel.y - layout.funnel.height * 0.2,
+                length: unit * 0.038,
+                hitRadius: unit * 0.028
+            };
+        }
+
+        // =====================================
+        // COLORS
+        // =====================================
+        const colors = {
+            brass: '#b8860b',
+            brassLight: '#d4a853',
+            brassDark: '#8b6914',
+            copper: '#b87333',
+            copperDark: '#8b4513',
+            wood: '#5c4033',
+            woodLight: '#8b7355',
+            glass: 'rgba(200, 220, 240, 0.3)',
+            glassHighlight: 'rgba(255, 255, 255, 0.4)',
+            background: '#2d2420',
+            balls: [
+                { main: '#3498db', light: '#5dade2', dark: '#2174a8' }, // Blue
+                { main: '#9b59b6', light: '#bb8fce', dark: '#7d3c98' }, // Purple
+                { main: '#e91e63', light: '#f48fb1', dark: '#ad1457' }, // Pink
+                { main: '#26a69a', light: '#80cbc4', dark: '#00796b' }, // Teal
+                { main: '#f1c40f', light: '#f9e079', dark: '#b7950b' }, // Yellow
+                { main: '#e74c3c', light: '#f1948a', dark: '#a93226' }  // Red/Orange
+            ]
+        };
+
+        // =====================================
+        // BALL PHYSICS
+        // =====================================
+        class Ball {
+            constructor(number, x, y) {
+                this.number = number;
+                this.x = x;
+                this.y = y;
+                this.vx = 0;
+                this.vy = 0;
+                this.radius = layout.ballRadius;
+                this.color = colors.balls[number - 1];
+                this.state = 'pipe'; // pipe, toFunnel, inFunnel, dome, exiting, inPipe, tray
+                this.pathProgress = 0;
+                this.traySlot = -1;
+            }
+
+            update(dt) {
+                this.radius = layout.ballRadius; // Update radius on resize
+
+                if (this.state === 'dome') {
+                    // Bounce physics inside dome
+                    const dome = layout.dome;
+                    const gravity = height * 0.8;
+                    const friction = 0.995;
+                    const bounce = 0.75;
+
+                    this.vy += gravity * dt;
+                    this.vx *= friction;
+                    this.vy *= friction;
+
+                    this.x += this.vx * dt;
+                    this.y += this.vy * dt;
+
+                    // Floor of dome (the brass ring where dome sits on machine base)
+                    // This is at dome.y + dome.radius * 0.15 (same as bottomY in drawDome)
+                    const floorY = dome.y + dome.radius * 0.15 - this.radius;
+                    if (this.y > floorY) {
+                        this.y = floorY;
+                        this.vy = -Math.abs(this.vy) * bounce;
+                        this.vx += (Math.random() - 0.5) * 20;
+                    }
+
+                    // Constrain to dome walls (hemisphere)
+                    const dx = this.x - dome.x;
+                    const dy = this.y - dome.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const maxDist = dome.innerRadius - this.radius;
+
+                    if (dist > maxDist && dy < 0) {
+                        // Only bounce off the curved upper part of dome
+                        const nx = dx / dist;
+                        const ny = dy / dist;
+
+                        this.x = dome.x + nx * maxDist;
+                        this.y = dome.y + ny * maxDist;
+
+                        // Reflect velocity
+                        const dot = this.vx * nx + this.vy * ny;
+                        this.vx = (this.vx - 2 * dot * nx) * bounce;
+                        this.vy = (this.vy - 2 * dot * ny) * bounce;
+
+                        // Add some random spin on wall hit
+                        this.vx += (Math.random() - 0.5) * 30;
+                    }
+
+                    // Side walls (vertical constraint at dome edge)
+                    const maxX = dome.x + dome.radius * 0.9 - this.radius;
+                    const minX = dome.x - dome.radius * 0.9 + this.radius;
+                    if (this.x > maxX) {
+                        this.x = maxX;
+                        this.vx = -Math.abs(this.vx) * bounce;
+                    } else if (this.x < minX) {
+                        this.x = minX;
+                        this.vx = Math.abs(this.vx) * bounce;
+                    }
+
+                } else if (this.state === 'toFunnel') {
+                    // Move along upper pipe toward funnel
+                    this.pathProgress += dt * 3;
+                    if (this.pathProgress >= 1) {
+                        this.state = 'inFunnel';
+                        this.pathProgress = 0;
+                    } else {
+                        const t = this.easeInOut(this.pathProgress);
+                        const startX = this.startX;
+                        const endX = layout.funnel.x;
+                        const pipeY = layout.upperPipe.y;
+                        this.x = startX + (endX - startX) * t;
+                        this.y = pipeY;
+                    }
+
+                } else if (this.state === 'inFunnel') {
+                    // Drop through funnel into dome
+                    this.pathProgress += dt * 2.5;
+                    if (this.pathProgress >= 1) {
+                        this.state = 'dome';
+                        this.vx = (Math.random() - 0.5) * 80;
+                        this.vy = 50;
+                    } else {
+                        const t = this.easeIn(this.pathProgress);
+                        const funnel = layout.funnel;
+                        const startY = funnel.y - funnel.height * 0.3;
+                        const endY = layout.dome.y - layout.dome.radius * 0.3;
+                        this.x = funnel.x + (Math.random() - 0.5) * 4; // Slight wobble
+                        this.y = startY + (endY - startY) * t;
+                    }
+
+                } else if (this.state === 'exiting') {
+                    // Move along dome floor to exit pipe at right corner
+                    this.pathProgress += dt * 1.5;
+                    if (this.pathProgress >= 1) {
+                        this.state = 'inPipe';
+                        this.pathProgress = 0;
+                    } else {
+                        const pos = this.getDomeExitPosition(this.pathProgress);
+                        this.x = pos.x;
+                        this.y = pos.y;
+                    }
+
+                } else if (this.state === 'inPipe') {
+                    // Follow the curved pipe to the tray - slower movement
+                    this.pathProgress += dt * 0.6;
+                    if (this.pathProgress >= 1) {
+                        this.state = 'tray';
+                        // Snap to tray position
+                        const trayPos = layout.trayPositions[this.traySlot];
+                        this.x = trayPos.x;
+                        this.y = trayPos.y;
+                    } else {
+                        const pos = this.getExitPipePosition(this.pathProgress);
+                        this.x = pos.x;
+                        this.y = pos.y;
+                    }
+
+                } else if (this.state === 'tray') {
+                    // Ensure ball stays in correct tray position
+                    const trayPos = layout.trayPositions[this.traySlot];
+                    if (trayPos) {
+                        this.x = trayPos.x;
+                        this.y = trayPos.y;
+                    }
+                } else if (this.state === 'returning') {
+                    // Animate ball flying back from tray to pipe position
+                    this.pathProgress += dt * 1.8;
+                    if (this.pathProgress >= 1) {
+                        this.state = 'pipe';
+                        const pipePos = layout.pipePositions[this.number - 1];
+                        this.x = pipePos.x;
+                        this.y = pipePos.y;
+                    } else {
+                        const pos = this.getReturnPathPosition(this.pathProgress);
+                        this.x = pos.x;
+                        this.y = pos.y;
+                    }
+                }
+            }
+
+            getReturnPathPosition(t) {
+                // Curved path from tray back up to pipe position
+                const trayPos = layout.trayPositions[this.traySlot];
+                const pipePos = layout.pipePositions[this.number - 1];
+
+                const startX = trayPos.x;
+                const startY = trayPos.y;
+                const endX = pipePos.x;
+                const endY = pipePos.y;
+
+                // Arc up and over - higher arc for balls further from destination
+                const midX = (startX + endX) / 2;
+                const arcHeight = Math.abs(startX - endX) * 0.5 + height * 0.15;
+                const midY = Math.min(startY, endY) - arcHeight;
+
+                // Quadratic bezier for smooth arc
+                const mt = 1 - t;
+                return {
+                    x: mt * mt * startX + 2 * mt * t * midX + t * t * endX,
+                    y: mt * mt * startY + 2 * mt * t * midY + t * t * endY
+                };
+            }
+
+            easeInOut(t) {
+                return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+            }
+
+            easeIn(t) {
+                return t * t * t;
+            }
+
+            getDomeExitPosition(t) {
+                // Ball rolls along dome floor toward right lower corner, then gets sucked into pipe
+                const dome = layout.dome;
+                const lp = layout.lowerPipe;
+
+                // Dome floor level
+                const floorY = dome.y + dome.radius * 0.15 - this.radius;
+
+                // Start from wherever the ball currently is (center area of dome)
+                const startX = dome.x;
+                const startY = floorY;
+
+                // End at pipe entrance (right lower corner of dome)
+                const endX = lp.startX - this.radius;
+                const endY = lp.startY;
+
+                // Use easing for smooth roll to right, then quick "suction" into pipe
+                const eased = this.easeInOut(t);
+
+                if (t < 0.8) {
+                    // Roll along dome floor toward right corner
+                    const t1 = t / 0.8;
+                    const easedRoll = t1 * t1 * (3 - 2 * t1); // smoothstep
+                    return {
+                        x: startX + (endX - startX) * easedRoll,
+                        y: floorY
+                    };
+                } else {
+                    // Quick suction into pipe (move down slightly into pipe entrance)
+                    const t2 = (t - 0.8) / 0.2;
+                    const suctionEase = t2 * t2;
+                    return {
+                        x: endX + this.radius * suctionEase,
+                        y: floorY + (endY - floorY + this.radius) * suctionEase
+                    };
+                }
+            }
+
+            getExitPipePosition(t) {
+                // Path follows the S-shaped pipe curve: from dome corner down to tray
+                // This must match the drawLowerPipe bezier path exactly
+                const lp = layout.lowerPipe;
+                const tray = layout.tray;
+                const trayPos = layout.trayPositions[this.traySlot];
+                const pipeWidth = layout.upperPipe.radius * 2;
+
+                // S-curve parameters (must match drawLowerPipe)
+                const startX = lp.startX;
+                const startY = lp.startY;
+                const midY = lp.startY + (tray.y - lp.startY) * 0.45;
+                const farRightX = lp.startX + width * 0.15;
+                const pipeEndX = tray.x + tray.width - pipeWidth;
+                const pipeEndY = tray.y;
+
+                // Final position in tray slot
+                const slotX = trayPos.x;
+                const slotY = trayPos.y;
+
+                if (t < 0.35) {
+                    // First bezier segment: from start to mid point (far right)
+                    const t1 = t / 0.35;
+
+                    // Control points for first segment
+                    const cp1x = lp.startX + width * 0.08;
+                    const cp1y = lp.startY;
+                    const cp2x = farRightX;
+                    const cp2y = midY - height * 0.08;
+
+                    // Cubic bezier calculation
+                    const mt = 1 - t1;
+                    const mt2 = mt * mt;
+                    const mt3 = mt2 * mt;
+                    const t2_ = t1 * t1;
+                    const t3 = t2_ * t1;
+
+                    return {
+                        x: mt3 * startX + 3 * mt2 * t1 * cp1x + 3 * mt * t2_ * cp2x + t3 * farRightX,
+                        y: mt3 * startY + 3 * mt2 * t1 * cp1y + 3 * mt * t2_ * cp2y + t3 * midY
+                    };
+                } else if (t < 0.75) {
+                    // Second bezier segment: from mid point to pipe end
+                    const t2 = (t - 0.35) / 0.4;
+
+                    // Control points for second segment
+                    const cp1x = farRightX;
+                    const cp1y = midY + height * 0.08;
+                    const cp2x = pipeEndX + width * 0.05;
+                    const cp2y = tray.y - height * 0.05;
+
+                    // Cubic bezier calculation
+                    const mt = 1 - t2;
+                    const mt2 = mt * mt;
+                    const mt3 = mt2 * mt;
+                    const t2_ = t2 * t2;
+                    const t3 = t2_ * t2;
+
+                    return {
+                        x: mt3 * farRightX + 3 * mt2 * t2 * cp1x + 3 * mt * t2_ * cp2x + t3 * pipeEndX,
+                        y: mt3 * midY + 3 * mt2 * t2 * cp1y + 3 * mt * t2_ * cp2y + t3 * pipeEndY
+                    };
+                } else {
+                    // Roll along tray to slot position
+                    const t3 = (t - 0.75) / 0.25;
+                    const eased = t3 * t3 * (3 - 2 * t3); // smoothstep
+                    return {
+                        x: pipeEndX + (slotX - pipeEndX) * eased,
+                        y: pipeEndY
+                    };
+                }
+            }
+
+            intensify() {
+                // Add energy when spinning - more vivid bouncing
+                this.vx += (Math.random() - 0.5) * 250;
+                this.vy += (Math.random() - 0.5) * 200 - 120;
+            }
+
+            draw(ctx) {
+                const sprite = ballSprites[this.number];
+                const size = this.radius * 2;
+
+                // Check if sprite is loaded and valid
+                if (sprite && sprite.complete && sprite.naturalWidth > 0) {
+                    // Draw sprite
+                    ctx.save();
+
+                    // Draw shadow first
+                    ctx.beginPath();
+                    ctx.arc(this.x + 2, this.y + 3, this.radius * 0.9, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                    ctx.fill();
+
+                    // Draw the sprite
+                    ctx.drawImage(
+                        sprite,
+                        this.x - this.radius,
+                        this.y - this.radius,
+                        size,
+                        size
+                    );
+
+                    ctx.restore();
+                } else {
+                    // Fallback to procedural drawing
+                    this.drawFallback(ctx);
+                }
+            }
+
+            drawFallback(ctx) {
+                ctx.save();
+
+                // Ball shadow
+                ctx.beginPath();
+                ctx.arc(this.x + 2, this.y + 3, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.35)';
+                ctx.fill();
+
+                // Ball gradient
+                const gradient = ctx.createRadialGradient(
+                    this.x - this.radius * 0.3,
+                    this.y - this.radius * 0.3,
+                    0,
+                    this.x,
+                    this.y,
+                    this.radius
+                );
+                gradient.addColorStop(0, this.color.light);
+                gradient.addColorStop(0.5, this.color.main);
+                gradient.addColorStop(1, this.color.dark);
+
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = gradient;
+                ctx.fill();
+
+                // Highlight
+                ctx.beginPath();
+                ctx.arc(
+                    this.x - this.radius * 0.3,
+                    this.y - this.radius * 0.3,
+                    this.radius * 0.3,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+                ctx.fill();
+
+                // Number
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${this.radius * 1.2}px Cinzel`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                ctx.shadowBlur = 2;
+                ctx.fillText(this.number, this.x, this.y + 1);
+
+                ctx.restore();
+            }
+        }
+
+        // =====================================
+        // DRAWING FUNCTIONS
+        // =====================================
+        function drawBackground() {
+            // Main background - fills entire canvas seamlessly
+            const bgGradient = ctx.createRadialGradient(width / 2, height / 2, 0, width / 2, height / 2, Math.max(width, height));
+            bgGradient.addColorStop(0, '#3d2e24');
+            bgGradient.addColorStop(0.5, '#2d2420');
+            bgGradient.addColorStop(1, '#1a1612');
+            ctx.fillStyle = bgGradient;
+            ctx.fillRect(0, 0, width, height);
+
+            // Decorative gears scattered around the infinite background
+            const gearSize = Math.min(width, height) * 0.08;
+
+            // Gears on all sides, some partially off-screen for infinite feel
+            drawGear(width * 0.05, height * 0.15, gearSize * 1.5, 12, 'rgba(139, 105, 20, 0.12)');
+            drawGear(width * 0.95, height * 0.2, gearSize * 1.2, 10, 'rgba(139, 105, 20, 0.1)');
+            drawGear(width * 0.08, height * 0.55, gearSize * 0.8, 8, 'rgba(139, 105, 20, 0.08)');
+            drawGear(width * 0.92, height * 0.65, gearSize * 1.3, 11, 'rgba(139, 105, 20, 0.1)');
+            drawGear(width * 0.15, height * 0.85, gearSize * 1.0, 9, 'rgba(139, 105, 20, 0.09)');
+            drawGear(width * 0.88, height * 0.9, gearSize * 0.7, 7, 'rgba(139, 105, 20, 0.07)');
+            // Additional gears near edges
+            drawGear(width * -0.02, height * 0.4, gearSize * 1.4, 12, 'rgba(139, 105, 20, 0.08)');
+            drawGear(width * 1.02, height * 0.45, gearSize * 1.1, 10, 'rgba(139, 105, 20, 0.08)');
+            drawGear(width * 0.5, height * -0.02, gearSize * 0.9, 8, 'rgba(139, 105, 20, 0.06)');
+            drawGear(width * 0.4, height * 1.02, gearSize * 1.0, 9, 'rgba(139, 105, 20, 0.07)');
+        }
+
+        function drawGear(x, y, radius, teeth, color) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(Date.now() / 10000);
+
+            ctx.beginPath();
+            const innerRadius = radius * 0.7;
+            const toothDepth = radius * 0.15;
+
+            for (let i = 0; i < teeth; i++) {
+                const angle1 = (i / teeth) * Math.PI * 2;
+                const angle2 = ((i + 0.5) / teeth) * Math.PI * 2;
+
+                ctx.lineTo(
+                    Math.cos(angle1) * (radius + toothDepth),
+                    Math.sin(angle1) * (radius + toothDepth)
+                );
+                ctx.lineTo(
+                    Math.cos(angle2) * radius,
+                    Math.sin(angle2) * radius
+                );
+            }
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+
+            // Center hole
+            ctx.beginPath();
+            ctx.arc(0, 0, radius * 0.25, 0, Math.PI * 2);
+            ctx.fillStyle = colors.background;
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        function drawUpperPipe() {
+            const up = layout.upperPipe;
+            const pipeWidth = up.radius * 2;
+
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Pipe gradient (brass)
+            const pipeGradient = ctx.createLinearGradient(0, up.y - pipeWidth, 0, up.y + pipeWidth);
+            pipeGradient.addColorStop(0, colors.brassLight);
+            pipeGradient.addColorStop(0.3, colors.brass);
+            pipeGradient.addColorStop(0.7, colors.brassDark);
+            pipeGradient.addColorStop(1, colors.brass);
+
+            // Upper horizontal pipe (goes to funnel)
+            ctx.beginPath();
+            ctx.moveTo(up.startX, up.y);
+            ctx.lineTo(up.endX + pipeWidth, up.y);
+            ctx.strokeStyle = pipeGradient;
+            ctx.lineWidth = pipeWidth;
+            ctx.stroke();
+
+            // Pipe inner (darker, gives depth)
+            ctx.beginPath();
+            ctx.moveTo(up.startX + pipeWidth * 0.3, up.y);
+            ctx.lineTo(up.endX + pipeWidth * 0.5, up.y);
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.25)';
+            ctx.lineWidth = pipeWidth * 0.5;
+            ctx.stroke();
+
+            // Brass cap at start of pipe
+            drawPipeJoint(up.startX, up.y, pipeWidth);
+        }
+
+        function drawLowerPipe() {
+            // Lower exit pipe - drawn ON TOP of machine base
+            // Starts from dome's right lower corner, S-curves down to tray
+            const lp = layout.lowerPipe;
+            const tray = layout.tray;
+            const pipeWidth = layout.upperPipe.radius * 2;
+
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // Pipe gradient (brass)
+            const pipeGradient = ctx.createLinearGradient(0, lp.startY, 0, tray.y);
+            pipeGradient.addColorStop(0, colors.brassLight);
+            pipeGradient.addColorStop(0.3, colors.brass);
+            pipeGradient.addColorStop(0.7, colors.brassDark);
+            pipeGradient.addColorStop(1, colors.brass);
+
+            // S-shaped pipe path using two connected bezier curves
+            // First curve: from dome, curves out to the right and down
+            // Second curve: curves back left and down to tray
+
+            const midY = lp.startY + (tray.y - lp.startY) * 0.45;
+            const farRightX = lp.startX + width * 0.15;
+            const endX = tray.x + tray.width - pipeWidth;
+
+            // Draw the S-curve pipe
+            ctx.beginPath();
+            ctx.moveTo(lp.startX, lp.startY);
+            // First half: curve out to the right
+            ctx.bezierCurveTo(
+                lp.startX + width * 0.08, lp.startY,           // Control 1: horizontal start
+                farRightX, midY - height * 0.08,               // Control 2: approach mid from above-right
+                farRightX, midY                                 // Mid point: far right
+            );
+            // Second half: curve back left and down to tray
+            ctx.bezierCurveTo(
+                farRightX, midY + height * 0.08,               // Control 1: leave mid going down
+                endX + width * 0.05, tray.y - height * 0.05,   // Control 2: approach tray from right
+                endX, tray.y                                    // End at tray
+            );
+            ctx.strokeStyle = pipeGradient;
+            ctx.lineWidth = pipeWidth;
+            ctx.stroke();
+
+            // Inner darker line for pipe depth
+            ctx.beginPath();
+            ctx.moveTo(lp.startX, lp.startY);
+            ctx.bezierCurveTo(
+                lp.startX + width * 0.08, lp.startY,
+                farRightX, midY - height * 0.08,
+                farRightX, midY
+            );
+            ctx.bezierCurveTo(
+                farRightX, midY + height * 0.08,
+                endX + width * 0.05, tray.y - height * 0.05,
+                endX, tray.y
+            );
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.2)';
+            ctx.lineWidth = pipeWidth * 0.5;
+            ctx.stroke();
+
+            // Joint at pipe entrance (at dome corner)
+            drawPipeJoint(lp.startX, lp.startY, pipeWidth);
+        }
+
+        function drawFunnel() {
+            const f = layout.funnel;
+
+            // Funnel body - proper funnel shape (wide top, narrow bottom)
+            ctx.beginPath();
+            ctx.moveTo(f.x - f.topWidth, f.y - f.height);  // Top left
+            ctx.lineTo(f.x + f.topWidth, f.y - f.height);  // Top right
+            ctx.lineTo(f.x + f.bottomWidth, f.y + f.height * 0.3);  // Bottom right
+            ctx.lineTo(f.x - f.bottomWidth, f.y + f.height * 0.3);  // Bottom left
+            ctx.closePath();
+
+            const funnelGrad = ctx.createLinearGradient(f.x - f.topWidth, 0, f.x + f.topWidth, 0);
+            funnelGrad.addColorStop(0, colors.brassDark);
+            funnelGrad.addColorStop(0.3, colors.brassLight);
+            funnelGrad.addColorStop(0.7, colors.brassLight);
+            funnelGrad.addColorStop(1, colors.brassDark);
+            ctx.fillStyle = funnelGrad;
+            ctx.fill();
+
+            // Funnel rim (top edge)
+            ctx.beginPath();
+            ctx.moveTo(f.x - f.topWidth * 1.1, f.y - f.height);
+            ctx.lineTo(f.x + f.topWidth * 1.1, f.y - f.height);
+            ctx.strokeStyle = colors.brassLight;
+            ctx.lineWidth = f.topWidth * 0.15;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Inner darkness (hole)
+            ctx.beginPath();
+            ctx.ellipse(f.x, f.y - f.height * 0.5, f.topWidth * 0.6, f.height * 0.25, 0, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.4)';
+            ctx.fill();
+
+            // Funnel neck (connects to dome)
+            ctx.beginPath();
+            ctx.moveTo(f.x - f.bottomWidth, f.y + f.height * 0.3);
+            ctx.lineTo(f.x - f.bottomWidth * 0.8, f.y + f.height);
+            ctx.lineTo(f.x + f.bottomWidth * 0.8, f.y + f.height);
+            ctx.lineTo(f.x + f.bottomWidth, f.y + f.height * 0.3);
+            ctx.fillStyle = colors.brass;
+            ctx.fill();
+        }
+
+        function drawPipeJoint(x, y, pipeWidth) {
+            ctx.beginPath();
+            ctx.arc(x, y, pipeWidth * 0.65, 0, Math.PI * 2);
+            ctx.fillStyle = colors.brassLight;
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(x, y, pipeWidth * 0.35, 0, Math.PI * 2);
+            ctx.fillStyle = colors.brassDark;
+            ctx.fill();
+        }
+
+        function drawMachineBase() {
+            const mb = layout.machineBase;
+            const d = layout.dome;
+
+            // The brass ring where dome sits - positioned at dome bottom
+            const ringY = d.y + d.radius * 0.15;
+            const ringWidth = d.radius * 1.05;
+
+            // Machine body (red/copper base) - connects ring to bottom
+            ctx.beginPath();
+            ctx.moveTo(mb.x - ringWidth, ringY);
+            ctx.lineTo(mb.x - mb.width * 0.52, mb.y + mb.height * 0.5);
+            ctx.lineTo(mb.x + mb.width * 0.52, mb.y + mb.height * 0.5);
+            ctx.lineTo(mb.x + ringWidth, ringY);
+            ctx.closePath();
+
+            const bodyGrad = ctx.createLinearGradient(0, ringY, 0, mb.y + mb.height * 0.5);
+            bodyGrad.addColorStop(0, '#9b2525');
+            bodyGrad.addColorStop(0.3, '#7b1818');
+            bodyGrad.addColorStop(0.7, '#5b1010');
+            bodyGrad.addColorStop(1, '#3a0808');
+            ctx.fillStyle = bodyGrad;
+            ctx.fill();
+
+            // Brass trim
+            ctx.strokeStyle = colors.brass;
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Decorative brass band in middle
+            const bandY = ringY + (mb.y + mb.height * 0.5 - ringY) * 0.5;
+            ctx.beginPath();
+            ctx.moveTo(mb.x - mb.width * 0.5, bandY);
+            ctx.lineTo(mb.x + mb.width * 0.5, bandY);
+            ctx.strokeStyle = colors.brassLight;
+            ctx.lineWidth = 5;
+            ctx.stroke();
+
+            // Brass ring where dome sits (at the top of machine base)
+            ctx.beginPath();
+            ctx.ellipse(mb.x, ringY, ringWidth, d.radius * 0.08, 0, 0, Math.PI * 2);
+            const ringGrad = ctx.createLinearGradient(mb.x - ringWidth, 0, mb.x + ringWidth, 0);
+            ringGrad.addColorStop(0, colors.brassDark);
+            ringGrad.addColorStop(0.3, colors.brassLight);
+            ringGrad.addColorStop(0.7, colors.brassLight);
+            ringGrad.addColorStop(1, colors.brassDark);
+            ctx.fillStyle = ringGrad;
+            ctx.fill();
+        }
+
+        function drawSupportPole() {
+            // Draw a pole/leg from machine base down to tray
+            const mb = layout.machineBase;
+            const tray = layout.tray;
+
+            const poleTopY = mb.y + mb.height * 0.5;
+            const poleBottomY = tray.y - tray.height * 0.5;
+            const poleWidth = mb.width * 0.15;
+
+            // Main pole body (brass/copper)
+            ctx.beginPath();
+            ctx.moveTo(mb.x - poleWidth, poleTopY);
+            ctx.lineTo(mb.x - poleWidth * 0.7, poleBottomY);
+            ctx.lineTo(mb.x + poleWidth * 0.7, poleBottomY);
+            ctx.lineTo(mb.x + poleWidth, poleTopY);
+            ctx.closePath();
+
+            const poleGrad = ctx.createLinearGradient(mb.x - poleWidth, 0, mb.x + poleWidth, 0);
+            poleGrad.addColorStop(0, colors.brassDark);
+            poleGrad.addColorStop(0.3, colors.brassLight);
+            poleGrad.addColorStop(0.7, colors.brassLight);
+            poleGrad.addColorStop(1, colors.brassDark);
+            ctx.fillStyle = poleGrad;
+            ctx.fill();
+
+            // Brass trim outline
+            ctx.strokeStyle = colors.brass;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Decorative bands along the pole
+            const bandCount = 3;
+            for (let i = 1; i <= bandCount; i++) {
+                const bandY = poleTopY + (poleBottomY - poleTopY) * (i / (bandCount + 1));
+                const bandWidth = poleWidth * (1 - (i / (bandCount + 1)) * 0.3);
+
+                ctx.beginPath();
+                ctx.moveTo(mb.x - bandWidth, bandY - 2);
+                ctx.lineTo(mb.x + bandWidth, bandY - 2);
+                ctx.lineTo(mb.x + bandWidth, bandY + 2);
+                ctx.lineTo(mb.x - bandWidth, bandY + 2);
+                ctx.closePath();
+                ctx.fillStyle = colors.brassLight;
+                ctx.fill();
+            }
+
+            // Bottom flange (where pole meets tray)
+            ctx.beginPath();
+            ctx.ellipse(mb.x, poleBottomY, poleWidth * 1.2, poleWidth * 0.3, 0, 0, Math.PI * 2);
+            ctx.fillStyle = colors.brass;
+            ctx.fill();
+            ctx.strokeStyle = colors.brassDark;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function drawDome() {
+            const d = layout.dome;
+
+            // Glass dome (hemisphere) - bottom sits on brass ring
+            const bottomY = d.y + d.radius * 0.15;
+
+            ctx.beginPath();
+            ctx.arc(d.x, d.y, d.radius, Math.PI, 0);  // Upper half circle
+            // Curve down to meet the brass ring
+            ctx.lineTo(d.x + d.radius, bottomY);
+            ctx.lineTo(d.x - d.radius, bottomY);
+            ctx.closePath();
+
+            const glassGrad = ctx.createRadialGradient(d.x - d.radius * 0.3, d.y - d.radius * 0.3, 0, d.x, d.y, d.radius * 1.2);
+            glassGrad.addColorStop(0, 'rgba(230, 245, 255, 0.35)');
+            glassGrad.addColorStop(0.5, 'rgba(200, 225, 245, 0.2)');
+            glassGrad.addColorStop(1, 'rgba(170, 200, 220, 0.15)');
+            ctx.fillStyle = glassGrad;
+            ctx.fill();
+
+            // Glass dome outline (brass frame) - just the curved top part
+            ctx.beginPath();
+            ctx.arc(d.x, d.y, d.radius, Math.PI, 0);
+            ctx.strokeStyle = colors.brass;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+
+            // Glass highlight (reflection)
+            ctx.beginPath();
+            ctx.ellipse(d.x - d.radius * 0.35, d.y - d.radius * 0.35, d.radius * 0.25, d.radius * 0.45, -0.4, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+            ctx.fill();
+
+            // Second smaller highlight
+            ctx.beginPath();
+            ctx.ellipse(d.x - d.radius * 0.5, d.y - d.radius * 0.1, d.radius * 0.08, d.radius * 0.15, -0.3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.fill();
+        }
+
+        function drawTray() {
+            const t = layout.tray;
+
+            // Tray back
+            ctx.beginPath();
+            ctx.roundRect(t.x - 10, t.y - t.height * 0.6, t.width + 20, t.height * 1.4, 10);
+            const trayGrad = ctx.createLinearGradient(0, t.y - t.height, 0, t.y + t.height);
+            trayGrad.addColorStop(0, colors.brassLight);
+            trayGrad.addColorStop(0.3, colors.brass);
+            trayGrad.addColorStop(1, colors.brassDark);
+            ctx.fillStyle = trayGrad;
+            ctx.fill();
+
+            // Slot dividers and labels
+            for (let i = 0; i <= 6; i++) {
+                const slotX = t.x + t.slotWidth * (i + 0.5);
+
+                if (i < 6) {
+                    // Slot background (darker)
+                    ctx.beginPath();
+                    ctx.roundRect(
+                        slotX - t.slotWidth * 0.4,
+                        t.y - t.height * 0.35,
+                        t.slotWidth * 0.8,
+                        t.height * 0.9,
+                        5
+                    );
+                    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+                    ctx.fill();
+                }
+            }
+
+        }
+
+        function drawLever() {
+            const lv = layout.lever;
+
+            // Lever base plate
+            ctx.beginPath();
+            ctx.arc(lv.x, lv.y, lv.length * 0.25, 0, Math.PI * 2);
+            const basePlateGrad = ctx.createRadialGradient(lv.x, lv.y, 0, lv.x, lv.y, lv.length * 0.25);
+            basePlateGrad.addColorStop(0, colors.brassLight);
+            basePlateGrad.addColorStop(1, colors.brassDark);
+            ctx.fillStyle = basePlateGrad;
+            ctx.fill();
+
+            // Lever arm - points up when ready, down when pulled (same as start lever)
+            const angle = state.leverPulled ? 0.6 : -0.6;
+            const endX = lv.x + Math.cos(angle) * lv.length;
+            const endY = lv.y + Math.sin(angle) * lv.length;
+
+            // Arm shadow
+            ctx.beginPath();
+            ctx.moveTo(lv.x + 2, lv.y + 2);
+            ctx.lineTo(endX + 2, endY + 2);
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.lineWidth = lv.length * 0.12;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Arm
+            ctx.beginPath();
+            ctx.moveTo(lv.x, lv.y);
+            ctx.lineTo(endX, endY);
+            const armGrad = ctx.createLinearGradient(lv.x, lv.y, endX, endY);
+            armGrad.addColorStop(0, colors.brassDark);
+            armGrad.addColorStop(0.5, colors.woodLight);
+            armGrad.addColorStop(1, colors.wood);
+            ctx.strokeStyle = armGrad;
+            ctx.lineWidth = lv.length * 0.1;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Lever knob (red ball handle)
+            const knobRadius = lv.length * 0.2;
+            ctx.beginPath();
+            ctx.arc(endX, endY, knobRadius, 0, Math.PI * 2);
+            const knobGrad = ctx.createRadialGradient(endX - knobRadius * 0.3, endY - knobRadius * 0.3, 0, endX, endY, knobRadius);
+            knobGrad.addColorStop(0, '#e74c3c');
+            knobGrad.addColorStop(0.7, '#c0392b');
+            knobGrad.addColorStop(1, '#7b241c');
+            ctx.fillStyle = knobGrad;
+            ctx.fill();
+
+            // Knob highlight
+            ctx.beginPath();
+            ctx.arc(endX - knobRadius * 0.3, endY - knobRadius * 0.3, knobRadius * 0.25, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.fill();
+
+            // Store knob position for click detection
+            state.leverKnobPos = { x: endX, y: endY, radius: knobRadius * 1.5 };
+        }
+
+        function isPointInLever(x, y) {
+            if (!state.leverKnobPos) return false;
+            const dx = x - state.leverKnobPos.x;
+            const dy = y - state.leverKnobPos.y;
+            return Math.sqrt(dx * dx + dy * dy) <= state.leverKnobPos.radius;
+        }
+
+        function drawStartLever() {
+            const sl = layout.startLever;
+            if (!sl) return;
+
+            // Small lever base
+            ctx.beginPath();
+            ctx.arc(sl.x, sl.y, sl.length * 0.3, 0, Math.PI * 2);
+            const basePlateGrad = ctx.createRadialGradient(sl.x, sl.y, 0, sl.x, sl.y, sl.length * 0.3);
+            basePlateGrad.addColorStop(0, colors.brassLight);
+            basePlateGrad.addColorStop(1, colors.brassDark);
+            ctx.fillStyle = basePlateGrad;
+            ctx.fill();
+
+            // Lever arm - points up when ready, down when pulled
+            const angle = state.startLeverPulled ? 0.6 : -0.6;
+            const endX = sl.x + Math.cos(angle) * sl.length;
+            const endY = sl.y + Math.sin(angle) * sl.length;
+
+            // Arm shadow
+            ctx.beginPath();
+            ctx.moveTo(sl.x + 1, sl.y + 1);
+            ctx.lineTo(endX + 1, endY + 1);
+            ctx.strokeStyle = 'rgba(0, 0, 0, 0.3)';
+            ctx.lineWidth = sl.length * 0.15;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Arm
+            ctx.beginPath();
+            ctx.moveTo(sl.x, sl.y);
+            ctx.lineTo(endX, endY);
+            const armGrad = ctx.createLinearGradient(sl.x, sl.y, endX, endY);
+            armGrad.addColorStop(0, colors.brassDark);
+            armGrad.addColorStop(0.5, colors.woodLight);
+            armGrad.addColorStop(1, colors.wood);
+            ctx.strokeStyle = armGrad;
+            ctx.lineWidth = sl.length * 0.12;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            // Knob (green)
+            const knobRadius = sl.length * 0.22;
+            ctx.beginPath();
+            ctx.arc(endX, endY, knobRadius, 0, Math.PI * 2);
+            const knobGrad = ctx.createRadialGradient(endX - knobRadius * 0.3, endY - knobRadius * 0.3, 0, endX, endY, knobRadius);
+            knobGrad.addColorStop(0, '#66BB6A');
+            knobGrad.addColorStop(0.7, '#43A047');
+            knobGrad.addColorStop(1, '#2E7D32');
+            ctx.fillStyle = knobGrad;
+            ctx.fill();
+
+            // Knob highlight
+            ctx.beginPath();
+            ctx.arc(endX - knobRadius * 0.3, endY - knobRadius * 0.3, knobRadius * 0.25, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+            ctx.fill();
+
+            // Store position for click detection (only when not pulled)
+            state.startLeverKnobPos = { x: endX, y: endY, radius: knobRadius * 2 };
+        }
+
+        function isPointInStartLever(x, y) {
+            if (!state.startLeverKnobPos) return false;
+            const dx = x - state.startLeverKnobPos.x;
+            const dy = y - state.startLeverKnobPos.y;
+            return Math.sqrt(dx * dx + dy * dy) <= state.startLeverKnobPos.radius;
+        }
+
+        // =====================================
+        // GAME STATE
+        // =====================================
+        const state = {
+            sessionStarted: false,
+            isSpinning: false,
+            isResetting: false,
+            balls: [],
+            presentedOrder: [],
+            leverPulled: false,
+            leverKnobPos: null,
+            canPull: false,
+            startLeverPulled: false,
+            startLeverKnobPos: null
+        };
+
+        function initBalls() {
+            state.balls = [];
+            for (let i = 1; i <= 6; i++) {
+                const pos = layout.pipePositions[i - 1];
+                if (pos) {
+                    state.balls.push(new Ball(i, pos.x, pos.y));
+                }
+            }
+        }
+
+        // =====================================
+        // GAME LOGIC
+        // =====================================
+        async function toggleSessionLever() {
+            // If session is running or balls are animating, reset to start position
+            if (state.sessionStarted || state.isResetting) {
+                await resetSession();
+            } else {
+                // Start a new session - pour balls into dome
+                await startSession();
+            }
+        }
+
+        async function startSession() {
+            if (state.sessionStarted || state.isResetting) return;
+
+            state.startLeverPulled = true;
+            state.sessionStarted = true;
+
+            // Brief delay to show lever pulled
+            await sleep(200);
+
+            // Move balls one by one through pipe to funnel to dome
+            // Process in reverse order: ball 6 (rightmost, closest to funnel) enters first
+            const ballsReversed = [...state.balls].reverse();
+            for (const ball of ballsReversed) {
+                ball.startX = ball.x;
+                ball.state = 'toFunnel';
+                ball.pathProgress = 0;
+                await sleep(280);
+            }
+
+            await sleep(600);
+            state.canPull = true;
+        }
+
+        async function pullLever() {
+            if (state.isSpinning || !state.sessionStarted || !state.canPull) return;
+
+            const domeBalls = state.balls.filter(b => b.state === 'dome');
+            if (domeBalls.length === 0) return;
+
+            state.isSpinning = true;
+            state.canPull = false;
+            state.leverPulled = true;
+
+            // Intensify ball movement - more frequent and longer duration
+            const intensifyInterval = setInterval(() => {
+                domeBalls.forEach(ball => {
+                    if (ball.state === 'dome') ball.intensify();
+                });
+            }, 50);  // More frequent intensification
+
+            await sleep(3500);  // Longer spin time (was 1800)
+            clearInterval(intensifyInterval);
+
+            // Select random ball
+            const selectedBall = domeBalls[Math.floor(Math.random() * domeBalls.length)];
+
+            // Calm other balls
+            domeBalls.forEach(ball => {
+                if (ball !== selectedBall) {
+                    ball.vx *= 0.2;
+                    ball.vy *= 0.2;
+                }
+            });
+
+            await sleep(400);
+
+            // Send selected ball to tray
+            const traySlot = state.presentedOrder.length;
+            selectedBall.traySlot = traySlot;
+            selectedBall.state = 'exiting';
+            selectedBall.pathProgress = 0;
+
+            state.presentedOrder.push(selectedBall.number);
+
+            // Wait for ball to reach tray
+            await sleep(1500);
+
+            state.leverPulled = false;
+            state.isSpinning = false;
+
+            const remaining = state.balls.filter(b => b.state === 'dome').length;
+            if (remaining > 0) {
+                state.canPull = true;
+            }
+            // When all balls are in tray, just leave the final state visible
+        }
+
+        async function resetSession() {
+            if (state.isResetting) return;
+
+            state.isResetting = true;
+            state.canPull = false;
+            state.leverPulled = false;
+
+            // Flip start lever back up
+            state.startLeverPulled = false;
+
+            await sleep(200);
+
+            // Animate balls back to pipe - start with balls in tray, then dome
+            const trayBalls = state.balls.filter(b => b.state === 'tray').sort((a, b) => b.traySlot - a.traySlot);
+            const domeBalls = state.balls.filter(b => b.state === 'dome');
+            const otherBalls = state.balls.filter(b => !['tray', 'dome', 'pipe'].includes(b.state));
+
+            // Send tray balls back one by one (rightmost first)
+            for (const ball of trayBalls) {
+                ball.state = 'returning';
+                ball.pathProgress = 0;
+                await sleep(150);
+            }
+
+            // Send dome balls back
+            for (const ball of domeBalls) {
+                // Set a tray slot for the return path calculation
+                ball.traySlot = ball.number - 1;
+                ball.state = 'returning';
+                ball.pathProgress = 0;
+                await sleep(100);
+            }
+
+            // Handle any balls in transition
+            for (const ball of otherBalls) {
+                ball.traySlot = ball.number - 1;
+                ball.state = 'returning';
+                ball.pathProgress = 0;
+            }
+
+            // Wait for all balls to return
+            await sleep(800);
+
+            // Ensure all balls are in pipe position
+            for (const ball of state.balls) {
+                const pipePos = layout.pipePositions[ball.number - 1];
+                ball.state = 'pipe';
+                ball.x = pipePos.x;
+                ball.y = pipePos.y;
+                ball.vx = 0;
+                ball.vy = 0;
+                ball.traySlot = -1;
+            }
+
+            state.sessionStarted = false;
+            state.isSpinning = false;
+            state.presentedOrder = [];
+            state.isResetting = false;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // =====================================
+        // GAME LOOP
+        // =====================================
+        let lastTime = 0;
+
+        function gameLoop(timestamp) {
+            const dt = Math.min((timestamp - lastTime) / 1000, 0.1);
+            lastTime = timestamp;
+
+            // Update balls
+            state.balls.forEach(ball => ball.update(dt));
+
+            // Draw everything in correct order
+            drawBackground();
+            drawUpperPipe();  // Upper pipe (balls enter from here)
+
+            // Draw support pole (behind machine base)
+            drawSupportPole();
+
+            // Draw machine base (behind dome and lower pipe)
+            drawMachineBase();
+
+            // Draw lower pipe ON TOP of machine base (from dome corner to tray)
+            drawLowerPipe();
+
+            // Draw tray ON TOP of lower pipe (pipe goes behind tray)
+            drawTray();
+
+            // Draw balls in tray (on top of tray)
+            state.balls.filter(b => b.state === 'tray').forEach(b => b.draw(ctx));
+
+            // Draw balls transitioning through exit pipe (on top of everything - always visible)
+            state.balls.filter(b => ['exiting', 'inPipe'].includes(b.state)).forEach(b => b.draw(ctx));
+
+            // Draw dome
+            drawDome();
+
+            // Draw funnel (on top of dome)
+            drawFunnel();
+
+            // Draw start lever (near funnel, only when not started)
+            drawStartLever();
+
+            // Draw lever
+            drawLever();
+
+            // Draw balls in pipe (on top, visible in pipe)
+            state.balls.filter(b => b.state === 'pipe').forEach(b => b.draw(ctx));
+
+            // Draw balls going to funnel
+            state.balls.filter(b => b.state === 'toFunnel').forEach(b => b.draw(ctx));
+
+            // Draw balls in funnel (dropping)
+            state.balls.filter(b => b.state === 'inFunnel').forEach(b => b.draw(ctx));
+
+            // Draw balls in dome (inside the glass)
+            state.balls.filter(b => b.state === 'dome').forEach(b => b.draw(ctx));
+
+            // Draw balls returning to pipe (flying back up)
+            state.balls.filter(b => b.state === 'returning').forEach(b => b.draw(ctx));
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // =====================================
+        // EVENT LISTENERS
+        // =====================================
+
+        // Click on canvas to pull lever or start/reset lever
+        canvas.addEventListener('click', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width) / scale;
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height) / scale;
+
+            // Check start/reset lever (green lever)
+            if (isPointInStartLever(x, y) && !state.isResetting) {
+                toggleSessionLever();
+                return;
+            }
+
+            // Check spin lever (when session started and can pull)
+            if (isPointInLever(x, y) && state.sessionStarted && state.canPull) {
+                pullLever();
+            }
+        });
+
+        // Change cursor when hovering over levers
+        canvas.addEventListener('mousemove', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const x = (e.clientX - rect.left) * (canvas.width / rect.width) / scale;
+            const y = (e.clientY - rect.top) * (canvas.height / rect.height) / scale;
+
+            if (isPointInStartLever(x, y) && !state.isResetting) {
+                canvas.style.cursor = 'pointer';
+            } else if (isPointInLever(x, y) && state.sessionStarted && state.canPull) {
+                canvas.style.cursor = 'pointer';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && state.sessionStarted && state.canPull) {
+                e.preventDefault();
+                pullLever();
+            } else if (e.code === 'Enter' && !state.isResetting) {
+                e.preventDefault();
+                toggleSessionLever();
+            }
+        });
+
+        // =====================================
+        // INITIALIZE
+        // =====================================
+        loadSprites();  // Load ball sprites
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        initBalls();
+        requestAnimationFrame(gameLoop);
+    </script>
+</body>
+</html>
