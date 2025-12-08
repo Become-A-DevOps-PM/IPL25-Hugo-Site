@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Introduction to Automation - Infrastructure Fundamentals</title>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-50TPJY0FZH"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-50TPJY0FZH');
+    </script>
+
+    <!-- Reveal.js Core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.css">
+
+    <!-- Swedish Tech Slides CSS -->
+    <link rel="stylesheet" href="swedish-tech-slides.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Hero Slide -->
+            <section class="hero-slide" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+
+                <div class="course-badge">
+                    <span>INFRASTRUCTURE FUNDAMENTALS</span>
+                </div>
+
+                <h1 class="main-title">
+                    INTRODUCTION<br>
+                    TO<br>
+                    AUTOMATION
+                </h1>
+
+                <p class="subtitle">From manual processes to reliable, repeatable infrastructure</p>
+                <p class="course-info">DevOps Project Management • IPL25</p>
+
+                <div class="bottom-accent"></div>
+            </section>
+
+            <!-- The Case for Automation -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">The Case for Automation</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Time and Scale Constraints:</span> One server takes 30 minutes, ten servers take 5 hours—linear scaling becomes impractical as infrastructure grows</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Consistency Challenges:</span> Different administrators configure systems differently, creating troubleshooting complexity and performance variations</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Human Error Risk:</span> Repetitive tasks increase error probability—mistyped commands, forgotten steps, configuration mistakes</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Knowledge Retention Problems:</span> Manual processes rely on memory and documentation; knowledge loss creates organizational risk</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Reproducibility Concerns:</span> Manual configurations are difficult to reproduce exactly—disaster recovery measured in hours or days instead of minutes</p>
+                </div>
+            </section>
+
+            <!-- The Automation Spectrum Timeline -->
+            <section class="timeline-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">The Automation Spectrum</h2>
+
+                <div class="timeline">
+                    <div class="timeline-item fragment" data-fragment-index="1">
+                        <div class="timeline-week">1</div>
+                        <div class="timeline-label">Manual</div>
+                    </div>
+                    <div class="timeline-item fragment" data-fragment-index="2">
+                        <div class="timeline-week">2</div>
+                        <div class="timeline-label">Scripted</div>
+                    </div>
+                    <div class="timeline-item fragment" data-fragment-index="3">
+                        <div class="timeline-week">3</div>
+                        <div class="timeline-label">IaC</div>
+                    </div>
+                </div>
+
+                <div class="description-container">
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="1">
+                        <p><span class="highlight">Manual Execution:</span> Typing commands directly—immediate feedback, suits learning and exploration, no reusable artifact</p>
+                    </div>
+                    <div class="fragment fade-in-then-out description-box" data-fragment-index="2">
+                        <p><span class="highlight">Scripted Automation:</span> Executable files (Bash, PowerShell)—reusable, consistent, imperative approach, requires correct sequencing</p>
+                    </div>
+                    <div class="fragment fade-in description-box" data-fragment-index="3">
+                        <p><span class="highlight">Infrastructure as Code:</span> Declarative configuration (cloud-init, Terraform)—idempotent, version controlled, manages desired state</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Decision Framework -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Making Automation Decisions</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">The Frequency Rule:</span> Once = manual, Weekly = consider scripting, Daily or more = automate</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">The Two-Times Rule:</span> If you'll do something more than twice, automate it—provides documentation, consistency, and knowledge transfer</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">When NOT to Automate:</span> One-off tasks, rapidly changing requirements, exploratory work, tasks requiring judgment</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Key Factors:</span> Frequency, complexity, consistency needs, skill distribution, change rate, documentation requirements</p>
+                </div>
+            </section>
+
+            <!-- Key Principle -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">The Core Principle</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Automation is about reliability, not just speed</span></p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Consistency across environments:</span> Development and production configured identically</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Consistency across time:</span> Configuration applied today works the same way in six months</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Consistency across people:</span> Different team members execute processes identically</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Reliability enables confident scaling, feasible disaster recovery, and verifiable security compliance</p>
+                </div>
+            </section>
+
+            <!-- Closing Slide -->
+            <section class="closing-slide" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+
+                <div class="centered-content">
+                    <div class="big-symbol">?</div>
+                    <p class="big-text">Questions</p>
+                </div>
+
+                <div class="bottom-accent"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Core JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: false,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            slideNumber: 'c/t',
+            history: true,
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 1.0
+        });
+    </script>
+</body>
+</html>
