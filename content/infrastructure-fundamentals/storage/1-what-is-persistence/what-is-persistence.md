@@ -5,9 +5,9 @@ date = 2024-11-19
 draft = false
 +++
 
-[Watch the presentation]({{< relref "what-is-persistence-slides.md" >}})
+[Watch the presentation](/presentations/infrastructure-fundamentals/storage/1-what-is-persistence.html)
 
-[Se presentationen på svenska]({{< relref "what-is-persistence-slides-swe.md" >}})
+[Se presentationen på svenska](/presentations/infrastructure-fundamentals/storage/1-what-is-persistence-swe.html)
 
 Applications that stop running should not lose their data. A user logs out, a server restarts, a process crashes—yet the application must remember user accounts, transaction history, and configuration settings. **Persistence** refers to data that survives beyond the lifespan of the process that created it. Understanding persistence mechanisms enables building applications that maintain state across time.
 

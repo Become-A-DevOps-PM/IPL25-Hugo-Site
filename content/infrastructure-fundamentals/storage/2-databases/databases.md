@@ -5,9 +5,9 @@ date = 2024-11-19
 draft = false
 +++
 
-[Watch the presentation]({{< relref "databases-slides.md" >}})
+[Watch the presentation](/presentations/infrastructure-fundamentals/storage/2-databases.html)
 
-[Se presentationen på svenska]({{< relref "databases-slides-swe.md" >}})
+[Se presentationen på svenska](/presentations/infrastructure-fundamentals/storage/2-databases-swe.html)
 
 Applications that serve multiple users must store data persistently and make it available for retrieval. The **database** provides this capability, organizing information in structured formats that support efficient querying, concurrent access, and reliable updates. Understanding database types and their characteristics enables selecting the right storage solution for specific application requirements.
 

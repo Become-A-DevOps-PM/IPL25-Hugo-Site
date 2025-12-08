@@ -5,9 +5,9 @@ date = 2024-11-19
 draft = false
 +++
 
-[Watch the presentation]({{< relref "storage-slides.md" >}})
+[Watch the presentation](/presentations/infrastructure-fundamentals/storage/3-storage.html)
 
-[Se presentationen på svenska]({{< relref "storage-slides-swe.md" >}})
+[Se presentationen på svenska](/presentations/infrastructure-fundamentals/storage/3-storage-swe.html)
 
 Applications require persistent data that survives beyond a single execution cycle. User accounts, transaction records, uploaded files, and application state must remain available after servers restart or processes terminate. **Storage** systems provide this persistence, managing how data is saved, retrieved, and maintained across an infrastructure.
 
