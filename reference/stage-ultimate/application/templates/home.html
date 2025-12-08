@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Flask Contact Form{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Welcome</h1>
+    <p>This is a Flask application demonstrating database persistence with Key Vault integration.</p>
+
+    <div class="hero-actions">
+        <a href="{{ url_for('main.contact') }}" class="btn btn-primary">Contact Us</a>
+        <a href="{{ url_for('main.messages') }}" class="btn btn-secondary">View Messages</a>
+    </div>
+</div>
+
+<div class="features">
+    <div class="feature">
+        <h3>📝 Contact Form</h3>
+        <p>Submit messages through a validated contact form.</p>
+    </div>
+    <div class="feature">
+        <h3>💾 Database Persistence</h3>
+        <p>Messages are stored in {{ database_type }}.</p>
+    </div>
+    <div class="feature">
+        <h3>🔐 Secure Configuration</h3>
+        <p>Secrets managed via Azure Key Vault in production.</p>
+    </div>
+</div>
+{% endblock %}

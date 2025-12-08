@@ -1,0 +1,65 @@
+#cloud-config
+#
+# Bastion Host Configuration
+# - SSH jump host only
+# - fail2ban for brute-force protection
+# - SSH hardening
+#
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - fail2ban
+  - ufw
+
+write_files:
+  # fail2ban configuration
+  - path: /etc/fail2ban/jail.local
+    content: |
+      [DEFAULT]
+      bantime = 3600
+      findtime = 600
+      maxretry = 5
+
+      [sshd]
+      enabled = true
+      port = ssh
+      filter = sshd
+      logpath = /var/log/auth.log
+      maxretry = 5
+      bantime = 3600
+
+  # SSH hardening
+  - path: /etc/ssh/sshd_config.d/hardening.conf
+    content: |
+      # Disable password authentication
+      PasswordAuthentication no
+
+      # Disable root login
+      PermitRootLogin no
+
+      # Limit authentication attempts
+      MaxAuthTries 3
+
+      # Client timeout settings
+      ClientAliveInterval 300
+      ClientAliveCountMax 2
+
+      # Disable X11 forwarding
+      X11Forwarding no
+
+      # Disable TCP forwarding (can be enabled if needed for tunneling)
+      AllowTcpForwarding yes
+      AllowAgentForwarding yes
+
+runcmd:
+  # Enable and start fail2ban
+  - systemctl enable fail2ban
+  - systemctl start fail2ban
+
+  # Restart SSH to apply hardening
+  - systemctl restart sshd
+
+  # Log completion
+  - echo "Bastion cloud-init completed at $(date)" >> /var/log/cloud-init-complete.log

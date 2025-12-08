@@ -1,0 +1,50 @@
+#cloud-config
+#
+# App Server Configuration
+# - Python environment for Flask
+# - Azure CLI for managed identity
+# - Application directories
+#
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - python3.12
+  - python3.12-venv
+  - python3-pip
+  - postgresql-client
+  - curl
+  - rsync
+
+write_files:
+  # SSH hardening
+  - path: /etc/ssh/sshd_config.d/hardening.conf
+    content: |
+      PasswordAuthentication no
+      PermitRootLogin no
+      MaxAuthTries 3
+      ClientAliveInterval 300
+      ClientAliveCountMax 2
+
+runcmd:
+  # Create application directory
+  - mkdir -p /opt/flask-contact-form
+  - chown azureuser:azureuser /opt/flask-contact-form
+
+  # Create log directory
+  - mkdir -p /var/log/flask-contact-form
+  - chown azureuser:azureuser /var/log/flask-contact-form
+
+  # Create config directory for environment file
+  - mkdir -p /etc/flask-contact-form
+  - chmod 755 /etc/flask-contact-form
+
+  # Install Azure CLI for managed identity access to Key Vault
+  - curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+
+  # Restart SSH to apply hardening
+  - systemctl restart sshd
+
+  # Log completion
+  - echo "App server cloud-init completed at $(date)" >> /var/log/cloud-init-complete.log

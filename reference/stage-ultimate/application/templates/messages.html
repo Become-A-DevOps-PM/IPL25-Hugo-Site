@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - Flask Contact Form{% endblock %}
+
+{% block content %}
+<div class="messages-container">
+    <h1>All Messages</h1>
+
+    {% if messages %}
+        <p class="message-count">{{ messages|length }} message(s) found</p>
+
+        {% for msg in messages %}
+        <div class="message-card">
+            <div class="message-header">
+                <h3>{{ msg.name }}</h3>
+                <span class="message-date">{{ msg.created_at.strftime('%Y-%m-%d %H:%M') if msg.created_at else 'Unknown' }}</span>
+            </div>
+            <p class="message-email">{{ msg.email }}</p>
+            <p class="message-content">{{ msg.message }}</p>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <p>No messages yet.</p>
+            <a href="{{ url_for('main.contact') }}" class="btn btn-primary">Send the first one!</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

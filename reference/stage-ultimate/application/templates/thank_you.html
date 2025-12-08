@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Thank You - Flask Contact Form{% endblock %}
+
+{% block content %}
+<div class="thank-you">
+    <h1>Thank You, {{ name }}!</h1>
+    <p>Your message has been received and saved to the database.</p>
+
+    <div class="thank-you-actions">
+        <a href="{{ url_for('main.messages') }}" class="btn btn-primary">View All Messages</a>
+        <a href="{{ url_for('main.contact') }}" class="btn btn-secondary">Send Another</a>
+    </div>
+</div>
+{% endblock %}
