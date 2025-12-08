@@ -13,7 +13,7 @@ This week covers data persistence and web application deployment. You will learn
 Understand the concepts behind data storage and web applications:
 
 - [Storage](/infrastructure-fundamentals/storage/) - Persistence, databases, and storage services
-- [How Web Applications Work](/application/how-web-applications-work/) - Client-server architecture, HTTP, and server-side rendering
+- [Application](/application/) - Web application concepts, HTTP, and Flask implementation
 
 ## Practice
 

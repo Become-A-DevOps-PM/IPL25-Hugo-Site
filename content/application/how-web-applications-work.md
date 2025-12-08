@@ -87,18 +87,7 @@ The server replaces `{{ name }}` and `{{ email }}` with values from the form sub
 
 This complete HTML travels to the browser, which displays it without needing to know how it was generated.
 
-### Jinja2: Python's Templating Engine
-
-Python web frameworks commonly use **Jinja2** for templating. Jinja2 provides a syntax for embedding Python expressions and logic within HTML templates. The double-brace syntax `{{ variable }}` outputs a value. Control structures like `{% if %}` and `{% for %}` enable conditional and repeated content.
-
-Jinja2 templates support:
-
-- Variable output: `{{ user.name }}`
-- Conditionals: `{% if logged_in %}Welcome{% endif %}`
-- Loops: `{% for item in items %}{{ item }}{% endfor %}`
-- Template inheritance: Child templates extend parent layouts
-
-The templating engine processes these constructs server-side, producing plain HTML for the browser.
+Different frameworks use different templating syntaxes, but the concept remains the same: define HTML structure once, insert dynamic values at request time.
 
 ## Web Servers vs Application Servers
 
@@ -112,22 +101,15 @@ Web servers can also act as **reverse proxies**, receiving all incoming requests
 
 ### Application Servers
 
-An **application server** executes application code to generate dynamic responses. When a request requires business logic—processing a form, querying a database, applying rules—the application server runs the Python (or other language) code that implements that logic.
+An **application server** executes application code to generate dynamic responses. When a request requires business logic—processing a form, querying a database, applying rules—the application server runs the code that implements that logic.
 
-For Python applications, **Gunicorn** (Green Unicorn) serves as the application server. Gunicorn manages multiple worker processes, each capable of handling requests independently. When a request arrives, Gunicorn assigns it to an available worker. The worker executes the Flask or Django application code and returns the response.
-
-Gunicorn handles:
-
-- Process management (starting, stopping, restarting workers)
-- Request distribution across workers
-- Worker lifecycle (replacing workers that crash or consume too much memory)
-- Graceful shutdown during deployments
+Application servers exist for every major programming language and framework. They manage worker processes that handle requests independently, distribute incoming requests across workers, and handle process lifecycle concerns like restarting failed workers.
 
 ### Why Two Server Types?
 
 Separating web serving from application execution provides several benefits:
 
-**Efficiency**: Web servers handle static content without involving application code. Serving an image requires only disk I/O, not Python execution.
+**Efficiency**: Web servers handle static content without involving application code. Serving an image requires only disk I/O, not application execution.
 
 **Scalability**: Each layer scales independently. More application servers handle increased dynamic request load; CDNs and caching reduce static content load.
 
@@ -135,30 +117,7 @@ Separating web serving from application execution provides several benefits:
 
 **Flexibility**: Application servers can be restarted or updated while the web server continues serving static content and queuing requests.
 
-A typical production deployment places nginx in front, handling SSL, static files, and proxying. Gunicorn runs behind nginx, executing application code for dynamic requests.
-
-## Request Flow in a Flask Application
-
-Understanding the complete request path clarifies how components interact.
-
-### Development: Direct to Application Server
-
-During development, Flask includes a built-in server. Running `python app.py` starts this server, which listens for HTTP connections directly. A request to `http://localhost:5000/contact` reaches Flask immediately.
-
-This direct connection simplifies development but lacks production characteristics. Flask's built-in server handles one request at a time and lacks the robustness required for public traffic.
-
-### Production: Through Web Server and Application Server
-
-In production, requests flow through multiple layers:
-
-1. **Client sends request**: Browser connects to the server's public IP
-2. **Web server receives request**: nginx accepts the connection
-3. **Static or dynamic?**: nginx checks if the request matches a static file
-4. **Proxy to application server**: For dynamic requests, nginx forwards to Gunicorn
-5. **Application processes request**: Gunicorn worker executes Flask code
-6. **Response returns**: Flask returns HTML, Gunicorn sends to nginx, nginx sends to client
-
-This layered architecture handles concurrent requests efficiently, maintains security boundaries, and enables independent scaling of each component.
+A typical production deployment places nginx in front, handling SSL, static files, and proxying. The application server runs behind nginx, executing application code for dynamic requests.
 
 ## The Role of the Reverse Proxy
 
@@ -176,7 +135,7 @@ Reverse proxies provide:
 
 **Compression**: Reducing response sizes for faster transmission
 
-nginx commonly serves as a reverse proxy for Python applications. Configuration directs certain paths to static files and proxies others to Gunicorn:
+nginx commonly serves as a reverse proxy. Configuration directs certain paths to static files and proxies others to the application server:
 
 ```nginx
 server {
@@ -188,7 +147,7 @@ server {
         alias /var/www/app/static/;
     }
 
-    # Proxy dynamic requests to Gunicorn
+    # Proxy dynamic requests to application server
     location / {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
@@ -197,8 +156,31 @@ server {
 }
 ```
 
-This configuration serves static assets efficiently while routing application requests through Gunicorn.
+This configuration serves static assets efficiently while routing dynamic requests to the application server.
+
+## Request Flow in Production
+
+Understanding the complete request path clarifies how components interact.
+
+### Development: Direct Connection
+
+During development, most frameworks include a built-in development server. This server listens for HTTP connections directly, allowing rapid iteration without additional infrastructure. A request to `http://localhost:5000/contact` reaches the application immediately.
+
+This direct connection simplifies development but lacks production characteristics. Development servers typically handle one request at a time and lack the robustness required for public traffic.
+
+### Production: Through Multiple Layers
+
+In production, requests flow through multiple components:
+
+1. **Client sends request**: Browser connects to the server's public IP
+2. **Web server receives request**: nginx accepts the connection
+3. **Static or dynamic?**: nginx checks if the request matches a static file
+4. **Proxy to application server**: For dynamic requests, nginx forwards to the application server
+5. **Application processes request**: A worker executes the application code
+6. **Response returns**: The application returns HTML, which flows back through nginx to the client
+
+This layered architecture handles concurrent requests efficiently, maintains security boundaries, and enables independent scaling of each component.
 
 ## Summary
 
-Web applications coordinate clients and servers through HTTP. Clients send requests; servers process them and return responses. Server-side rendering uses templates to generate HTML dynamically, inserting data into page structures before sending to clients. Web servers like nginx handle connections and static content efficiently, while application servers like Gunicorn execute Python code for dynamic requests. Production deployments typically combine both, with nginx as a reverse proxy forwarding dynamic requests to Gunicorn, which manages Flask application workers. Understanding this architecture enables deploying applications that handle traffic reliably and scale with demand.
+Web applications coordinate clients and servers through HTTP. Clients send requests; servers process them and return responses. Server-side rendering uses templates to generate HTML dynamically, inserting data into page structures before sending to clients. Web servers like nginx handle connections and static content efficiently, while application servers execute code for dynamic requests. Production deployments typically combine both, with nginx as a reverse proxy forwarding dynamic requests to the application server. Understanding this architecture enables deploying applications that handle traffic reliably and scale with demand.
