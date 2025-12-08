@@ -1,8 +1,7 @@
 +++
 title = "Week 1"
 description = "Server foundations: compute concepts, SSH, and hands-on exercises"
-weight = 2
-chapter = true
+weight = 1
 +++
 
 # Week 1: Compute

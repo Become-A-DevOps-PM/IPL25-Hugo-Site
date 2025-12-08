@@ -2,6 +2,7 @@
 title = "Week 1 Technical Recap"
 type = "slide"
 date = 2025-12-01
+weight = 1
 draft = false
 hidden = false
 
