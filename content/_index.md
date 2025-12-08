@@ -1,6 +1,7 @@
 +++
 title = "DevOps PM IPL25"
 description = "Infrastructure, applications, and security for DevOps"
+weight = 1
 +++
 
 # DevOps PM IPL25

@@ -1,5 +1,7 @@
 # Author's Reference Guide: Modern Cloud Infrastructure and Software Delivery
 
+> **STATUS:** FUTURE WORK - Aspirational book project, not part of current IPL25 course deliverables.
+
 **Project Goal:** To author a rigorous, university-level technical textbook bridging the gap between Hardware, Software Engineering, and DevOps Operations.
 **Rhetorical Style:** Technical Expository (Objective, Third-Person, Lexically Dense).
 **Target Audience:** Computer Science undergraduates or junior engineers transitioning into Cloud/DevOps roles.

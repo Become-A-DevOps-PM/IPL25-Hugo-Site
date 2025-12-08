@@ -13,12 +13,13 @@ This repository contains the Hugo-based documentation site for the DevOps PM IPL
 - Presentations: Dual system (Standalone HTML + DocDock inline slides)
 
 **Project Statistics:**
-- 122 markdown files (~800KB content)
-- 73 active content files
-- 36 total presentations (26 DocDock slides + 10 standalone HTML)
+- 138 markdown content files (~1MB content)
+- 15 active exercises (6 server + 3 network + 6 application)
+- 62 presentations total (26 DocDock slides + 36 standalone HTML)
 - 23 legacy files in 4 legacy directories
-- 7 theme override files (28KB)
-- 4 Claude Code skills
+- 8 theme override files (32KB)
+- 4 Claude Code skills + 2 custom commands
+- 1 reference implementation (stage-ultimate)
 
 ## Related Repository - 2024 Reference Project
 
@@ -83,6 +84,118 @@ The DemoDice project contains the "Presenter-Tron 3000" - a steampunk-themed lot
 - `DemoDice/src/assets/ball-{1-6}.png` → `static/tools/demo-dice/assets/`
 
 **Check for updates:** If the DemoDice application is updated, the source files are in `DemoDice/src/`. Copy updated files to `static/tools/demo-dice/` as needed.
+
+## Reference Implementation - Stage Ultimate
+
+**Location:** `reference/stage-ultimate/`
+
+The "stage-ultimate" reference implementation is a complete, production-grade Flask Contact Form application deployed on Azure. It demonstrates best practices for:
+
+- Infrastructure as Code (Azure CLI scripts)
+- Network segmentation with proper security groups
+- Bastion host for secure SSH access
+- Reverse proxy with SSL termination
+- Azure Key Vault for secrets management
+- Managed identity for secure credential access
+
+### Architecture Overview
+
+```
+Internet
+    │
+    ├──SSH (22)────→ Bastion VM ──SSH──→ Internal VMs
+    │                (10.0.1.x)
+    │
+    └──HTTPS (443)─→ Reverse Proxy VM ──HTTP (5001)──→ App Server VM
+                     (10.0.2.x)                        (10.0.3.x)
+                                                           │
+                                                           ├──→ PostgreSQL (Azure PaaS)
+                                                           └──→ Key Vault (Azure PaaS)
+```
+
+### Directory Structure
+
+```
+reference/stage-ultimate/
+├── README.md                    # Quick-start guide (6 steps)
+├── ARCHITECTURE.md              # 10 mermaid diagrams at different abstraction levels
+├── PLAN-INFRASTRUCTURE.md       # Detailed infrastructure specification
+├── PLAN-APPLICATION.md          # Detailed application specification
+│
+├── infrastructure/              # Azure provisioning
+│   ├── provision.sh            # Main script (~600 lines)
+│   ├── cloud-init-bastion.yaml # SSH hardening, fail2ban
+│   ├── cloud-init-proxy.yaml   # nginx, SSL, fail2ban
+│   └── cloud-init-app-server.yaml # Python, Azure CLI
+│
+├── application/                 # Flask application
+│   ├── app.py                  # Application factory
+│   ├── config.py               # Configuration with Key Vault fallback
+│   ├── models.py               # SQLAlchemy models
+│   ├── routes.py               # Blueprint with all routes
+│   ├── validators.py           # Input validation
+│   ├── keyvault.py             # Azure Key Vault integration
+│   ├── wsgi.py                 # Gunicorn entry point
+│   ├── requirements.txt        # Production dependencies
+│   ├── templates/              # Jinja2 templates (6 files)
+│   └── static/style.css        # Application styling
+│
+└── deploy/                      # Deployment automation
+    ├── deploy.sh               # Main deployment script
+    ├── nginx/                  # Reverse proxy config
+    │   ├── flask-contact-form.conf
+    │   └── ssl-params.conf
+    └── systemd/
+        └── flask-contact-form.service
+```
+
+### Key Features
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| VMs (3x) | Standard_B1s | Bastion, Proxy, App Server |
+| Database | PostgreSQL Flexible Server (B1ms) | Production data storage |
+| Secrets | Azure Key Vault + RBAC | Secure credential management |
+| Identity | System-assigned Managed Identity | No stored credentials |
+| Networking | 5 subnets + NSGs | Network segmentation |
+| SSL | Self-signed certificates | HTTPS termination |
+
+### Cost Estimate
+
+~$40-50/month for learning environment (all resources use lowest cost tiers)
+
+### Quick Start
+
+```bash
+# 1. Provision infrastructure (15-20 minutes)
+cd reference/stage-ultimate/infrastructure
+./provision.sh
+
+# 2. Wait for cloud-init (2-3 minutes)
+
+# 3. Deploy application (3-5 minutes)
+cd ../deploy
+./deploy.sh
+
+# 4. Access application
+PROXY_IP=$(az vm show -g flask-ultimate-rg -n flask-ultimate-proxy --show-details -o tsv --query publicIps)
+echo "https://$PROXY_IP/"
+```
+
+### Documentation Files
+
+- **README.md** - Quick-start with prerequisites, steps, troubleshooting
+- **ARCHITECTURE.md** - Visual diagrams including:
+  - High-level overview
+  - Network topology with IP addresses
+  - User request flow (sequence diagram)
+  - SSH management flow
+  - NSG rules visualization
+  - Application component stack
+  - Data flow and trust boundaries
+  - Deployment pipeline
+- **PLAN-INFRASTRUCTURE.md** - Complete infrastructure specification
+- **PLAN-APPLICATION.md** - Complete application specification
 
 ## Working Guidelines
 
@@ -191,6 +304,11 @@ content/                                   (118 markdown files, 744KB)
 │   └── retrospective-template-sv.md      # Swedish
 ├── presentations/                         (1 file)
 │   └── _index.md                         # Links to standalone HTML
+├── week-1/                                (1 file)
+│   └── _index.md                         # Week 1 overview (chapter)
+├── week-2/                                (1 file)
+│   └── _index.md                         # Week 2 overview (chapter)
+├── privacy-feedback.md                    # Privacy policy for feedback system
 ├── application/                           # Placeholder (_index only)
 └── it-security/                           # Placeholder (_index only)
 
@@ -206,41 +324,88 @@ layouts/
     └── original/
         └── scripts.html                  # Original theme scripts
 
-static/                                    (584KB)
+static/                                    (2.4MB)
 ├── CNAME                                 # devops-pm-25.educ8.se
 ├── robots.txt                            # Search engine directives
+├── images/
+│   └── NetworkOverview.png              # Network diagram
 ├── js/
 │   └── feedback.js                       # Feedback system (11.4KB)
-└── presentations/                        # Standalone HTML presentations
+├── tools/
+│   └── demo-dice/                       # Presenter-Tron 3000 tool
+│       ├── index.html
+│       └── assets/ball-{1-6}.png
+└── presentations/                        # Standalone HTML presentations (36 files)
     ├── course-introduction.html          # Course overview
     ├── project-assignment.html           # Project requirements
-    ├── infrastructure-fundamentals/
-    │   └── compute/                      # 8 files (4 topics × 2 langs)
-    │       ├── 1-what-is-a-server.html
-    │       ├── 1-what-is-a-server-swe.html
-    │       ├── 2-common-server-roles.html
-    │       ├── 2-common-server-roles-swe.html
-    │       ├── 3-inside-a-physical-server.html
-    │       ├── 3-inside-a-physical-server-swe.html
-    │       ├── 4-inside-a-virtual-server.html
-    │       └── 4-inside-a-virtual-server-swe.html
     ├── swedish-tech-slides.css           # Swedish Tech branding
     ├── lars-appel.jpg                    # Instructor photo (112KB)
-    └── webinar-mockup.png                # Supporting image (309KB)
+    ├── webinar-mockup.png                # Supporting image (309KB)
+    └── infrastructure-fundamentals/
+        ├── compute/                      # 8 files (4 topics × 2 langs)
+        │   ├── 1-what-is-a-server.html
+        │   ├── 1-what-is-a-server-swe.html
+        │   ├── 2-common-server-roles.html
+        │   ├── 2-common-server-roles-swe.html
+        │   ├── 3-inside-a-physical-server.html
+        │   ├── 3-inside-a-physical-server-swe.html
+        │   ├── 4-inside-a-virtual-server.html
+        │   └── 4-inside-a-virtual-server-swe.html
+        ├── network/                      # 12 files (6 topics × 2 langs)
+        │   ├── 1-what-is-a-network.html
+        │   ├── 1-what-is-a-network-swe.html
+        │   ├── 2-ip-addresses-and-cidr-ranges.html
+        │   ├── 2-ip-addresses-and-cidr-ranges-swe.html
+        │   ├── 3-private-and-public-networks.html
+        │   ├── 3-private-and-public-networks-swe.html
+        │   ├── 4-firewalls.html
+        │   ├── 4-firewalls-swe.html
+        │   ├── 5-the-osi-model.html
+        │   ├── 5-the-osi-model-swe.html
+        │   ├── 6-network-intermediaries.html
+        │   └── 6-network-intermediaries-swe.html
+        └── storage/                      # 6 files (3 topics × 2 langs)
+            ├── 1-what-is-persistence.html
+            ├── 1-what-is-persistence-swe.html
+            ├── 2-databases.html
+            ├── 2-databases-swe.html
+            ├── 3-storage.html
+            └── 3-storage-swe.html
 
 .claude/
-└── skills/                               # 4 Claude Code skills
-    ├── create-exercise/                  # Exercise creation framework
-    ├── revealjs-skill/                   # Swedish Tech presentations
-    ├── student-technical-writer/         # Student-facing content style
-    └── technical-textbook-writer/        # Formal textbook style
+├── settings.local.json                   # Local Claude configuration
+├── skills/                               # 4 Claude Code skills
+│   ├── create-exercise/                  # Exercise creation framework
+│   ├── revealjs-skill/                   # Swedish Tech presentations
+│   ├── student-technical-writer/         # Student-facing content style
+│   └── technical-textbook-writer/        # Formal textbook style
+└── commands/                             # 2 custom slash commands
+    ├── check-links.md                   # Link checking command
+    ├── lint-md.md                       # Markdown linting command
+    └── scripts/                         # Supporting scripts
+        ├── crawl-links-local.sh
+        └── crawl-links-public.sh
 
-docs/                                      (5 files)
-├── hugo-github-pages-setup.md           # Complete setup tutorial
-├── feedback-system-plan.md              # Feedback feature design
-├── feedback-system-solution.md          # Implementation details
-├── idea_for_book.md                     # Book concept notes
-└── crawl-links.sh                       # Link validation script
+docs/                                      (8 files + planning/)
+├── hugo-github-pages-setup.md           # Complete setup tutorial (34KB)
+├── feedback-system-plan.md              # Feedback feature design (superseded)
+├── feedback-system-solution.md          # Implementation details (current)
+├── project-review-improvements.md       # Project improvement recommendations
+├── markdown-lint-report.md              # Lint analysis summary
+├── markdown-lint-report.json            # Lint analysis data
+├── repetition-ipl25-vecka1-notes.md     # Week 1 recap notes
+└── planning/                            # Future/aspirational content
+    └── book-outline.md                  # Book concept notes
+
+reference/                                 # Reference implementations
+└── stage-ultimate/                       # Production-grade Flask deployment
+    ├── README.md                        # Quick-start guide
+    ├── ARCHITECTURE.md                  # 10 mermaid diagrams
+    ├── PLAN-APPLICATION.md              # App specification
+    ├── PLAN-INFRASTRUCTURE.md           # Infrastructure specification
+    ├── infrastructure/                  # Azure provisioning scripts
+    ├── application/                     # Flask application code
+    └── deploy/                          # Deployment automation
 ```
 
 ### Claude Skills (This Project)
@@ -277,11 +442,11 @@ This project includes 4 Claude Code skills for content creation:
 
 This project uses **TWO distinct presentation systems** serving different purposes:
 
-### 1. Standalone HTML Presentations (Primary - 10 files)
+### 1. Standalone HTML Presentations (Primary - 36 files)
 
 **Location:** `static/presentations/`
 **Technology:** Self-contained HTML with CDN-linked reveal.js + Swedish Tech CSS
-**Count:** 10 files (5 English + 5 Swedish)
+**Count:** 36 files (2 course + 26 infrastructure bilingual + 8 compute)
 
 **Use for:**
 - Course introductions and overview presentations
@@ -294,15 +459,10 @@ This project uses **TWO distinct presentation systems** serving different purpos
 static/presentations/
 ├── course-introduction.html              # Course overview
 ├── project-assignment.html               # Project requirements
-└── infrastructure-fundamentals/compute/  # 8 files (4 topics × 2 langs)
-    ├── 1-what-is-a-server.html
-    ├── 1-what-is-a-server-swe.html
-    ├── 2-common-server-roles.html
-    ├── 2-common-server-roles-swe.html
-    ├── 3-inside-a-physical-server.html
-    ├── 3-inside-a-physical-server-swe.html
-    ├── 4-inside-a-virtual-server.html
-    └── 4-inside-a-virtual-server-swe.html
+└── infrastructure-fundamentals/
+    ├── compute/                          # 8 files (4 topics × 2 langs)
+    ├── network/                          # 12 files (6 topics × 2 langs)
+    └── storage/                          # 6 files (3 topics × 2 langs)
 ```
 
 **Characteristics:**
@@ -386,17 +546,13 @@ Example from infrastructure-fundamentals articles:
 [Article content follows...]
 ```
 
-### Current State and Migration Strategy
+### Current State
 
-**Compute presentations:**
+**All infrastructure-fundamentals presentations:**
 - Exist in BOTH formats (standalone HTML + DocDock slides)
-- Articles link to standalone HTML
+- Articles link to standalone HTML (preferred)
 - DocDock slides are supplementary/legacy
-
-**Network and Storage presentations:**
-- Only DocDock slides exist (no standalone HTML yet)
-- Consider creating standalone HTML for consistency
-- Would enable same linking pattern as compute articles
+- Full bilingual coverage (EN + Swedish)
 
 **Course presentations:**
 - Only standalone HTML (course-introduction, project-assignment)
@@ -767,13 +923,21 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 | `content/tutorials/setup/` | Modular setup guides (17 files) |
 | `content/infrastructure-fundamentals/` | Core concepts (60 files: compute/network/storage) |
 | `content/exercises/server-foundation/` | Server exercises (19 files: 6 active + 10 legacy) |
+| `content/exercises/network-foundation/` | Network exercises (9 files: 3 active + 3 legacy) |
+| `content/exercises/application-development/` | Flask exercises (7 files: 6 active) |
 | `content/cheat-sheets/` | Quick reference materials (4 files) |
-| `content/project-templates/` | Demo + retrospective templates (5 files, bilingual) |
+| `content/project-templates/` | Demo + retrospective templates (6 files, bilingual) |
 | `content/*/legacy/` | Legacy content directories (23 files total) |
 | **Presentations** | |
-| `static/presentations/` | Standalone HTML presentations (10 files) |
+| `static/presentations/` | Standalone HTML presentations (36 files) |
 | `static/presentations/swedish-tech-slides.css` | Swedish Tech branding |
 | `content/presentations/_index.md` | Presentations index page |
+| **Reference Implementation** | |
+| `reference/stage-ultimate/` | Production-grade Flask deployment |
+| `reference/stage-ultimate/infrastructure/provision.sh` | Azure provisioning script |
+| `reference/stage-ultimate/application/` | Flask application (7 Python files) |
+| `reference/stage-ultimate/deploy/deploy.sh` | Deployment automation |
+| `reference/stage-ultimate/ARCHITECTURE.md` | 10 mermaid architecture diagrams |
 | **Theme Overrides** | |
 | `layouts/partials/pagination.html` | Hugo v0.148+ pagination fix |
 | `layouts/partials/custom-head.html` | Analytics + robots meta |
@@ -781,17 +945,20 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 | `layouts/partials/language-selector.html` | Language switching |
 | `layouts/partials/flex/` | Flex theme overrides (2 files) |
 | `layouts/partials/original/` | Original theme overrides (1 file) |
-| **Claude Skills** | |
+| `layouts/_default/_markup/render-codeblock-mermaid.html` | Mermaid diagram rendering |
+| **Claude Skills & Commands** | |
 | `.claude/skills/create-exercise/` | Exercise creation framework (4 files) |
 | `.claude/skills/revealjs-skill/` | Swedish Tech presentations (5 files) |
 | `.claude/skills/student-technical-writer/` | Student-facing content style (1 file) |
 | `.claude/skills/technical-textbook-writer/` | Formal textbook style (4 files) |
+| `.claude/commands/check-links.md` | Link checking slash command |
+| `.claude/commands/lint-md.md` | Markdown linting slash command |
 | **Documentation** | |
 | `docs/hugo-github-pages-setup.md` | Complete setup tutorial (34KB) |
-| `docs/feedback-system-plan.md` | Feedback feature design (39KB) |
-| `docs/feedback-system-solution.md` | Implementation details (16KB) |
-| `docs/idea_for_book.md` | Book concept notes (8KB) |
-| `docs/crawl-links.sh` | Link validation script |
+| `docs/feedback-system-plan.md` | Feedback feature design (superseded) |
+| `docs/feedback-system-solution.md` | Implementation details (current) |
+| `docs/project-review-improvements.md` | Project improvement recommendations |
+| `docs/planning/book-outline.md` | Book concept notes |
 | `CLAUDE.md` | This project documentation file |
 | **Theme** | |
 | `themes/docdock/` | DocDock theme (git submodule, never edit directly) |

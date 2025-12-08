@@ -1,5 +1,7 @@
 # Feedback System Implementation Plan
 
+> **STATUS:** Planning document (superseded by solution). See `feedback-system-solution.md` for actual implementation.
+
 A serverless feedback system for the DevOps PM documentation site that creates GitHub Issues from user feedback in a private repository.
 
 ---
