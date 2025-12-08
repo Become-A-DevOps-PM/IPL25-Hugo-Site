@@ -13,8 +13,8 @@ This repository contains the Hugo-based documentation site for the DevOps PM IPL
 - Presentations: Dual system (Standalone HTML + DocDock inline slides)
 
 **Project Statistics:**
-- 118 markdown files (744KB content)
-- 69 active content files
+- 122 markdown files (~800KB content)
+- 73 active content files
 - 36 total presentations (26 DocDock slides + 10 standalone HTML)
 - 23 legacy files in 4 legacy directories
 - 7 theme override files (28KB)
@@ -152,7 +152,7 @@ content/                                   (118 markdown files, 744KB)
 │       ├── 2-databases/
 │       ├── 3-storage/
 │       └── legacy/                       # 4 v1 files
-├── exercises/                             (20 files)
+├── exercises/                             (34 files)
 │   ├── _index.md
 │   ├── server-foundation/                # Complete (6 exercises)
 │   │   ├── 1-portal-interface/          # Exercises 1-3
@@ -164,9 +164,20 @@ content/                                   (118 markdown files, 744KB)
 │   │   │   ├── 5-provisioning-vm-az-cli.md
 │   │   │   └── 6-automating-vm-bash-script.md
 │   │   └── legacy/                       # 10 files (v1 + v2 variants)
-│   ├── application-layer/                # Placeholder (_index only)
-│   ├── database-automation/              # Placeholder (_index only)
-│   └── security-production/              # Placeholder (_index only)
+│   ├── network-foundation/               # Complete (3 exercises)
+│   │   ├── 1-portal-interface/          # Exercises 1-2
+│   │   │   ├── 1-creating-virtual-network.md
+│   │   │   └── 2-virtual-network-enhanced-security.md
+│   │   ├── 2-command-line-interface/    # Exercise 3
+│   │   │   └── 3-virtual-network-az-cli.md
+│   │   └── legacy/                       # 3 v1 files
+│   └── application-development/          # Complete (6 exercises)
+│       ├── 1. develop-flask-locally.md
+│       ├── 2. deploy-flask-application-basic.md
+│       ├── 3. add-database-persistence.md
+│       ├── 4. provision-azure-postgresql.md
+│       ├── 5. deploy-flask-with-database.md
+│       └── 6. production-deployment-systemd.md
 ├── cheat-sheets/                         (4 files)
 │   ├── _index.md
 │   ├── bash-scripting-cheatsheet.md
@@ -594,36 +605,43 @@ server-foundation/
 - ✅ Legacy with v2 variants
 - ✅ Pedagogical progression
 
-**5. Tutorials - Setup** (17 files)
+**5. Exercises - Network Foundation** (7 files)
+- ✅ 3 active exercises (2 Portal + 1 CLI)
+- ✅ Interface-based organization
+- ✅ Legacy preserved
+
+**6. Exercises - Application Development** (6 files)
+- ✅ Complete Flask application lifecycle
+- ✅ Local development → Azure deployment → Production
+- ✅ Database persistence with SQLAlchemy
+- ✅ Azure PostgreSQL provisioning
+- ✅ systemd service configuration
+
+**7. Tutorials - Setup** (17 files)
 - ✅ Modular guides (Azure, GitHub, Dev, AI Tools)
 - ✅ Package manager guidance
 - ✅ Complete coverage
 
-**6. Getting Started** (4 files)
+**8. Getting Started** (4 files)
 - ✅ Course introduction
 - ✅ Project assignment
 - ✅ Setup overview
 
-### Partially Developed (3 sections)
+### Partially Developed (2 sections)
 
-**7. Cheat Sheets** (4 files)
+**9. Cheat Sheets** (4 files)
 - ✅ Bash, Cloud-init, Linux
 - ⚠️ Could expand: Git, Azure CLI, PostgreSQL
 
-**8. Project Templates** (5 files)
+**10. Project Templates** (5 files)
 - ✅ Demo instructions (bilingual)
 - ✅ Retrospective template (bilingual)
 - ⚠️ Minimal but functional
 
-### Placeholder Sections (5 sections)
+### Placeholder Sections (2 sections)
 
-**9-11. Exercise Sections** (_index only):
-- ⚠️ application-layer
-- ⚠️ database-automation
-- ⚠️ security-production
-
-**13-14. Content Sections** (_index only):
-- ⚠️ application (Flask development)
+**11-12. Content Sections** (_index only):
+- ⚠️ application (Flask development tutorials)
 - ⚠️ it-security (Security concepts, GDPR)
 
 **Status:** Sections created for navigation, awaiting content development
@@ -694,19 +712,23 @@ When migrating content from the 2024 project:
 3. **Infrastructure Fundamentals - Network** - 6 topics with articles + bilingual slides (no standalone HTML yet)
 4. **Infrastructure Fundamentals - Storage** - 3 topics with articles + bilingual slides (no standalone HTML yet)
 5. **Exercises - Server Foundation** - 6 exercises organized by interface type (Portal/CLI)
-6. **Tutorials - Setup** - Modular setup guides (Azure, GitHub, Development, AI Tools)
+6. **Exercises - Network Foundation** - 3 exercises organized by interface type (Portal/CLI)
+7. **Exercises - Application Development** - 6 exercises covering full Flask lifecycle:
+   - Local development with Flask
+   - Basic deployment to Azure VM
+   - Database persistence with SQLAlchemy/SQLite
+   - Azure PostgreSQL provisioning
+   - Deployment with database connection
+   - Production deployment with systemd
+8. **Tutorials - Setup** - Modular setup guides (Azure, GitHub, Development, AI Tools)
 
 **⚠️ Partially Complete:**
-7. **Cheat Sheets** - Bash, Cloud-init, Linux (could expand: Git, Azure CLI, PostgreSQL)
-8. **Project Templates** - Demo instructions + retrospectives (bilingual)
+9. **Cheat Sheets** - Bash, Cloud-init, Linux (could expand: Git, Azure CLI, PostgreSQL)
+10. **Project Templates** - Demo instructions + retrospectives (bilingual)
 
 **❌ Placeholder Sections (Need Development):**
-9. **Exercises - Application Layer** - Flask exercises, Python development
-10. **Exercises - Database Automation** - PostgreSQL setup, automation
-11. **Exercises - Security Production** - HTTPS, hardening, production deployment
-12. **Application Content** - Flask, Python, web development tutorials
-13. **IT Security Content** - Security concepts, GDPR, risk analysis
-14. **Presentations Index** - Update to include compute standalone HTML links
+11. **Application Content** - Flask, Python, web development tutorials
+12. **IT Security Content** - Security concepts, GDPR, risk analysis
 
 ## Git Workflow
 
