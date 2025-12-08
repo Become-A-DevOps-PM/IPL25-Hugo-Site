@@ -1,4 +1,13 @@
-# Implementation Strategies: Designing Feedback Loops
++++
+title = "Implementation Strategies"
+weight = 3
+date = 2024-12-08
+draft = false
++++
+
+[Watch the presentation](/presentations/mini-lectures/implementation-strategies.html)
+
+---
 
 Project teams face a persistent challenge: development must begin before complete information exists. Requirements remain unclear, technical approaches are untested, and user needs evolve throughout the project lifecycle. Building software under these conditions requires strategies that acknowledge uncertainty and systematically reduce it through deliberate experimentation.
 

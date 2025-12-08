@@ -1,4 +1,13 @@
-# From Intent to Code: Abstraction Levels in Planning
++++
+title = "From Intent to Code"
+weight = 2
+date = 2024-12-08
+draft = false
++++
+
+[Watch the presentation](/presentations/mini-lectures/from-intent-to-code.html)
+
+---
 
 Software projects begin with intentions and end with executable code. Between these endpoints lies a progression of increasingly concrete representations, each serving a distinct purpose in transforming business objectives into working systems. Understanding this **abstraction hierarchy** reveals why planning remains essential despite the inherent uncertainty at each level, and how AI systems complement human judgment in navigating these transitions.
 

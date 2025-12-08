@@ -1,4 +1,13 @@
-# AI as Co-worker
++++
+title = "AI as Co-worker"
+weight = 1
+date = 2024-12-08
+draft = false
++++
+
+[Watch the presentation](/presentations/mini-lectures/ai-as-co-worker.html)
+
+---
 
 Project managers coordinate teams of specialists—each with distinct expertise, communication styles, and work patterns. Integrating AI agents into technical workflows requires the same coordination skills, but with a different type of team member. Understanding how to work effectively with AI transforms it from an occasional tool into a reliable collaborator that amplifies project capabilities.
 
