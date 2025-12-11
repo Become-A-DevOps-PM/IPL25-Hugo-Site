@@ -28,8 +28,9 @@ Your report should include the following sections:
 
      - Describe the Azure infrastructure, including:
        - Network layout (subnets, NSG rules, internal/external communication).
-       - The role of reverse proxy, bastion host, application server, and database server.
-     - Describe key configurations (e.g., Nginx rules for reverse proxy, MySQL settings).
+       - The role of reverse proxy, bastion host, and application server.
+       - The managed database service (Azure Database for PostgreSQL).
+     - Describe key configurations (e.g., nginx rules for reverse proxy, Azure Database for PostgreSQL settings, Gunicorn configuration).
 
    - **Verification:**
 
@@ -42,14 +43,19 @@ Your report should include the following sections:
 
    - **Description:**
 
-     - Describe the application stack (LEMP: Linux, Nginx, MySQL, PHP).
-     - Explain the flow of the contact form - from user input to data storage in the database.
+     - Describe the application stack:
+       - **Operating System:** Ubuntu Linux
+       - **Web Server:** nginx (reverse proxy)
+       - **Application Server:** Gunicorn (WSGI server)
+       - **Web Framework:** Flask (Python)
+       - **Database:** PostgreSQL (Azure managed service)
+     - Explain the flow of the contact form - from user input through the reverse proxy and application server to data storage in the database.
 
    - **Verification:**
 
      - Show how you tested:
        - The contact form (e.g., form submission, validation, and data storage).
-       - Database connection (e.g., queries against the database to retrieve stored data).
+       - Database connection (e.g., queries against the database to retrieve stored data). You can use a GUI tool like DBeaver or the PostgreSQL CLI (`psql`) to connect and verify.
      - Include screenshots of the form in action and results from database queries.
 
 ### 4. Security (20%)
@@ -88,10 +94,11 @@ When building the solution and preparing your report, it is important to be meth
 
 - Start with **core functionality**:
 
-  - Provision a single VM with Nginx, PHP, and MySQL.
+  - Develop the Flask application locally with SQLite for quick iteration.
+  - Provision a single VM with Gunicorn to serve the Flask app (SQLite works fine initially).
   - Ensure the contact form works and that form data is stored in the database.
 
-This gives you a working foundation to build upon before adding advanced configurations like security and networking.
+This gives you a working foundation to build upon before adding advanced configurations like the managed PostgreSQL database, reverse proxy, and network segmentation.
 
 ### 2. Build the Solution Gradually in Layers
 
@@ -103,14 +110,15 @@ After MVP, add layers to the solution one at a time and test each step.
   - Test SSH access.
 
 - **Step 2: Reverse Proxy**
-  - Introduce Nginx as a reverse proxy to handle incoming traffic.
-  - Test that traffic to the proxy is correctly forwarded to the web server.
+  - Introduce nginx as a reverse proxy to handle incoming traffic.
+  - Configure nginx to forward requests to Gunicorn (typically on port 5001).
+  - Test that traffic to the proxy is correctly forwarded to the Flask application.
   - Check regularly (e.g., with curl or browser) that it works.
 
-- **Step 3: Database Server**
-  - Add the database server (MySQL).
-  - Configure the application server (PHP code) to connect to the database server.
-  - Verify the database connection and that data from the form is stored in the database.
+- **Step 3: Managed Database**
+  - Provision Azure Database for PostgreSQL (managed service).
+  - Configure the Flask application to connect to PostgreSQL instead of SQLite.
+  - Verify the database connection and that data from the form is stored in the database (use DBeaver or `psql` to query the database).
 
 ### 3. Work on Security Early
 
@@ -133,6 +141,8 @@ When the basic functionality is verified, you can focus on advanced aspects such
 
 - Implement NSG, ASG, and Service Tags.
 - Provision a bastion host for secure SSH access to internal servers.
+- Configure systemd services for automatic application startup and management.
+- Configure a self-signed SSL certificate on the reverse proxy to enable HTTPS.
 
 Security and architectural improvements should be built on top of a stable and working foundation.
 
@@ -149,12 +159,15 @@ Security and architectural improvements should be built on top of a stable and w
 - This makes it easier to write the report and ensures you don't forget anything.
 
 
-### Example
+### Example Progression
 
-1. Provision and configure a single VM with Nginx, PHP, and MySQL.
-2. Test the contact form to ensure basic functionality.
-3. Add a reverse proxy and test.
-4. Separate the database to its own VM and test app-to-database communication.
-5. Add ASG and Service Tags.
-6. Provision a Bastion Host and verify secure SSH access.
-7. Run a final test of the solution and take screenshots.
+1. Develop Flask application locally with SQLite database.
+2. Test the contact form to ensure basic functionality works locally.
+3. Provision a single Azure VM with Gunicorn to serve the Flask app.
+4. Deploy the Flask application and verify it works via HTTP.
+5. Provision Azure Database for PostgreSQL and configure the application to use it.
+6. Add network segmentation with VNet and NSG rules.
+7. Add ASG and Service Tags for fine-grained security.
+8. Provision a Bastion Host and verify secure SSH access.
+9. Configure systemd for production process management.
+10. Run a final test of the solution and take screenshots.
