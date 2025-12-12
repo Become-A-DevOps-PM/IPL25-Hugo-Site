@@ -35,7 +35,6 @@ module network 'modules/network.bicep' = {
   params: {
     location: location
     vnetName: vnetName
-    baseName: baseName
   }
 }
 
@@ -48,7 +47,6 @@ module bastion 'modules/bastion.bicep' = {
     subnetId: network.outputs.bastionSubnetId
     asgId: network.outputs.bastionAsgId
     sshPublicKey: sshPublicKey
-    baseName: baseName
   }
 }
 
@@ -61,7 +59,6 @@ module proxy 'modules/proxy.bicep' = {
     subnetId: network.outputs.webSubnetId
     asgId: network.outputs.proxyAsgId
     sshPublicKey: sshPublicKey
-    baseName: baseName
   }
 }
 
@@ -74,7 +71,6 @@ module app 'modules/app.bicep' = {
     subnetId: network.outputs.appSubnetId
     asgId: network.outputs.appAsgId
     sshPublicKey: sshPublicKey
-    baseName: baseName
   }
 }
 
@@ -88,7 +84,6 @@ module database 'modules/database.bicep' = {
     vnetId: network.outputs.vnetId
     adminUsername: dbAdminUsername
     adminPassword: dbAdminPassword
-    baseName: baseName
   }
 }
 

@@ -6,9 +6,6 @@ param location string
 @description('Virtual network name')
 param vnetName string
 
-@description('Base name for resources')
-param baseName string
-
 // Virtual Network
 resource vnet 'Microsoft.Network/virtualNetworks@2023-05-01' = {
   name: vnetName

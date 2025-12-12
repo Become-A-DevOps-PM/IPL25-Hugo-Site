@@ -16,62 +16,11 @@ param asgId string
 @secure()
 param sshPublicKey string
 
-@description('Base name for resources')
-param baseName string
+@description('Admin username for VM')
+param adminUsername string = 'azureuser'
 
-// Cloud-init configuration for app server
-var cloudInitApp = '''
-#cloud-config
-package_update: true
-package_upgrade: true
-
-packages:
-  - python3
-  - python3-pip
-  - python3-venv
-  - postgresql-client
-
-# Note: Create system user in runcmd to preserve Azure's default azureuser
-# Using 'users:' directive replaces default users which breaks SSH access
-
-write_files:
-  - path: /etc/systemd/system/flask-app.service
-    content: |
-      [Unit]
-      Description=Flask Application
-      After=network.target
-
-      [Service]
-      Type=simple
-      User=flask-app
-      Group=flask-app
-      WorkingDirectory=/opt/flask-app
-      EnvironmentFile=/etc/flask-app/database.env
-      ExecStart=/opt/flask-app/venv/bin/gunicorn --bind 0.0.0.0:5001 wsgi:app
-      Restart=always
-      RestartSec=5
-
-      [Install]
-      WantedBy=multi-user.target
-
-runcmd:
-  # Create flask-app system user (don't use cloud-init users: as it replaces default users)
-  - useradd --system --shell /usr/sbin/nologin --no-create-home flask-app
-  - mkdir -p /opt/flask-app
-  - mkdir -p /etc/flask-app
-  - python3 -m venv /opt/flask-app/venv
-  - /opt/flask-app/venv/bin/pip install --upgrade pip wheel setuptools
-  - chown -R azureuser:flask-app /opt/flask-app
-  - chmod 775 /opt/flask-app
-  - chmod 775 /opt/flask-app/venv
-  - usermod -aG flask-app azureuser
-  - chown root:flask-app /etc/flask-app
-  - chmod 750 /etc/flask-app
-  - touch /etc/flask-app/database.env
-  - chown root:flask-app /etc/flask-app/database.env
-  - chmod 640 /etc/flask-app/database.env
-  - systemctl daemon-reload
-'''
+// Cloud-init configuration loaded from external file
+var cloudInitApp = loadTextContent('../cloud-init/app.yaml')
 
 // Network interface (no public IP - internal only)
 resource nic 'Microsoft.Network/networkInterfaces@2023-05-01' = {
@@ -107,13 +56,13 @@ resource vm 'Microsoft.Compute/virtualMachines@2023-07-01' = {
     }
     osProfile: {
       computerName: vmName
-      adminUsername: 'azureuser'
+      adminUsername: adminUsername
       linuxConfiguration: {
         disablePasswordAuthentication: true
         ssh: {
           publicKeys: [
             {
-              path: '/home/azureuser/.ssh/authorized_keys'
+              path: '/home/${adminUsername}/.ssh/authorized_keys'
               keyData: sshPublicKey
             }
           ]

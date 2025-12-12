@@ -3239,7 +3239,7 @@ This section defines how to execute the implementation plan in a fully **unatten
       "description": "Create parameters.json with generated password if not exists",
       "status": "pending",
       "required": true,
-      "command": "./scripts/init-secrets.sh",
+      "command": "./infrastructure/scripts/init-secrets.sh",
       "verification": { "method": "file_exists", "path": "infrastructure/parameters.json" },
       "depends_on": ["A3"]
     },
@@ -3250,7 +3250,7 @@ This section defines how to execute the implementation plan in a fully **unatten
       "description": "Verify password meets Azure requirements",
       "status": "pending",
       "required": true,
-      "command": "./scripts/validate-password.sh",
+      "command": "./infrastructure/scripts/validate-password.sh",
       "verification": { "method": "exit_code", "expected": 0 },
       "depends_on": ["A5"]
     },
@@ -3311,7 +3311,7 @@ This section defines how to execute the implementation plan in a fully **unatten
       "max_attempts": 40,
       "poll_interval_seconds": 30,
       "timeout_minutes": 20,
-      "command": "./scripts/wait-for-postgres.sh",
+      "command": "./scripts/wait-for-postgresql.sh",
       "verification": {
         "method": "az_postgres_state",
         "expected_state": "Ready"
@@ -3385,14 +3385,14 @@ This section defines how to execute the implementation plan in a fully **unatten
       "id": "D3",
       "phase": "D",
       "name": "Configure database connection",
-      "description": "Create /etc/flask-app/database.env with connection string",
+      "description": "Create /etc/flask-app/app.env with connection string",
       "status": "pending",
       "required": true,
       "max_attempts": 3,
       "verification": {
         "method": "ssh_file_exists",
         "host": "vm-app",
-        "path": "/etc/flask-app/database.env"
+        "path": "/etc/flask-app/app.env"
       },
       "depends_on": ["D2", "C1"]
     },
@@ -4201,6 +4201,360 @@ reference/flask-bicep/
     ├── nginx-error.log
     └── flask-app-journal.log
 ```
+
+---
+
+## Errata and Lessons Learned
+
+This section documents corrections and improvements discovered during the first execution of this implementation plan. Future executions should incorporate these changes.
+
+### File Structure Changes
+
+The actual file structure evolved differently from the original plan:
+
+| Original Plan | Actual Implementation | Reason |
+|---------------|----------------------|--------|
+| `scripts/init-secrets.sh` | `infrastructure/scripts/init-secrets.sh` | Co-locate with infrastructure |
+| `scripts/validate-password.sh` | `infrastructure/scripts/validate-password.sh` | Co-locate with infrastructure |
+| `scripts/wait-for-postgres.sh` | `scripts/wait-for-postgresql.sh` | Use full service name |
+| `scripts/wait-for-cloud-init.sh` | `scripts/wait-for-vms-cloud-init.sh` | Clarify scope (all VMs) |
+| `scripts/wait-for-app.sh` | `scripts/wait-for-flask-app.sh` | Clarify which app |
+| `cloud-init/` (root level) | `infrastructure/cloud-init/` | Co-locate with Bicep |
+| `cloud-init/app-server.yaml` | `infrastructure/cloud-init/app.yaml` | Consistent naming |
+| `/etc/flask-app/database.env` | `/etc/flask-app/app.env` | More general-purpose name |
+
+**Updated File Structure:**
+
+```
+reference/flask-bicep/
+├── IMPLEMENTATION-PLAN.md          # This document (includes all lessons learned)
+├── README.md                       # Quick-start guide and naming conventions
+├── .gitignore
+│
+├── deploy-all.sh                   # Orchestrates full deployment
+├── delete-all.sh                   # Tears down all resources
+├── config.sh                       # Central configuration (all shared variables)
+│
+├── infrastructure/
+│   ├── provision.sh                # Main provisioning script
+│   ├── main.bicep                  # Bicep entry point
+│   ├── parameters.example.json     # Template (no secrets)
+│   ├── parameters.json             # Generated secrets (gitignored)
+│   ├── modules/
+│   │   ├── network.bicep
+│   │   ├── bastion.bicep
+│   │   ├── proxy.bicep
+│   │   ├── app.bicep
+│   │   └── database.bicep
+│   ├── cloud-init/                 # Extracted from Bicep modules
+│   │   ├── bastion.yaml
+│   │   ├── proxy.yaml
+│   │   └── app.yaml
+│   └── scripts/
+│       ├── init-secrets.sh
+│       └── validate-password.sh
+│
+├── scripts/                        # Deployment-phase scripts
+│   ├── wait-for-postgresql.sh
+│   ├── wait-for-vms-cloud-init.sh
+│   ├── wait-for-flask-app.sh
+│   └── verification-tests.sh
+│
+├── deploy/
+│   └── deploy.sh
+│
+├── application/
+│   ├── app.py
+│   ├── models.py
+│   ├── requirements.txt
+│   ├── wsgi.py
+│   └── templates/
+│
+└── execution-state.json            # Task tracker (reset between runs)
+```
+
+### Critical Issues Discovered
+
+These issues caused deployment failures and required fixes:
+
+#### Issue 1: Cloud-init `users:` Directive Replaces Default Users
+
+**Problem:** Using `users:` in cloud-init YAML removes the `azureuser` account Azure creates by default.
+
+**Symptom:** `Permission denied (publickey)` when SSH to app VM.
+
+**Solution:** Use `useradd` in `runcmd` instead of `users:` directive:
+```yaml
+runcmd:
+  - useradd --system --shell /usr/sbin/nologin --no-create-home flask-app
+```
+
+#### Issue 2: SSH ProxyJump (`-J`) Host Key Verification Failures
+
+**Problem:** SSH options like `-o StrictHostKeyChecking=no` don't propagate to the proxy connection when using `-J`.
+
+**Symptom:** `Host key verification failed` or script hangs waiting for confirmation.
+
+**Solution:** Use explicit `ProxyCommand` instead of `-J`:
+```bash
+SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
+PROXY_CMD="ssh $SSH_OPTS -W %h:%p azureuser@$BASTION_IP"
+ssh $SSH_OPTS -o "ProxyCommand=$PROXY_CMD" azureuser@vm-app "command"
+```
+
+#### Issue 3: Database Not Created Automatically
+
+**Problem:** PostgreSQL Flexible Server was provisioned but no database existed within it.
+
+**Symptom:** `database "flask" does not exist` error.
+
+**Solution:** Add database resource in `database.bicep`:
+```bicep
+resource flaskDatabase 'Microsoft.DBforPostgreSQL/flexibleServers/databases@2022-12-01' = {
+  parent: postgresServer
+  name: 'flask'
+  properties: { charset: 'UTF8', collation: 'en_US.utf8' }
+}
+```
+
+#### Issue 4: Bicep Linter Warnings
+
+**Problem:** Unused parameters and literal values triggered Bicep linter warnings.
+
+**Symptoms:**
+- `Warning no-unused-params: Parameter "baseName" is declared but never used`
+- `Warning adminusername-should-not-be-literal: Property 'adminUserName' should not use a literal value`
+
+**Solution:**
+1. Remove unused `baseName` parameter from all modules
+2. Parameterize admin username with default value:
+```bicep
+param adminUsername string = 'azureuser'
+```
+
+#### Issue 5: Cloud-init Embedded in Bicep Files
+
+**Problem:** Cloud-init YAML embedded as multi-line strings in Bicep made files hard to maintain and test.
+
+**Solution:** Use `loadTextContent()` to load external YAML files:
+```bicep
+var cloudInitBastion = loadTextContent('../cloud-init/bastion.yaml')
+```
+
+#### Issue 6: Overly Specific Environment File Naming
+
+**Problem:** Environment file named `database.env` implied limited scope.
+
+**Solution:** Renamed to `app.env` for general-purpose configuration.
+
+#### Issue 7: Inconsistent Script Naming
+
+**Problem:** Scripts had inconsistent naming patterns (`wait-for-postgres.sh` vs `wait-for-cloud-init.sh`).
+
+**Solution:** Established naming convention:
+- Use full names: `wait-for-postgresql.sh` (not `postgres`)
+- Include scope: `wait-for-vms-cloud-init.sh` (not just `cloud-init`)
+- Co-locate related files: Infrastructure scripts in `infrastructure/scripts/`
+
+#### Issue 8: Hardcoded File List in Deployment
+
+**Problem:** Deployment script listed individual files to copy, requiring edits for new files.
+
+**Solution:** Use recursive copy:
+```bash
+scp -r $SSH_OPTS -o "ProxyCommand=$PROXY_CMD" "$APP_DIR"/* azureuser@vm-app:/opt/flask-app/
+```
+
+#### Issue 9: Duplicated Logic in Orchestration Script
+
+**Problem:** `deploy-all.sh` duplicated prerequisite checks and Azure CLI calls from `provision.sh`.
+
+**Solution:** Orchestration scripts delegate to specialized scripts rather than duplicating logic.
+
+#### Issue 10: Redundant Validation Across Scripts
+
+**Problem:** `deploy.sh` called `validate-password.sh` even though `provision.sh` already validated.
+
+**Solution:** Validate at source only. Downstream scripts trust upstream validation.
+
+#### Issue 11: Systemd Unit Files Do Not Support Inline Comments
+
+**Problem:** Systemd parsed inline comments as configuration values, causing service startup failures.
+
+**Symptom:** `Failed to enable unit: "#" is not a valid unit name`
+
+**Root cause:** Systemd unit files do NOT support inline comments. This was wrong:
+```ini
+After=network.target    # Start after network is available
+Type=simple             # Gunicorn runs in foreground
+```
+
+Systemd interpreted `#`, `Start`, `after`, `network`, `is`, `available` as additional dependencies.
+
+**Solution:** Move all comments to their own lines:
+```ini
+# Start after network is available
+After=network.target
+
+# Gunicorn runs in foreground
+Type=simple
+```
+
+**File affected:** `infrastructure/cloud-init/app.yaml`
+
+**Key takeaway:** In systemd unit files, comments must be on their own lines starting with `#` or `;`. Never place comments after directives on the same line.
+
+#### Issue 12: SCP Preserves Restrictive File Permissions
+
+**Problem:** `scp` copied local file permissions (600) to remote server, preventing the `flask-app` service user from reading application files.
+
+**Symptom:** `PermissionError: [Errno 13] Permission denied: '/opt/flask-app/wsgi.py'`
+
+**Root cause:** Local development files had restrictive permissions (`rw-------`). After SCP, files were owned by `azureuser:azureuser` with 600 permissions - the `flask-app` group couldn't read them.
+
+**Solution:** Set explicit ownership and permissions after copying:
+```bash
+# Copy files
+scp -r $SSH_OPTS -o "ProxyCommand=$PROXY_CMD" "$APP_DIR"/* azureuser@vm-app:/opt/flask-app/
+
+# Fix permissions so flask-app group can read
+ssh_via_bastion "$VM_APP" "chown azureuser:flask-app /opt/flask-app/*.py /opt/flask-app/*.txt; chmod 640 /opt/flask-app/*.py /opt/flask-app/*.txt"
+```
+
+**File affected:** `deploy/deploy.sh`
+
+**Key takeaway:** When deploying files via SCP to be run by a different user/group:
+1. Always set explicit ownership and permissions after copying
+2. Use `chown user:group` to set proper ownership
+3. Use `chmod 640` (rw-r-----) so owner can read/write, group can read
+
+### Execution State JSON Issues
+
+The `execution-state.json` was not properly maintained during execution:
+
+1. **Tasks never updated** - All tasks remained `"status": "pending"` even after completion
+2. **Timestamps not recorded** - `started_at`, `completed_at`, `duration_seconds` were never populated
+3. **Errors not logged** - The `errors_log` array remained empty despite encountering issues
+
+**Recommendations for future executions:**
+
+1. Update `execution-state.json` **immediately** after each task completes or fails
+2. Use actual system timestamps (`date -u +"%Y-%m-%dT%H:%M:%SZ"`)
+3. Log all errors with root cause analysis in the `errors_log` array
+4. Calculate and record `duration_seconds` for each task
+
+### Script Organization Lessons
+
+1. **Orchestration scripts should delegate, not duplicate** - `deploy-all.sh` now calls specialized scripts rather than reimplementing their logic
+2. **Validate at source, not every consumer** - `deploy.sh` no longer calls `validate-password.sh` since `provision.sh` already validated
+3. **Use full, unambiguous names** - `wait-for-postgresql.sh` instead of `wait-for-postgres.sh`
+4. **Co-locate related files** - Infrastructure scripts belong in `infrastructure/scripts/`
+5. **Centralize configuration** - All shared variables defined in `config.sh` at project root, sourced by all scripts
+
+### Central Configuration (config.sh)
+
+All scripts now source `config.sh` which provides:
+
+**Variables:**
+- Project identity: `PROJECT`, `ENVIRONMENT`, `LOCATION`
+- Resource names: `RESOURCE_GROUP`, `POSTGRES_SERVER`, `POSTGRES_HOST`, `DATABASE_NAME`
+- VM names: `VM_BASTION`, `VM_PROXY`, `VM_APP`
+- SSH configuration: `SSH_OPTS`, `VM_ADMIN_USER`
+- Timing: `POSTGRES_POLL_INTERVAL`, `POSTGRES_MAX_ATTEMPTS`, `APP_POLL_INTERVAL`, `APP_MAX_ATTEMPTS`
+
+**Helper functions:**
+- `get_vm_public_ip "vm-name"` - Query public IP from Azure
+- `ssh_via_bastion "target-vm" "command"` - SSH through bastion with proper options
+- `scp_via_bastion "source" "target:path"` - SCP through bastion
+
+**Benefits:**
+- Single source of truth for all resource names
+- Easy environment switching (change `PROJECT` and `ENVIRONMENT`)
+- Consistent SSH handling across all scripts
+- Eliminates hardcoded values scattered across 11+ files
+
+### Cloud-init Best Practices
+
+1. **Extract from Bicep** - Use `loadTextContent()` to keep cloud-init in separate YAML files
+2. **Add comprehensive comments** - Cloud-init YAML files should be self-documenting
+3. **Never use `users:` on Azure** - It replaces default users instead of adding to them
+4. **Test cloud-init independently** - Separate YAML files enable testing without redeploying VMs
+5. **Systemd unit files: no inline comments** - Comments must be on their own lines, not after directives (see Issue 11)
+
+### Test Report Deficiencies
+
+The final test report generated during execution was inadequate. Future executions should produce a comprehensive report including:
+
+**Missing from current report:**
+
+1. **Execution timeline** - No timestamps showing when each phase started/completed
+2. **Duration metrics** - No tracking of how long each task took
+3. **Resource inventory** - No listing of created Azure resources with their IDs
+4. **Cost information** - No estimated or actual cost breakdown
+5. **Error history** - No record of errors encountered and how they were resolved
+6. **Configuration summary** - No record of parameters used (VM sizes, regions, etc.)
+
+**Required test report structure:**
+
+```markdown
+# Flask-Bicep Deployment Report
+
+## Execution Summary
+| Metric | Value |
+|--------|-------|
+| Execution ID | flask-bicep-YYYYMMDD-HHMMSS |
+| Status | PASS / PARTIAL / FAIL |
+| Total Duration | X minutes Y seconds |
+| Start Time | ISO 8601 timestamp |
+| End Time | ISO 8601 timestamp |
+
+## Phase Timeline
+| Phase | Name | Duration | Status |
+|-------|------|----------|--------|
+| A | Prerequisites & Setup | Xs | ✅ |
+| B | Infrastructure Deployment | Xm Xs | ✅ |
+| ... | ... | ... | ... |
+
+## Task Results
+| ID | Task | Duration | Status | Notes |
+|----|------|----------|--------|-------|
+| A1 | Verify Azure CLI | 2s | ✅ | v2.55.0 |
+| ... | ... | ... | ... | ... |
+
+## Resources Created
+| Resource Type | Name | Location | SKU/Size |
+|---------------|------|----------|----------|
+| Resource Group | rg-flask-bicep-dev | swedencentral | - |
+| Virtual Machine | vm-bastion | swedencentral | Standard_B1s |
+| ... | ... | ... | ... |
+
+## Verification Tests
+| Test | Expected | Actual | Status |
+|------|----------|--------|--------|
+| Health endpoint | {"status": "ok"} | {"status": "ok"} | ✅ |
+| ... | ... | ... | ... |
+
+## Errors Encountered
+| Time | Task | Error | Resolution |
+|------|------|-------|------------|
+| (none if clean run) | | | |
+
+## Cost Estimate
+| Resource | Monthly Cost |
+|----------|--------------|
+| VMs (3x Standard_B1s) | ~$30 |
+| PostgreSQL (B1ms) | ~$15 |
+| ... | ... |
+| **Total** | **~$50/month** |
+
+## Configuration Used
+- Azure Region: swedencentral
+- VM Admin User: azureuser
+- PostgreSQL Version: 16
+- Flask Version: 3.0.x
+```
+
+**Recommendation:** The `verification-tests.sh` script or a separate `generate-report.sh` script should produce this comprehensive report at the end of execution, populating data from `execution-state.json` and Azure CLI queries.
 
 ---
 

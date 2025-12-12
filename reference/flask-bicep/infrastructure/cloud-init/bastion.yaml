@@ -1,0 +1,59 @@
+#cloud-config
+# =============================================================================
+# BASTION HOST CONFIGURATION
+# =============================================================================
+# Purpose: Secure jump host for SSH access to internal VMs
+# Security: Hardened SSH, brute-force protection via fail2ban
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# PACKAGE MANAGEMENT
+# -----------------------------------------------------------------------------
+# Update package lists and upgrade all installed packages to latest versions
+# This ensures we start with a fully patched system
+package_update: true
+package_upgrade: true
+
+# Install security-related packages
+packages:
+  - fail2ban   # Intrusion prevention: bans IPs after failed login attempts
+  - ufw        # Uncomplicated Firewall: simplified iptables management
+
+# -----------------------------------------------------------------------------
+# CONFIGURATION FILES
+# -----------------------------------------------------------------------------
+write_files:
+  # ---------------------------------------------------------------------------
+  # Fail2ban configuration for SSH protection
+  # ---------------------------------------------------------------------------
+  # Monitors SSH login attempts and temporarily bans IPs with too many failures
+  - path: /etc/fail2ban/jail.local
+    content: |
+      [sshd]
+      enabled = true
+      port = ssh
+      filter = sshd
+      logpath = /var/log/auth.log
+      maxretry = 3      # Ban after 3 failed attempts
+      bantime = 3600    # Ban duration: 1 hour (3600 seconds)
+      findtime = 600    # Time window: 10 minutes (600 seconds)
+
+  # ---------------------------------------------------------------------------
+  # SSH server hardening configuration
+  # ---------------------------------------------------------------------------
+  # Placed in sshd_config.d/ to override default settings
+  - path: /etc/ssh/sshd_config.d/hardening.conf
+    content: |
+      PasswordAuthentication no   # Disable password login (SSH keys only)
+      PermitRootLogin no          # Prevent direct root login
+      PubkeyAuthentication yes    # Enable SSH key authentication
+      MaxAuthTries 3              # Disconnect after 3 failed auth attempts
+
+# -----------------------------------------------------------------------------
+# RUNTIME COMMANDS
+# -----------------------------------------------------------------------------
+# Commands executed in order after packages are installed and files are written
+runcmd:
+  - systemctl enable fail2ban   # Enable fail2ban to start on boot
+  - systemctl start fail2ban    # Start fail2ban immediately
+  - systemctl restart sshd      # Restart SSH to apply hardening config

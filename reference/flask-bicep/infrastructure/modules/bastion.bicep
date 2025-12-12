@@ -16,43 +16,11 @@ param asgId string
 @secure()
 param sshPublicKey string
 
-@description('Base name for resources')
-param baseName string
+@description('Admin username for VM')
+param adminUsername string = 'azureuser'
 
-// Cloud-init configuration for bastion
-var cloudInitBastion = '''
-#cloud-config
-package_update: true
-package_upgrade: true
-
-packages:
-  - fail2ban
-  - ufw
-
-write_files:
-  - path: /etc/fail2ban/jail.local
-    content: |
-      [sshd]
-      enabled = true
-      port = ssh
-      filter = sshd
-      logpath = /var/log/auth.log
-      maxretry = 3
-      bantime = 3600
-      findtime = 600
-
-  - path: /etc/ssh/sshd_config.d/hardening.conf
-    content: |
-      PasswordAuthentication no
-      PermitRootLogin no
-      PubkeyAuthentication yes
-      MaxAuthTries 3
-
-runcmd:
-  - systemctl enable fail2ban
-  - systemctl start fail2ban
-  - systemctl restart sshd
-'''
+// Cloud-init configuration loaded from external file
+var cloudInitBastion = loadTextContent('../cloud-init/bastion.yaml')
 
 // Public IP for bastion
 resource publicIp 'Microsoft.Network/publicIPAddresses@2023-05-01' = {
@@ -104,13 +72,13 @@ resource vm 'Microsoft.Compute/virtualMachines@2023-07-01' = {
     }
     osProfile: {
       computerName: vmName
-      adminUsername: 'azureuser'
+      adminUsername: adminUsername
       linuxConfiguration: {
         disablePasswordAuthentication: true
         ssh: {
           publicKeys: [
             {
-              path: '/home/azureuser/.ssh/authorized_keys'
+              path: '/home/${adminUsername}/.ssh/authorized_keys'
               keyData: sshPublicKey
             }
           ]

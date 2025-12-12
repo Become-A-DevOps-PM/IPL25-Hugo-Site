@@ -19,9 +19,6 @@ param adminUsername string
 @secure()
 param adminPassword string
 
-@description('Base name for resources')
-param baseName string
-
 // Private DNS Zone for PostgreSQL
 resource privateDnsZone 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: '${serverName}.private.postgres.database.azure.com'

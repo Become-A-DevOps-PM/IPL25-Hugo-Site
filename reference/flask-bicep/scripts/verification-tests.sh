@@ -1,23 +1,71 @@
 #!/bin/bash
-# Comprehensive verification test suite for Flask Bicep deployment
+# =============================================================================
+# VERIFICATION TEST SUITE FOR FLASK-BICEP DEPLOYMENT
+# =============================================================================
+# Comprehensive end-to-end tests to verify the deployment is working correctly.
+#
+# Test categories:
+#
+# Application Tests (E1-E4):
+#   E1: Health endpoint         - GET /health returns {"status": "ok"}
+#   E2: Homepage                - GET / contains "Flask Demo Application"
+#   E3: Create entry            - POST / creates a new database entry
+#   E4: List entries            - GET /entries returns JSON array
+#
+# Security Tests (E5-E6):
+#   E5: App server no public IP - vm-app should not be directly accessible
+#   E6: Database no public access - PostgreSQL public network access disabled
+#
+# Database Tests (E7-E8):
+#   E7: Database connectivity   - App can connect to PostgreSQL
+#   E8: Entries table exists    - SQLAlchemy created the schema
+#
+# Test execution:
+#   - All tests run sequentially
+#   - Results collected and displayed as markdown table
+#   - Exit code equals number of failed tests (0 = all passed)
+#
+# SSH access pattern:
+#   - Database tests require SSH to app server
+#   - Uses ProxyCommand through bastion (not -J) for reliability
+#   - See LESSONS-LEARNED.md Issue 2 for details
+#
+# Classification:
+#   - PASS: All tests passed (exit 0)
+#   - PARTIAL: More passes than failures
+#   - FAIL: More failures than passes
+#
+# Usage:
+#   ./scripts/verification-tests.sh
+#
+# Prerequisites:
+#   - Infrastructure deployed (deploy-all.sh completed)
+#   - Azure CLI logged in
+#   - jq installed (for JSON parsing)
+# =============================================================================
+
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
-RG="rg-flask-bicep-dev"
-POSTGRES_SERVER="psql-flask-bicep-dev"
+# Source central configuration
+source "$PROJECT_DIR/config.sh"
 
-# Get IPs
-BASTION_IP=$(az vm show -g $RG -n vm-bastion --show-details -o tsv --query publicIps)
-PROXY_IP=$(az vm show -g $RG -n vm-proxy --show-details -o tsv --query publicIps)
+# -----------------------------------------------------------------------------
+# Get VM IP Addresses
+# -----------------------------------------------------------------------------
+BASTION_IP=$(get_vm_public_ip "$VM_BASTION")
+PROXY_IP=$(get_vm_public_ip "$VM_PROXY")
 
-SSH_OPTS="-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o LogLevel=ERROR"
-
+# -----------------------------------------------------------------------------
+# Test Framework
+# -----------------------------------------------------------------------------
 PASS_COUNT=0
 FAIL_COUNT=0
 RESULTS=""
 
+# Run a single test and record the result
 run_test() {
     local name="$1"
     local result="$2"
@@ -37,6 +85,12 @@ run_test() {
 
 echo "=== Running Verification Tests ==="
 echo ""
+
+# -----------------------------------------------------------------------------
+# Application Tests (E1-E4)
+# -----------------------------------------------------------------------------
+# These tests verify the Flask application is responding correctly through
+# the nginx reverse proxy. All requests go: curl -> nginx (proxy) -> Gunicorn (app)
 
 # E1: Health endpoint
 echo "Testing health endpoint..."
@@ -70,9 +124,16 @@ else
     run_test "List entries (/entries)" "empty" "has_entries" "No entries found"
 fi
 
+# -----------------------------------------------------------------------------
+# Security Tests (E5-E6)
+# -----------------------------------------------------------------------------
+# These tests verify the infrastructure security configuration.
+# The app server should only be reachable through the reverse proxy.
+# The database should only be reachable from the app server's subnet.
+
 # E5: App server no public IP
 echo "Testing app server security..."
-APP_PUBLIC_IP=$(az vm show -g $RG -n vm-app --show-details -o tsv --query publicIps 2>/dev/null)
+APP_PUBLIC_IP=$(az vm show -g "$RESOURCE_GROUP" -n "$VM_APP" --show-details -o tsv --query publicIps 2>/dev/null)
 if [ -z "$APP_PUBLIC_IP" ] || [ "$APP_PUBLIC_IP" = "None" ]; then
     run_test "App server no public IP" "none" "none" "Security verified"
 else
@@ -81,17 +142,22 @@ fi
 
 # E6: Database no public access
 echo "Testing database security..."
-DB_PUBLIC=$(az postgres flexible-server show -g $RG -n $POSTGRES_SERVER --query network.publicNetworkAccess -o tsv 2>/dev/null || echo "Unknown")
+DB_PUBLIC=$(az postgres flexible-server show -g "$RESOURCE_GROUP" -n "$POSTGRES_SERVER" --query network.publicNetworkAccess -o tsv 2>/dev/null || echo "Unknown")
 if [ "$DB_PUBLIC" = "Disabled" ]; then
     run_test "Database no public access" "Disabled" "Disabled" "Security verified"
 else
     run_test "Database no public access" "$DB_PUBLIC" "Disabled" "Public access found"
 fi
 
+# -----------------------------------------------------------------------------
+# Database Tests (E7-E8)
+# -----------------------------------------------------------------------------
+# These tests verify the Flask app can connect to PostgreSQL and that
+# SQLAlchemy created the expected schema. Requires SSH access to app server.
+
 # E7: Database connectivity
 echo "Testing database connectivity..."
-DB_TEST=$(ssh $SSH_OPTS -J azureuser@$BASTION_IP azureuser@vm-app \
-    "source /etc/flask-app/database.env && psql \"\$DATABASE_URL\" -c 'SELECT 1;' 2>&1" 2>/dev/null)
+DB_TEST=$(ssh_via_bastion "$VM_APP" "source /etc/flask-app/app.env && psql \"\$DATABASE_URL\" -c 'SELECT 1;' 2>&1" 2>/dev/null)
 if echo "$DB_TEST" | grep -q "1 row"; then
     run_test "Database connectivity" "connected" "connected" "SELECT 1 succeeded"
 else
@@ -100,15 +166,16 @@ fi
 
 # E8: Entries table exists
 echo "Testing entries table..."
-TABLE_TEST=$(ssh $SSH_OPTS -J azureuser@$BASTION_IP azureuser@vm-app \
-    "source /etc/flask-app/database.env && psql \"\$DATABASE_URL\" -c '\\dt entries' 2>&1" 2>/dev/null)
+TABLE_TEST=$(ssh_via_bastion "$VM_APP" "source /etc/flask-app/app.env && psql \"\$DATABASE_URL\" -c '\\dt entries' 2>&1" 2>/dev/null)
 if echo "$TABLE_TEST" | grep -q "entries"; then
     run_test "Entries table exists" "exists" "exists" "Table found in database"
 else
     run_test "Entries table exists" "missing" "exists" "Table not found"
 fi
 
-# Generate summary
+# -----------------------------------------------------------------------------
+# Test Summary
+# -----------------------------------------------------------------------------
 echo ""
 echo "=== Test Summary ==="
 TOTAL=$((PASS_COUNT + FAIL_COUNT))

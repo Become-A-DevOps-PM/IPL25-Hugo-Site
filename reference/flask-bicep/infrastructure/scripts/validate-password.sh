@@ -3,8 +3,8 @@
 # Can be called with password as argument, or reads from parameters.json
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-PARAMS_FILE="$PROJECT_DIR/infrastructure/parameters.json"
+INFRA_DIR="$(dirname "$SCRIPT_DIR")"
+PARAMS_FILE="$INFRA_DIR/parameters.json"
 
 # Get password from argument or parameters.json
 if [ -n "$1" ]; then

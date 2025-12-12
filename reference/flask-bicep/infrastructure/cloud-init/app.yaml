@@ -1,0 +1,136 @@
+#cloud-config
+# =============================================================================
+# APPLICATION SERVER CONFIGURATION
+# =============================================================================
+# Purpose: Flask application server with Gunicorn WSGI server
+# Security: Runs as dedicated non-login user, no public IP
+# Database: Connects to PostgreSQL via environment file
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# PACKAGE MANAGEMENT
+# -----------------------------------------------------------------------------
+package_update: true
+package_upgrade: true
+
+packages:
+  - python3            # Python 3 interpreter
+  - python3-pip        # Python package installer
+  - python3-venv       # Virtual environment support
+  - postgresql-client  # psql CLI for database connectivity testing
+
+# =============================================================================
+# IMPORTANT: User Creation Strategy
+# =============================================================================
+# We create the flask-app user in runcmd instead of using the cloud-init
+# 'users:' directive. This is critical because:
+#
+#   - The 'users:' directive REPLACES the default user list
+#   - Azure creates 'azureuser' as the default admin user
+#   - Using 'users:' would DELETE azureuser, breaking SSH access!
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# CONFIGURATION FILES
+# -----------------------------------------------------------------------------
+write_files:
+  # ---------------------------------------------------------------------------
+  # Systemd service unit for Flask application
+  # ---------------------------------------------------------------------------
+  # Manages the Flask app as a system service with automatic restart
+  #
+  # IMPORTANT: Systemd does NOT support inline comments!
+  # Comments must be on their own lines, not after directives.
+  - path: /etc/systemd/system/flask-app.service
+    content: |
+      [Unit]
+      Description=Flask Application
+      # Start after network is available
+      After=network.target
+
+      [Service]
+      # Gunicorn runs in foreground
+      Type=simple
+      # Run as dedicated non-root user
+      User=flask-app
+      Group=flask-app
+      WorkingDirectory=/opt/flask-app
+
+      # Load environment variables from secure file (DATABASE_URL, etc.)
+      EnvironmentFile=/etc/flask-app/app.env
+
+      # Start Gunicorn WSGI server
+      # --bind 0.0.0.0:5001: Listen on all interfaces, port 5001
+      # wsgi:app: Import 'app' from wsgi.py
+      ExecStart=/opt/flask-app/venv/bin/gunicorn --bind 0.0.0.0:5001 wsgi:app
+
+      # Restart on any exit
+      Restart=always
+      # Wait 5 seconds between restarts
+      RestartSec=5
+
+      [Install]
+      # Start in normal multi-user mode
+      WantedBy=multi-user.target
+
+# -----------------------------------------------------------------------------
+# RUNTIME COMMANDS
+# -----------------------------------------------------------------------------
+runcmd:
+  # ---------------------------------------------------------------------------
+  # Create dedicated service account for Flask application
+  # ---------------------------------------------------------------------------
+  # --system: Create as system user (UID below 1000, no aging)
+  # --shell /usr/sbin/nologin: Prevent interactive login
+  # --no-create-home: Don't create home directory
+  - useradd --system --shell /usr/sbin/nologin --no-create-home flask-app
+
+  # ---------------------------------------------------------------------------
+  # Create application directories
+  # ---------------------------------------------------------------------------
+  - mkdir -p /opt/flask-app      # Application code and virtualenv
+  - mkdir -p /etc/flask-app      # Configuration files (database credentials)
+
+  # ---------------------------------------------------------------------------
+  # Set up Python virtual environment
+  # ---------------------------------------------------------------------------
+  # Create isolated Python environment to avoid system package conflicts
+  - python3 -m venv /opt/flask-app/venv
+
+  # Upgrade pip and install wheel/setuptools for faster package installation
+  - /opt/flask-app/venv/bin/pip install --upgrade pip wheel setuptools
+
+  # ---------------------------------------------------------------------------
+  # Set ownership and permissions for application directory
+  # ---------------------------------------------------------------------------
+  # Owner: azureuser (for deployment via SSH)
+  # Group: flask-app (for service to read files)
+  - chown -R azureuser:flask-app /opt/flask-app
+
+  # 775 = rwxrwxr-x (owner/group can write, others can read/execute)
+  # Allows azureuser to deploy and flask-app service to run
+  - chmod 775 /opt/flask-app
+  - chmod 775 /opt/flask-app/venv
+
+  # Add azureuser to flask-app group for shared access
+  - usermod -aG flask-app azureuser
+
+  # ---------------------------------------------------------------------------
+  # Set up secure configuration directory
+  # ---------------------------------------------------------------------------
+  # Root owns the config dir, flask-app group can read
+  - chown root:flask-app /etc/flask-app
+  - chmod 750 /etc/flask-app    # rwxr-x--- (root full, group read/execute)
+
+  # Create empty app.env file with secure permissions
+  # This will be populated by deploy.sh with environment variables (DATABASE_URL, etc.)
+  - touch /etc/flask-app/app.env
+  - chown root:flask-app /etc/flask-app/app.env
+  - chmod 640 /etc/flask-app/app.env  # rw-r----- (root write, group read)
+
+  # ---------------------------------------------------------------------------
+  # Reload systemd to recognize new service file
+  # ---------------------------------------------------------------------------
+  # Note: Service is NOT started here - deploy.sh will start it after
+  # copying application files and configuring database connection
+  - systemctl daemon-reload

@@ -2,9 +2,9 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
-PARAMS_EXAMPLE="$PROJECT_DIR/infrastructure/parameters.example.json"
-PARAMS_FILE="$PROJECT_DIR/infrastructure/parameters.json"
+INFRA_DIR="$(dirname "$SCRIPT_DIR")"
+PARAMS_EXAMPLE="$INFRA_DIR/parameters.example.json"
+PARAMS_FILE="$INFRA_DIR/parameters.json"
 
 # Parse arguments
 PASSWORD=""

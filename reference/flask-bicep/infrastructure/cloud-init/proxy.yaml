@@ -1,0 +1,89 @@
+#cloud-config
+# =============================================================================
+# REVERSE PROXY CONFIGURATION
+# =============================================================================
+# Purpose: Public-facing web server that terminates SSL and forwards requests
+#          to the internal Flask application server
+# Traffic flow: Internet -> HTTPS:443 -> nginx -> HTTP:5001 -> vm-app
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# PACKAGE MANAGEMENT
+# -----------------------------------------------------------------------------
+package_update: true
+package_upgrade: true
+
+packages:
+  - nginx      # High-performance web server and reverse proxy
+  - openssl    # SSL/TLS toolkit for generating self-signed certificates
+
+# -----------------------------------------------------------------------------
+# CONFIGURATION FILES
+# -----------------------------------------------------------------------------
+write_files:
+  # ---------------------------------------------------------------------------
+  # Nginx site configuration for Flask application
+  # ---------------------------------------------------------------------------
+  - path: /etc/nginx/sites-available/flask-app
+    content: |
+      # -----------------------------------------------------------------------
+      # HTTP Server Block - Redirect all HTTP traffic to HTTPS
+      # -----------------------------------------------------------------------
+      server {
+          listen 80;              # Listen on port 80 (HTTP)
+          server_name _;          # Match any hostname
+          return 301 https://$host$request_uri;  # 301 permanent redirect to HTTPS
+      }
+
+      # -----------------------------------------------------------------------
+      # HTTPS Server Block - SSL termination and reverse proxy
+      # -----------------------------------------------------------------------
+      server {
+          listen 443 ssl;         # Listen on port 443 with SSL
+          server_name _;          # Match any hostname
+
+          # SSL Certificate paths (self-signed, created in runcmd)
+          ssl_certificate /etc/nginx/ssl/nginx.crt;
+          ssl_certificate_key /etc/nginx/ssl/nginx.key;
+
+          # SSL Security settings
+          ssl_protocols TLSv1.2 TLSv1.3;    # Only allow secure TLS versions
+          ssl_ciphers HIGH:!aNULL:!MD5;      # Strong ciphers, exclude weak ones
+
+          # Reverse proxy configuration
+          location / {
+              # Forward requests to Flask app on internal VM
+              # 'vm-app' resolves via Azure private DNS
+              proxy_pass http://vm-app:5001;
+
+              # Preserve original request information for the backend
+              proxy_set_header Host $host;                          # Original hostname
+              proxy_set_header X-Real-IP $remote_addr;              # Client's real IP
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;  # Proxy chain
+              proxy_set_header X-Forwarded-Proto $scheme;           # Original protocol (https)
+          }
+      }
+
+# -----------------------------------------------------------------------------
+# RUNTIME COMMANDS
+# -----------------------------------------------------------------------------
+runcmd:
+  # Create directory for SSL certificates
+  - mkdir -p /etc/nginx/ssl
+
+  # Generate self-signed SSL certificate (valid for 365 days)
+  # -x509: Output self-signed certificate
+  # -nodes: No passphrase (allows nginx to start without manual intervention)
+  # -days 365: Certificate validity period
+  # -newkey rsa:2048: Generate new 2048-bit RSA key
+  # -subj: Certificate subject (CN=Common Name, O=Organization, C=Country)
+  - openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx.key -out /etc/nginx/ssl/nginx.crt -subj "/CN=flask-app/O=Learning/C=SE"
+
+  # Enable the Flask app site configuration
+  - ln -sf /etc/nginx/sites-available/flask-app /etc/nginx/sites-enabled/flask-app
+
+  # Disable the default nginx welcome page
+  - rm -f /etc/nginx/sites-enabled/default
+
+  # Reload nginx to apply new configuration
+  - systemctl reload nginx
