@@ -1,0 +1,26 @@
+# Secrets (NEVER commit)
+infrastructure/parameters.json
+
+# Local development database
+application/local.db
+*.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Execution artifacts (may contain sensitive info)
+execution-state.json
+execution-log.md
+test-report.md
+errors/
+diagnostics/
