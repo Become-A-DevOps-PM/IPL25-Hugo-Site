@@ -1,9 +1,34 @@
-# Flask-Bicep Reference Implementation
+# Stage IaaS Flask
 
-A complete Flask application deployment on Azure using Bicep infrastructure-as-code.
+A complete Flask application deployment on Azure using pure IaaS components and Bicep infrastructure-as-code.
+
+## Stage Naming Convention
+
+This reference implementation follows a **stage-based naming convention** for progressive architecture complexity:
+
+| Stage | Description | Key Characteristics |
+|-------|-------------|---------------------|
+| `stage-iaas-{app}` | **Pure IaaS baseline** | VMs only, self-managed networking, no managed services |
+| `stage-hybrid-{app}` | IaaS + managed secrets | Adds Azure Key Vault for secrets management |
+| `stage-managed-{app}` | Managed networking | Adds Azure Bastion, Application Gateway |
+| `stage-scalable-{app}` | Auto-scaling | Adds VM Scale Sets, load balancing |
+| `stage-paas-{app}` | Full PaaS | App Service, fully managed database |
+
+**This implementation (`stage-iaas-flask`)** represents the pure IaaS baseline:
+
+- All compute runs on self-managed VMs
+- Networking uses NSGs and ASGs (no Azure Firewall or WAF)
+- Database uses Azure PostgreSQL Flexible Server (the one PaaS exception for practicality)
+- No Key Vault, no managed identities, no Azure Bastion service
+- Traditional Linux administration (systemd, nginx config files)
+
+This stage serves as the **foundation** that all other stages build upon. Depending on the course and audience, different stages may serve as the capstone project.
+
+The `{app}` suffix indicates the application type (e.g., `flask`, `django`, `node`), allowing the same architecture patterns to be demonstrated with different technology stacks.
 
 ## Table of Contents
 
+- [Stage Naming Convention](#stage-naming-convention)
 - [Architecture](#architecture)
 - [Quick Start](#quick-start)
 - [Project Structure](#project-structure)
@@ -45,7 +70,7 @@ Internet
 ## Project Structure
 
 ```
-flask-bicep/
+stage-iaas-flask/
 ├── deploy-all.sh              # One-command full deployment
 ├── delete-all.sh              # Tear down all resources
 │
