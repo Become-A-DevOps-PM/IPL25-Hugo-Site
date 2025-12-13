@@ -1,0 +1,199 @@
+#cloud-config
+# =============================================================================
+# HTTPS Self-Signed Certificate Tutorial - Cloud-Init Configuration
+# =============================================================================
+# This cloud-init configuration:
+# 1. Installs nginx and openssl
+# 2. Creates a simple Hello World site on port 8080
+# 3. Generates a self-signed SSL certificate
+# 4. Configures nginx as a reverse proxy with HTTP to HTTPS redirect
+# =============================================================================
+
+package_update: true
+package_upgrade: true
+
+packages:
+  - nginx
+  - openssl
+
+write_files:
+  # Create Hello World HTML page
+  - path: /var/www/hello/index.html
+    content: |
+      <!DOCTYPE html>
+      <html>
+      <head>
+          <title>Hello World - HTTPS Tutorial</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  max-width: 600px;
+                  margin: 100px auto;
+                  padding: 20px;
+                  text-align: center;
+                  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                  min-height: 100vh;
+                  color: white;
+              }
+              .container {
+                  background: rgba(255,255,255,0.95);
+                  color: #333;
+                  padding: 40px;
+                  border-radius: 10px;
+                  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+              }
+              h1 { color: #667eea; margin-bottom: 10px; }
+              .lock { font-size: 48px; margin-bottom: 20px; }
+              .status {
+                  background: #d4edda;
+                  color: #155724;
+                  padding: 10px 20px;
+                  border-radius: 5px;
+                  display: inline-block;
+                  margin-top: 20px;
+              }
+              .info { margin-top: 20px; font-size: 0.9em; color: #666; }
+          </style>
+      </head>
+      <body>
+          <div class="container">
+              <div class="lock">&#128274;</div>
+              <h1>Hello World!</h1>
+              <p>You are viewing this page over a secure HTTPS connection.</p>
+              <div class="status">&#10003; SSL/TLS Active</div>
+              <p class="info">
+                  This page is served by nginx on port 8080,<br>
+                  proxied through HTTPS on port 443.
+              </p>
+          </div>
+      </body>
+      </html>
+    owner: www-data:www-data
+    permissions: '0644'
+
+  # Create nginx site config for Hello World app (port 8080, localhost only)
+  - path: /etc/nginx/sites-available/hello
+    content: |
+      # Hello World application server
+      # Listens on localhost:8080 only (not exposed to internet)
+      server {
+          listen 127.0.0.1:8080;
+          server_name localhost;
+
+          root /var/www/hello;
+          index index.html;
+
+          location / {
+              try_files $uri $uri/ =404;
+          }
+      }
+    owner: root:root
+    permissions: '0644'
+
+  # Create nginx site config for HTTPS reverse proxy (ports 80 and 443)
+  - path: /etc/nginx/sites-available/https-proxy
+    content: |
+      # HTTP to HTTPS redirect
+      server {
+          listen 80 default_server;
+          listen [::]:80 default_server;
+          server_name _;
+
+          # Redirect all HTTP requests to HTTPS
+          return 301 https://$host$request_uri;
+      }
+
+      # HTTPS server with reverse proxy
+      server {
+          listen 443 ssl default_server;
+          listen [::]:443 ssl default_server;
+          server_name _;
+
+          # SSL certificate paths
+          ssl_certificate /etc/ssl/certs/nginx-selfsigned.crt;
+          ssl_certificate_key /etc/ssl/private/nginx-selfsigned.key;
+
+          # SSL configuration (modern settings)
+          ssl_protocols TLSv1.2 TLSv1.3;
+          ssl_prefer_server_ciphers off;
+          ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384;
+
+          # Security headers
+          add_header X-Frame-Options "SAMEORIGIN" always;
+          add_header X-Content-Type-Options "nosniff" always;
+          add_header X-XSS-Protection "1; mode=block" always;
+
+          # Reverse proxy to Hello World app on port 8080
+          location / {
+              proxy_pass http://127.0.0.1:8080;
+              proxy_http_version 1.1;
+              proxy_set_header Host $host;
+              proxy_set_header X-Real-IP $remote_addr;
+              proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+              proxy_set_header X-Forwarded-Proto $scheme;
+          }
+      }
+    owner: root:root
+    permissions: '0644'
+
+  # Create setup script to generate certificate and configure nginx
+  - path: /usr/local/bin/setup-https.sh
+    content: |
+      #!/bin/bash
+      set -e
+
+      echo "=== Setting up HTTPS with self-signed certificate ==="
+
+      # Fetch public IP address for certificate CN (Common Name)
+      echo "Fetching public IP..."
+
+      # Try Azure Instance Metadata Service first (preferred but empty for Basic SKU)
+      PUBLIC_IP=$(curl -s -H "Metadata:true" --max-time 5 \
+        "http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/publicIpAddress?api-version=2021-02-01&format=text" 2>/dev/null)
+
+      # Fall back to external service that echoes back your public IP
+      if [ -z "$PUBLIC_IP" ]; then
+        echo "IMDS returned empty, trying external service..."
+        PUBLIC_IP=$(curl -s --max-time 10 ifconfig.me 2>/dev/null)
+      fi
+
+      # Fall back to localhost if both methods fail
+      if [ -z "$PUBLIC_IP" ]; then
+        echo "Warning: Could not get public IP, using 'localhost' as CN"
+        PUBLIC_IP="localhost"
+      else
+        echo "Public IP: $PUBLIC_IP"
+      fi
+
+      # Generate self-signed certificate with the public IP as CN
+      echo "Generating self-signed SSL certificate for $PUBLIC_IP..."
+      openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+          -keyout /etc/ssl/private/nginx-selfsigned.key \
+          -out /etc/ssl/certs/nginx-selfsigned.crt \
+          -subj "/C=SE/ST=Stockholm/L=Stockholm/O=Tutorial/OU=DevOps/CN=$PUBLIC_IP"
+
+      # Set secure permissions on certificate files
+      chmod 600 /etc/ssl/private/nginx-selfsigned.key
+      chmod 644 /etc/ssl/certs/nginx-selfsigned.crt
+
+      # Disable default nginx site (the "Welcome to nginx" page)
+      rm -f /etc/nginx/sites-enabled/default
+
+      # Enable custom sites by symlinking from sites-available to sites-enabled
+      ln -sf /etc/nginx/sites-available/hello /etc/nginx/sites-enabled/hello
+      ln -sf /etc/nginx/sites-available/https-proxy /etc/nginx/sites-enabled/https-proxy
+
+      # Test configuration and restart nginx
+      nginx -t
+      systemctl restart nginx
+      systemctl enable nginx
+
+      echo "=== HTTPS Setup Complete ==="
+      echo "HTTP:  Port 80 (redirects to HTTPS)"
+      echo "HTTPS: Port 443 (proxies to port 8080)"
+    owner: root:root
+    permissions: '0755'
+
+runcmd:
+  # Run the setup script after packages are installed and files are created
+  - /usr/local/bin/setup-https.sh
