@@ -2,17 +2,7 @@
 
 A complete Flask application deployment on Azure using pure IaaS components and Bicep infrastructure-as-code.
 
-## Stage Naming Convention
-
-This reference implementation follows a **stage-based naming convention** for progressive architecture complexity:
-
-| Stage | Description | Key Characteristics |
-|-------|-------------|---------------------|
-| `stage-iaas-{app}` | **Pure IaaS baseline** | VMs only, self-managed networking, no managed services |
-| `stage-hybrid-{app}` | IaaS + managed secrets | Adds Azure Key Vault for secrets management |
-| `stage-managed-{app}` | Managed networking | Adds Azure Bastion, Application Gateway |
-| `stage-scalable-{app}` | Auto-scaling | Adds VM Scale Sets, load balancing |
-| `stage-paas-{app}` | Full PaaS | App Service, fully managed database |
+> See [../README.md](../README.md) for the stage naming convention.
 
 **This implementation (`stage-iaas-flask`)** represents the pure IaaS baseline:
 
@@ -22,13 +12,8 @@ This reference implementation follows a **stage-based naming convention** for pr
 - No Key Vault, no managed identities, no Azure Bastion service
 - Traditional Linux administration (systemd, nginx config files)
 
-This stage serves as the **foundation** that all other stages build upon. Depending on the course and audience, different stages may serve as the capstone project.
-
-The `{app}` suffix indicates the application type (e.g., `flask`, `django`, `node`), allowing the same architecture patterns to be demonstrated with different technology stacks.
-
 ## Table of Contents
 
-- [Stage Naming Convention](#stage-naming-convention)
 - [Architecture](#architecture)
 - [Quick Start](#quick-start)
 - [Project Structure](#project-structure)
