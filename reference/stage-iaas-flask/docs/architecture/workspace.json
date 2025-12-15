@@ -6,196 +6,196 @@
   "documentation" : { },
   "id" : 1,
   "lastModifiedAgent" : "structurizr-ui",
-  "lastModifiedDate" : "2025-12-15T11:43:40Z",
+  "lastModifiedDate" : "2025-12-15T12:20:08Z",
   "model" : {
     "deploymentNodes" : [ {
       "children" : [ {
         "children" : [ {
           "children" : [ {
             "containerInstances" : [ {
-              "containerId" : "5",
+              "containerId" : "7",
               "deploymentGroups" : [ "Default" ],
               "environment" : "Production",
-              "id" : "32",
+              "id" : "38",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.84f4d709-5136-47a4-8f3e-961ae1032303.0da6c78e-a39f-4672-bff3-24a5b841ec0c.bastionInstance"
+                "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.e71b3b9e-b776-49d3-8cf2-9c81e7c8f68a.738469bf-579d-411a-99d2-a0798b1a20ac.bastionInstance"
               },
               "relationships" : [ {
                 "description" : "SSH tunnel",
-                "destinationId" : "35",
-                "id" : "36",
-                "linkedRelationshipId" : "19",
-                "sourceId" : "32",
+                "destinationId" : "41",
+                "id" : "42",
+                "linkedRelationshipId" : "23",
+                "sourceId" : "38",
                 "technology" : "SSH/22"
               }, {
                 "description" : "SSH tunnel",
-                "destinationId" : "39",
-                "id" : "40",
-                "linkedRelationshipId" : "20",
-                "sourceId" : "32",
+                "destinationId" : "45",
+                "id" : "46",
+                "linkedRelationshipId" : "24",
+                "sourceId" : "38",
                 "technology" : "SSH/22"
               } ],
               "tags" : "Container Instance"
             } ],
             "description" : "Ubuntu 22.04 LTS",
             "environment" : "Production",
-            "id" : "31",
+            "id" : "37",
             "instances" : "1",
             "name" : "vm-bastion",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.84f4d709-5136-47a4-8f3e-961ae1032303.0da6c78e-a39f-4672-bff3-24a5b841ec0c"
+              "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.e71b3b9e-b776-49d3-8cf2-9c81e7c8f68a.738469bf-579d-411a-99d2-a0798b1a20ac"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Standard_B1s"
           } ],
           "description" : "snet-bastion",
           "environment" : "Production",
-          "id" : "30",
+          "id" : "36",
           "instances" : "1",
           "name" : "Bastion Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.84f4d709-5136-47a4-8f3e-961ae1032303"
+            "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.e71b3b9e-b776-49d3-8cf2-9c81e7c8f68a"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.1.0/24"
         }, {
           "children" : [ {
             "containerInstances" : [ {
-              "containerId" : "6",
+              "containerId" : "8",
               "deploymentGroups" : [ "Default" ],
               "environment" : "Production",
-              "id" : "35",
+              "id" : "41",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.fc6f5c4c-0a05-4c0a-8b42-0acbdb2962bf.bfd52782-7316-45fa-b5b8-44b8bfb68113.proxyInstance"
+                "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.7db60a82-e077-403f-94b0-d930687bf08f.235ea04f-a411-49e8-8a82-e67230e8d5bd.proxyInstance"
               },
               "relationships" : [ {
                 "description" : "Forwards requests",
-                "destinationId" : "39",
-                "id" : "41",
-                "linkedRelationshipId" : "21",
-                "sourceId" : "35",
+                "destinationId" : "45",
+                "id" : "47",
+                "linkedRelationshipId" : "25",
+                "sourceId" : "41",
                 "technology" : "HTTP/5001"
               } ],
               "tags" : "Container Instance"
             } ],
             "description" : "Ubuntu 22.04 LTS",
             "environment" : "Production",
-            "id" : "34",
+            "id" : "40",
             "instances" : "1",
             "name" : "vm-proxy",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.fc6f5c4c-0a05-4c0a-8b42-0acbdb2962bf.bfd52782-7316-45fa-b5b8-44b8bfb68113"
+              "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.7db60a82-e077-403f-94b0-d930687bf08f.235ea04f-a411-49e8-8a82-e67230e8d5bd"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Standard_B1s"
           } ],
           "description" : "snet-web",
           "environment" : "Production",
-          "id" : "33",
+          "id" : "39",
           "instances" : "1",
           "name" : "Web Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.fc6f5c4c-0a05-4c0a-8b42-0acbdb2962bf"
+            "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.7db60a82-e077-403f-94b0-d930687bf08f"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.2.0/24"
         }, {
           "children" : [ {
             "containerInstances" : [ {
-              "containerId" : "7",
+              "containerId" : "9",
               "deploymentGroups" : [ "Default" ],
               "environment" : "Production",
-              "id" : "39",
+              "id" : "45",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.778b8ec7-c723-4ccc-a723-d10528ed6beb.fe9bcf2a-65ca-43ce-8026-0fe40767b370.flaskInstance"
+                "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.f1919573-4be6-410b-b5f2-52905751335c.a1fd0b4c-9869-4d97-ac54-c073e0dc96b2.flaskInstance"
               },
               "relationships" : [ {
                 "description" : "Reads/writes data",
-                "destinationId" : "44",
-                "id" : "45",
-                "linkedRelationshipId" : "22",
-                "sourceId" : "39",
+                "destinationId" : "50",
+                "id" : "51",
+                "linkedRelationshipId" : "26",
+                "sourceId" : "45",
                 "technology" : "PostgreSQL/5432"
               } ],
               "tags" : "Container Instance"
             } ],
             "description" : "Ubuntu 22.04 LTS",
             "environment" : "Production",
-            "id" : "38",
+            "id" : "44",
             "instances" : "1",
             "name" : "vm-app",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.778b8ec7-c723-4ccc-a723-d10528ed6beb.fe9bcf2a-65ca-43ce-8026-0fe40767b370"
+              "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.f1919573-4be6-410b-b5f2-52905751335c.a1fd0b4c-9869-4d97-ac54-c073e0dc96b2"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Standard_B1s"
           } ],
           "description" : "snet-app",
           "environment" : "Production",
-          "id" : "37",
+          "id" : "43",
           "instances" : "1",
           "name" : "App Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.778b8ec7-c723-4ccc-a723-d10528ed6beb"
+            "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.f1919573-4be6-410b-b5f2-52905751335c"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.3.0/24"
         }, {
           "children" : [ {
             "containerInstances" : [ {
-              "containerId" : "12",
+              "containerId" : "14",
               "deploymentGroups" : [ "Default" ],
               "environment" : "Production",
-              "id" : "44",
+              "id" : "50",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.334ab33b-7bfc-4d7f-8732-8afe24670157.3645ef92-5906-4a18-aea4-dd0fe106be1b.databaseInstance"
+                "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.96aadc65-74f8-491a-9661-14447208b8da.8b5ac85a-f8de-43f6-b21d-d4bba7f93442.databaseInstance"
               },
               "tags" : "Container Instance"
             } ],
             "description" : "psql-flask-bicep-dev",
             "environment" : "Production",
-            "id" : "43",
+            "id" : "49",
             "instances" : "1",
             "name" : "Azure PostgreSQL Flexible Server",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.334ab33b-7bfc-4d7f-8732-8afe24670157.3645ef92-5906-4a18-aea4-dd0fe106be1b"
+              "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.96aadc65-74f8-491a-9661-14447208b8da.8b5ac85a-f8de-43f6-b21d-d4bba7f93442"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Burstable B1ms"
           } ],
           "description" : "snet-data",
           "environment" : "Production",
-          "id" : "42",
+          "id" : "48",
           "instances" : "1",
           "name" : "Data Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5.334ab33b-7bfc-4d7f-8732-8afe24670157"
+            "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.96aadc65-74f8-491a-9661-14447208b8da"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.4.0/24"
         } ],
         "description" : "vnet-flask-bicep-dev",
         "environment" : "Production",
-        "id" : "29",
+        "id" : "35",
         "instances" : "1",
         "name" : "Virtual Network",
         "properties" : {
-          "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004.0a91afdd-dd52-4bce-a8c7-0678e957f5e5"
+          "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e"
         },
         "tags" : "Element,Deployment Node",
         "technology" : "10.0.0.0/16"
       } ],
       "description" : "Microsoft Azure public cloud infrastructure",
       "environment" : "Production",
-      "id" : "28",
+      "id" : "34",
       "instances" : "1",
       "name" : "Azure Cloud",
       "properties" : {
-        "structurizr.dsl.identifier" : "production.86837d8a-2fb1-48b5-80fb-5e5b0b6eb004"
+        "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef"
       },
       "tags" : "Element,Deployment Node",
       "technology" : "Azure IaaS"
@@ -220,17 +220,17 @@
       "relationships" : [ {
         "description" : "Registers for webinars",
         "destinationId" : "4",
-        "id" : "13",
+        "id" : "15",
         "sourceId" : "1",
         "tags" : "Relationship",
         "technology" : "HTTPS"
       }, {
-        "description" : "Registers via browser",
-        "destinationId" : "6",
-        "id" : "16",
+        "description" : "Uses",
+        "destinationId" : "5",
+        "id" : "18",
         "sourceId" : "1",
         "tags" : "Relationship",
-        "technology" : "HTTPS/443"
+        "technology" : "Mouse, keyboard"
       } ],
       "tags" : "Element,Person,Primary Actor"
     }, {
@@ -253,19 +253,19 @@
       "relationships" : [ {
         "description" : "Views registrations",
         "destinationId" : "4",
-        "id" : "14",
+        "id" : "16",
         "sourceId" : "2",
         "tags" : "Relationship",
         "technology" : "HTTPS"
       }, {
-        "description" : "Views registrations",
-        "destinationId" : "6",
-        "id" : "17",
+        "description" : "Uses",
+        "destinationId" : "5",
+        "id" : "19",
         "sourceId" : "2",
         "tags" : "Relationship",
-        "technology" : "HTTPS/443"
+        "technology" : "Mouse, keyboard"
       } ],
-      "tags" : "Element,Person,Secondary Actor"
+      "tags" : "Element,Person,Tertiary Actor"
     }, {
       "description" : "Supporting actor - deploys and maintains infrastructure",
       "id" : "3",
@@ -286,41 +286,77 @@
       "relationships" : [ {
         "description" : "Deploys and maintains",
         "destinationId" : "4",
-        "id" : "15",
+        "id" : "17",
         "sourceId" : "3",
         "tags" : "Relationship",
         "technology" : "SSH"
       }, {
-        "description" : "Connects via terminal",
-        "destinationId" : "5",
-        "id" : "18",
+        "description" : "Uses",
+        "destinationId" : "6",
+        "id" : "20",
         "sourceId" : "3",
         "tags" : "Relationship",
-        "technology" : "SSH/22"
+        "technology" : "Keyboard"
       } ],
       "tags" : "Element,Person,Secondary Actor"
     } ],
     "softwareSystems" : [ {
       "containers" : [ {
-        "description" : "Secure SSH entry point for administrative access",
+        "description" : "Renders HTML, executes JavaScript, user interaction",
         "documentation" : { },
         "id" : "5",
+        "name" : "Web Browser",
+        "properties" : {
+          "structurizr.dsl.identifier" : "webinarSystem.browser"
+        },
+        "relationships" : [ {
+          "description" : "HTTPS requests",
+          "destinationId" : "8",
+          "id" : "21",
+          "sourceId" : "5",
+          "tags" : "Relationship",
+          "technology" : "HTTPS/443"
+        } ],
+        "tags" : "Element,Container,Client,Primary Client",
+        "technology" : "Chrome, Firefox, Safari, Edge"
+      }, {
+        "description" : "Command-line interface for administrative access",
+        "documentation" : { },
+        "id" : "6",
+        "name" : "Terminal",
+        "properties" : {
+          "structurizr.dsl.identifier" : "webinarSystem.terminal"
+        },
+        "relationships" : [ {
+          "description" : "Connects to",
+          "destinationId" : "7",
+          "id" : "22",
+          "sourceId" : "6",
+          "tags" : "Relationship",
+          "technology" : "Azure CLI, SSH"
+        } ],
+        "tags" : "Element,Container,Client,Secondary Client",
+        "technology" : "Azure CLI, SSH"
+      }, {
+        "description" : "Secure SSH entry point for administrative access",
+        "documentation" : { },
+        "id" : "7",
         "name" : "Bastion Host",
         "properties" : {
           "structurizr.dsl.identifier" : "webinarSystem.bastion"
         },
         "relationships" : [ {
           "description" : "SSH tunnel",
-          "destinationId" : "6",
-          "id" : "19",
-          "sourceId" : "5",
+          "destinationId" : "8",
+          "id" : "23",
+          "sourceId" : "7",
           "tags" : "Relationship",
           "technology" : "SSH/22"
         }, {
           "description" : "SSH tunnel",
-          "destinationId" : "7",
-          "id" : "20",
-          "sourceId" : "5",
+          "destinationId" : "9",
+          "id" : "24",
+          "sourceId" : "7",
           "tags" : "Relationship",
           "technology" : "SSH/22"
         } ],
@@ -329,49 +365,49 @@
       }, {
         "description" : "SSL termination, HTTPS endpoint, request forwarding",
         "documentation" : { },
-        "id" : "6",
+        "id" : "8",
         "name" : "Reverse Proxy",
         "properties" : {
           "structurizr.dsl.identifier" : "webinarSystem.proxy"
         },
         "relationships" : [ {
           "description" : "Forwards requests",
-          "destinationId" : "7",
-          "id" : "21",
-          "sourceId" : "6",
+          "destinationId" : "9",
+          "id" : "25",
+          "sourceId" : "8",
           "tags" : "Relationship",
           "technology" : "HTTP/5001"
         }, {
           "description" : "HTTP requests",
-          "destinationId" : "11",
-          "id" : "23",
-          "sourceId" : "6",
+          "destinationId" : "13",
+          "id" : "27",
+          "sourceId" : "8",
           "tags" : "Relationship",
           "technology" : "HTTP/5001"
         } ],
-        "tags" : "Element,Container,Web Server",
+        "tags" : "Element,Container",
         "technology" : "nginx on Ubuntu 22.04 VM"
       }, {
         "components" : [ {
           "description" : "HTTP request handling, form processing",
           "documentation" : { },
-          "id" : "8",
+          "id" : "10",
           "name" : "Route Handlers",
           "properties" : {
             "structurizr.dsl.identifier" : "webinarSystem.flask.routes"
           },
           "relationships" : [ {
             "description" : "Renders HTML",
-            "destinationId" : "9",
-            "id" : "25",
-            "sourceId" : "8",
+            "destinationId" : "11",
+            "id" : "29",
+            "sourceId" : "10",
             "tags" : "Relationship",
             "technology" : "Jinja2 API"
           }, {
             "description" : "CRUD operations",
-            "destinationId" : "10",
-            "id" : "26",
-            "sourceId" : "8",
+            "destinationId" : "12",
+            "id" : "30",
+            "sourceId" : "10",
             "tags" : "Relationship",
             "technology" : "Python method calls"
           } ],
@@ -380,26 +416,34 @@
         }, {
           "description" : "HTML rendering with data binding",
           "documentation" : { },
-          "id" : "9",
+          "id" : "11",
           "name" : "Template Engine",
           "properties" : {
             "structurizr.dsl.identifier" : "webinarSystem.flask.templates"
           },
+          "relationships" : [ {
+            "description" : "Returns HTML",
+            "destinationId" : "5",
+            "id" : "32",
+            "sourceId" : "11",
+            "tags" : "Relationship,ComponentLevel",
+            "technology" : "HTTP Response"
+          } ],
           "tags" : "Element,Component",
           "technology" : "Jinja2"
         }, {
           "description" : "Database abstraction, ORM",
           "documentation" : { },
-          "id" : "10",
+          "id" : "12",
           "name" : "Data Models",
           "properties" : {
             "structurizr.dsl.identifier" : "webinarSystem.flask.models"
           },
           "relationships" : [ {
             "description" : "SQL queries",
-            "destinationId" : "12",
-            "id" : "27",
-            "sourceId" : "10",
+            "destinationId" : "14",
+            "id" : "31",
+            "sourceId" : "12",
             "tags" : "Relationship",
             "technology" : "psycopg2"
           } ],
@@ -408,16 +452,16 @@
         }, {
           "description" : "Production HTTP server, process management",
           "documentation" : { },
-          "id" : "11",
+          "id" : "13",
           "name" : "WSGI Server",
           "properties" : {
             "structurizr.dsl.identifier" : "webinarSystem.flask.wsgi"
           },
           "relationships" : [ {
             "description" : "Forwards requests",
-            "destinationId" : "8",
-            "id" : "24",
-            "sourceId" : "11",
+            "destinationId" : "10",
+            "id" : "28",
+            "sourceId" : "13",
             "tags" : "Relationship",
             "technology" : "WSGI"
           } ],
@@ -426,25 +470,32 @@
         } ],
         "description" : "Handles registration logic, serves HTML, REST API",
         "documentation" : { },
-        "id" : "7",
+        "id" : "9",
         "name" : "Flask Application",
         "properties" : {
           "structurizr.dsl.identifier" : "webinarSystem.flask"
         },
         "relationships" : [ {
           "description" : "Reads/writes data",
-          "destinationId" : "12",
-          "id" : "22",
-          "sourceId" : "7",
+          "destinationId" : "14",
+          "id" : "26",
+          "sourceId" : "9",
           "tags" : "Relationship",
           "technology" : "PostgreSQL/5432"
+        }, {
+          "description" : "Returns HTML",
+          "destinationId" : "5",
+          "id" : "33",
+          "linkedRelationshipId" : "32",
+          "sourceId" : "9",
+          "technology" : "HTTP Response"
         } ],
         "tags" : "Element,Container,Application",
         "technology" : "Python/Gunicorn on Ubuntu 22.04 VM"
       }, {
         "description" : "Stores registration data persistently",
         "documentation" : { },
-        "id" : "12",
+        "id" : "14",
         "name" : "PostgreSQL Database",
         "properties" : {
           "structurizr.dsl.identifier" : "webinarSystem.database"
@@ -501,64 +552,82 @@
   },
   "views" : {
     "componentViews" : [ {
-      "automaticLayout" : {
-        "applied" : false,
-        "edgeSeparation" : 0,
-        "implementation" : "Graphviz",
-        "nodeSeparation" : 300,
-        "rankDirection" : "LeftRight",
-        "rankSeparation" : 300,
-        "vertices" : false
-      },
-      "containerId" : "7",
+      "containerId" : "9",
       "description" : "Component diagram showing Flask application internals",
+      "dimensions" : {
+        "height" : 1486,
+        "width" : 5322
+      },
       "elements" : [ {
-        "id" : "6",
-        "x" : 0,
-        "y" : 0
+        "id" : "1",
+        "x" : 199,
+        "y" : 145
+      }, {
+        "id" : "5",
+        "x" : 886,
+        "y" : 191
       }, {
         "id" : "8",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "9",
-        "x" : 0,
-        "y" : 0
+        "x" : 1654,
+        "y" : 186
       }, {
         "id" : "10",
-        "x" : 0,
-        "y" : 0
+        "x" : 3153,
+        "y" : 183
       }, {
         "id" : "11",
-        "x" : 0,
-        "y" : 0
+        "x" : 3146,
+        "y" : 731
       }, {
         "id" : "12",
-        "x" : 0,
-        "y" : 0
+        "x" : 3906,
+        "y" : 190
+      }, {
+        "id" : "13",
+        "x" : 2403,
+        "y" : 183
+      }, {
+        "id" : "14",
+        "x" : 4651,
+        "y" : 190
       } ],
       "externalContainerBoundariesVisible" : false,
       "key" : "C3-Components",
       "name" : "Component View: Webinar Registration Website - Flask Application",
       "order" : 4,
       "relationships" : [ {
-        "id" : "23"
+        "id" : "18"
       }, {
-        "id" : "24"
-      }, {
-        "id" : "25"
-      }, {
-        "id" : "26"
+        "id" : "21"
       }, {
         "id" : "27"
+      }, {
+        "id" : "28"
+      }, {
+        "id" : "29"
+      }, {
+        "id" : "30"
+      }, {
+        "id" : "31"
+      }, {
+        "id" : "32",
+        "vertices" : [ {
+          "x" : 1106,
+          "y" : 886
+        } ]
       } ]
     } ],
     "configuration" : {
       "branding" : { },
-      "lastSavedView" : "C2-Containers-Admin",
+      "lastSavedView" : "C2-Containers",
       "metadataSymbols" : "SquareBrackets",
       "styles" : {
         "elements" : [ {
+          "background" : "#85bbf0",
+          "color" : "#000000",
+          "shape" : "RoundedBox",
+          "tag" : "Client"
+        }, {
           "background" : "#85bbf0",
           "color" : "#000000",
           "tag" : "Component"
@@ -581,16 +650,27 @@
           "color" : "#ffffff",
           "tag" : "Primary Actor"
         }, {
-          "background" : "#999999",
+          "background" : "#08427b",
+          "color" : "#ffffff",
+          "shape" : "RoundedBox",
+          "tag" : "Primary Client"
+        }, {
+          "background" : "#5c5c5c",
           "color" : "#ffffff",
           "tag" : "Secondary Actor"
+        }, {
+          "background" : "#5c5c5c",
+          "color" : "#ffffff",
+          "shape" : "RoundedBox",
+          "tag" : "Secondary Client"
         }, {
           "background" : "#438dd5",
           "color" : "#ffffff",
           "tag" : "Software System"
         }, {
-          "shape" : "WebBrowser",
-          "tag" : "Web Server"
+          "background" : "#85bbf0",
+          "color" : "#000000",
+          "tag" : "Tertiary Actor"
         } ]
       },
       "terminology" : { },
@@ -598,7 +678,7 @@
     },
     "containerViews" : [ {
       "automaticLayout" : {
-        "applied" : false,
+        "applied" : true,
         "edgeSeparation" : 0,
         "implementation" : "Graphviz",
         "nodeSeparation" : 300,
@@ -607,79 +687,102 @@
         "vertices" : false
       },
       "description" : "Container diagram showing the technical building blocks",
+      "dimensions" : {
+        "height" : 2102,
+        "width" : 2390
+      },
       "elements" : [ {
         "id" : "1",
-        "x" : 0,
-        "y" : 0
+        "x" : 245,
+        "y" : 143
       }, {
-        "id" : "6",
-        "x" : 0,
-        "y" : 0
+        "id" : "5",
+        "x" : 970,
+        "y" : 752
       }, {
-        "id" : "7",
-        "x" : 0,
-        "y" : 0
+        "id" : "8",
+        "x" : 1720,
+        "y" : 1206
       }, {
-        "id" : "12",
-        "x" : 0,
-        "y" : 0
+        "id" : "9",
+        "x" : 220,
+        "y" : 1352
+      }, {
+        "id" : "14",
+        "x" : 970,
+        "y" : 1352
       } ],
       "externalSoftwareSystemBoundariesVisible" : false,
       "key" : "C2-Containers",
       "name" : "Container View: Webinar Registration Website",
       "order" : 2,
       "relationships" : [ {
-        "id" : "16"
+        "id" : "18"
       }, {
         "id" : "21"
       }, {
-        "id" : "22"
+        "id" : "25",
+        "vertices" : [ {
+          "x" : 1420,
+          "y" : 1802
+        }, {
+          "x" : 970,
+          "y" : 1802
+        } ]
+      }, {
+        "id" : "26"
+      }, {
+        "id" : "33"
       } ],
       "softwareSystemId" : "4"
     }, {
       "description" : "Container diagram including administrative access",
       "dimensions" : {
-        "height" : 2225,
-        "width" : 3820
+        "height" : 1912,
+        "width" : 3748
       },
       "elements" : [ {
         "id" : "1",
-        "x" : 645,
-        "y" : 500
+        "x" : 199,
+        "y" : 590
       }, {
         "id" : "2",
-        "x" : 655,
-        "y" : 45
+        "x" : 213,
+        "y" : 142
       }, {
         "id" : "3",
-        "x" : 645,
-        "y" : 1135
-      }, {
-        "id" : "5",
-        "x" : 1650,
+        "x" : 229,
         "y" : 1195
       }, {
+        "id" : "5",
+        "x" : 924,
+        "y" : 655
+      }, {
         "id" : "6",
-        "x" : 1650,
-        "y" : 559
+        "x" : 929,
+        "y" : 1255
       }, {
         "id" : "7",
-        "x" : 2360,
-        "y" : 555
+        "x" : 1664,
+        "y" : 1250
       }, {
-        "id" : "12",
-        "x" : 3085,
-        "y" : 555
+        "id" : "8",
+        "x" : 1664,
+        "y" : 650
+      }, {
+        "id" : "9",
+        "x" : 2364,
+        "y" : 655
+      }, {
+        "id" : "14",
+        "x" : 3077,
+        "y" : 630
       } ],
       "externalSoftwareSystemBoundariesVisible" : false,
       "key" : "C2-Containers-Admin",
       "name" : "Container View: Webinar Registration Website",
       "order" : 3,
       "relationships" : [ {
-        "id" : "16"
-      }, {
-        "id" : "17"
-      }, {
         "id" : "18"
       }, {
         "id" : "19"
@@ -689,6 +792,14 @@
         "id" : "21"
       }, {
         "id" : "22"
+      }, {
+        "id" : "23"
+      }, {
+        "id" : "24"
+      }, {
+        "id" : "25"
+      }, {
+        "id" : "26"
       } ],
       "softwareSystemId" : "4"
     } ],
@@ -704,35 +815,15 @@
       },
       "description" : "Azure IaaS deployment architecture",
       "elements" : [ {
-        "id" : "28",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "29",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "30",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "31",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "32",
-        "x" : 0,
-        "y" : 0
-      }, {
-        "id" : "33",
-        "x" : 0,
-        "y" : 0
-      }, {
         "id" : "34",
         "x" : 0,
         "y" : 0
       }, {
         "id" : "35",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "36",
         "x" : 0,
         "y" : 0
       }, {
@@ -748,7 +839,11 @@
         "x" : 0,
         "y" : 0
       }, {
-        "id" : "42",
+        "id" : "40",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "41",
         "x" : 0,
         "y" : 0
       }, {
@@ -759,19 +854,35 @@
         "id" : "44",
         "x" : 0,
         "y" : 0
+      }, {
+        "id" : "45",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "48",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "49",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "50",
+        "x" : 0,
+        "y" : 0
       } ],
       "environment" : "Production",
       "key" : "Deployment",
       "name" : "Deployment View: Webinar Registration Website - Production",
       "order" : 5,
       "relationships" : [ {
-        "id" : "36"
+        "id" : "42"
       }, {
-        "id" : "40"
+        "id" : "46"
       }, {
-        "id" : "41"
+        "id" : "47"
       }, {
-        "id" : "45"
+        "id" : "51"
       } ],
       "softwareSystemId" : "4"
     } ],
@@ -808,11 +919,11 @@
       "name" : "System Context View: Webinar Registration Website",
       "order" : 1,
       "relationships" : [ {
-        "id" : "13"
-      }, {
-        "id" : "14"
-      }, {
         "id" : "15"
+      }, {
+        "id" : "16"
+      }, {
+        "id" : "17"
       } ],
       "softwareSystemId" : "4"
     } ]

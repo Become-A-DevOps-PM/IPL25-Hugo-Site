@@ -21,7 +21,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             }
         }
         admin = person "Marketing Administrator" "Supporting actor - manages webinars and views registrations" {
-            tags "Secondary Actor"
+            tags "Tertiary Actor"
             properties {
                 "Actor Type" "Secondary"
                 "Frequency" "Medium"
@@ -51,12 +51,19 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             !docs docs
             !adrs adrs
             
-            # Containers
+            # Client-side Containers
+            browser = container "Web Browser" "Renders HTML, executes JavaScript, user interaction" "Chrome, Firefox, Safari, Edge" {
+                tags "Client" "Primary Client"
+            }
+            
+            terminal = container "Terminal" "Command-line interface for administrative access" "Azure CLI, SSH" {
+                tags "Client" "Secondary Client"
+            }
+            
+            # Server-side Containers
             bastion = container "Bastion Host" "Secure SSH entry point for administrative access" "Ubuntu 22.04 VM"
             
-            proxy = container "Reverse Proxy" "SSL termination, HTTPS endpoint, request forwarding" "nginx on Ubuntu 22.04 VM" {
-                tags "Web Server"
-            }
+            proxy = container "Reverse Proxy" "SSL termination, HTTPS endpoint, request forwarding" "nginx on Ubuntu 22.04 VM"
             
             flask = container "Flask Application" "Handles registration logic, serves HTML, REST API" "Python/Gunicorn on Ubuntu 22.04 VM" {
                 tags "Application"
@@ -79,9 +86,12 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
         sysadmin -> webinarSystem "Deploys and maintains" "SSH"
 
         # Relationships - Container Level
-        attendee -> webinarSystem.proxy "Registers via browser" "HTTPS/443"
-        admin -> webinarSystem.proxy "Views registrations" "HTTPS/443"
-        sysadmin -> webinarSystem.bastion "Connects via terminal" "SSH/22"
+        attendee -> webinarSystem.browser "Uses" "Mouse, keyboard"
+        admin -> webinarSystem.browser "Uses" "Mouse, keyboard"
+        sysadmin -> webinarSystem.terminal "Uses" "Keyboard"
+        
+        webinarSystem.browser -> webinarSystem.proxy "HTTPS requests" "HTTPS/443"
+        webinarSystem.terminal -> webinarSystem.bastion "Connects to" "Azure CLI, SSH"
         
         webinarSystem.bastion -> webinarSystem.proxy "SSH tunnel" "SSH/22"
         webinarSystem.bastion -> webinarSystem.flask "SSH tunnel" "SSH/22"
@@ -94,6 +104,9 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
         webinarSystem.flask.routes -> webinarSystem.flask.templates "Renders HTML" "Jinja2 API"
         webinarSystem.flask.routes -> webinarSystem.flask.models "CRUD operations" "Python method calls"
         webinarSystem.flask.models -> webinarSystem.database "SQL queries" "psycopg2"
+        webinarSystem.flask.templates -> webinarSystem.browser "Returns HTML" "HTTP Response" {
+            tags "ComponentLevel"
+        }
 
         # Deployment - Azure IaaS
         production = deploymentEnvironment "Production" {
@@ -138,6 +151,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
         # C2 - Container (main user flow)
         container webinarSystem "C2-Containers" "Container diagram showing the technical building blocks" {
             include attendee
+            include webinarSystem.browser
             include webinarSystem.proxy
             include webinarSystem.flask
             include webinarSystem.database
@@ -147,12 +161,15 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
         # C2b - Container (with admin access)
         container webinarSystem "C2-Containers-Admin" "Container diagram including administrative access" {
             include *
+            exclude relationship.tag==ComponentLevel
         }
 
         # C3 - Component (Flask Application)
         component webinarSystem.flask "C3-Components" "Component diagram showing Flask application internals" {
             include *
-            autolayout lr
+            include attendee
+            include webinarSystem.browser
+            include webinarSystem.proxy
         }
 
         # Deployment
@@ -172,8 +189,12 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                 color #ffffff
             }
             element "Secondary Actor" {
-                background #999999
+                background #5c5c5c
                 color #ffffff
+            }
+            element "Tertiary Actor" {
+                background #85BBF0
+                color #000000
             }
             element "Software System" {
                 background #438DD5
@@ -192,8 +213,20 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                 background #438DD5
                 color #ffffff
             }
-            element "Web Server" {
-                shape WebBrowser
+            element "Client" {
+                shape RoundedBox
+                background #85BBF0
+                color #000000
+            }
+            element "Primary Client" {
+                shape RoundedBox
+                background #08427B
+                color #ffffff
+            }
+            element "Secondary Client" {
+                shape RoundedBox
+                background #5c5c5c
+                color #ffffff
             }
         }
 
