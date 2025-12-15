@@ -1,6 +1,6 @@
 # System Context (C1)
 
-## C4 Model - Level 1: System Context
+## System Context (C4 Model Level 1)
 
 This document provides the highest level view of the Webinar Registration Website system, showing how it fits into the broader environment of users and external systems.
 

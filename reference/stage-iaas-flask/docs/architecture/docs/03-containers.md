@@ -1,6 +1,6 @@
 # Containers (C2)
 
-## C4 Model - Level 2: Containers
+## Containers (C4 Model Level 2)
 
 This document zooms into the Webinar Registration Website system to show the high-level technical building blocks (containers) and how they interact.
 

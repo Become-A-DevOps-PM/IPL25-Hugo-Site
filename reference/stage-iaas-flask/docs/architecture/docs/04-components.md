@@ -1,6 +1,6 @@
 # Components (C3)
 
-## C4 Model - Level 3: Components
+## Components (C4 Model Level 3)
 
 This document zooms into the Flask Application container to show its internal structure and how components collaborate to fulfill the system's responsibilities.
 
