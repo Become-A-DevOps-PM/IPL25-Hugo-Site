@@ -1,54 +1,20 @@
----
-title: "Component Diagram"
-subtitle: "Webinar Registration Website - C4 Level 3"
-type: c4-component
-version: "1.0"
-status: draft
-tags:
-  - architecture
-  - c4-model
-  - components
-related:
-  - C1-context.md
-  - C2-containers.md
-  - ../PRD.md
----
+# Components (C3)
 
-# Component Diagram
 ## C4 Model - Level 3: Components
 
 This document zooms into the Flask Application container to show its internal structure and how components collaborate to fulfill the system's responsibilities.
 
 > **Note**: For a simple Flask application like this one, a component diagram may be more detailed than strictly necessary. We include it here for educational completeness.
 
----
-
 ## Flask Application Components
 
-```mermaid
-C4Component
-    title Component Diagram - Flask Application (vm-app)
+![](embed:C3-Components)
 
-    Container_Boundary(flask_app, "Flask Application") {
-        Component(routes, "Route Handlers", "Flask @app.route", "HTTP request handling, form processing")
-        Component(templates, "Template Engine", "Jinja2", "HTML rendering with data binding")
-        Component(models, "Data Models", "SQLAlchemy ORM", "Entry model, database abstraction")
-        Component(wsgi, "WSGI Server", "Gunicorn", "Production HTTP server, process management")
-    }
+## Reverse Proxy Components
 
-    ContainerDb(postgres, "PostgreSQL", "Azure Flex Server", "Persistent storage")
-    Container(nginx, "nginx", "Reverse Proxy", "Incoming requests")
+The nginx reverse proxy also has internal components worth understanding:
 
-    Rel(nginx, wsgi, "HTTP requests", "HTTP/5001")
-    Rel(wsgi, routes, "Forwards to", "WSGI protocol")
-    Rel(routes, templates, "Renders", "Template context")
-    Rel(routes, models, "CRUD operations", "ORM queries")
-    Rel(models, postgres, "SQL queries", "psycopg2/5432")
-
-    UpdateLayoutConfig($c4ShapeInRow="3", $c4BoundaryInRow="1")
-```
-
----
+![](embed:C3-Components-Proxy)
 
 ## Component Inventory
 
@@ -60,8 +26,6 @@ C4Component
 | **Template Engine** | Jinja2 | Render dynamic HTML pages | Inline in `app.py` |
 | **Data Models** | SQLAlchemy | Object-relational mapping, database schema | `app.py` (Entry class) |
 | **WSGI Server** | Gunicorn | Production HTTP server, worker processes | `wsgi.py` |
-
----
 
 ## Component Details
 
@@ -76,7 +40,8 @@ The application exposes three HTTP endpoints:
 | `/entries` | GET | List all entries as JSON | JSON array |
 | `/health` | GET | Health check for monitoring | `{"status": "ok"}` |
 
-**Code Structure** ([app.py](../../application/app.py)):
+**Code Structure** (`application/app.py`):
+
 ```python
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -97,6 +62,7 @@ def health():
 Uses Jinja2 (Flask's default) with inline template definition:
 
 **Template Variables**:
+
 | Variable | Source | Purpose |
 |----------|--------|---------|
 | `entries` | Query result | List of recent Entry objects |
@@ -104,6 +70,7 @@ Uses Jinja2 (Flask's default) with inline template definition:
 | `db_type` | Environment check | Shows "PostgreSQL" or "SQLite" |
 
 **Template Features Used**:
+
 - `{% for entry in entries %}` - Iteration
 - `{{ entry.value }}` - Variable interpolation
 - `{{ entry.created_at.strftime() }}` - Method calls
@@ -116,13 +83,14 @@ Single model representing a registration entry:
 ```python
 class Entry(db.Model):
     __tablename__ = 'entries'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     value = db.Column(db.Text, nullable=False)     # Registrant info
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 ```
 
 **Database Operations**:
+
 | Operation | Code Pattern | SQL Equivalent |
 |-----------|--------------|----------------|
 | Create | `db.session.add(entry)` | INSERT INTO entries... |
@@ -132,7 +100,8 @@ class Entry(db.Model):
 
 ### 4. WSGI Server
 
-**Entry Point** ([wsgi.py](../../application/wsgi.py)):
+**Entry Point** (`application/wsgi.py`):
+
 ```python
 from app import app
 
@@ -141,6 +110,7 @@ if __name__ == '__main__':
 ```
 
 **Gunicorn Configuration** (via systemd unit):
+
 ```bash
 gunicorn --bind 0.0.0.0:5001 wsgi:app
 ```
@@ -151,8 +121,6 @@ gunicorn --bind 0.0.0.0:5001 wsgi:app
 | Workers | 1 (default) | Single worker sufficient for small load |
 | Module | `wsgi:app` | Import `app` object from `wsgi.py` |
 
----
-
 ## Data Flow
 
 ### Registration Flow (Happy Path)
@@ -160,55 +128,53 @@ gunicorn --bind 0.0.0.0:5001 wsgi:app
 ```
 1. User submits form
    POST / {value: "John Doe"}
-        │
-        ▼
+        |
+        v
 2. Route handler receives request
    @app.route('/', methods=['POST'])
-        │
-        ▼
+        |
+        v
 3. Create Entry object
    entry = Entry(value="John Doe")
-        │
-        ▼
+        |
+        v
 4. Persist to database
    db.session.add(entry)
    db.session.commit()
-        │
-        ▼
+        |
+        v
 5. Redirect to GET /
    return redirect(url_for('index'))
-        │
-        ▼
+        |
+        v
 6. Query recent entries
    Entry.query.order_by(created_at.desc()).limit(10)
-        │
-        ▼
+        |
+        v
 7. Render template with data
    render_template_string(INDEX_TEMPLATE, entries=entries, ...)
-        │
-        ▼
+        |
+        v
 8. Return HTML to user
 ```
 
 ### Request/Response Cycle
 
 ```
-┌─────────┐     ┌─────────┐     ┌─────────┐     ┌─────────┐
-│ Browser │────▶│ nginx   │────▶│Gunicorn │────▶│ Flask   │
-└─────────┘     └─────────┘     └─────────┘     └─────────┘
-                                                     │
-                    ┌────────────────────────────────┘
-                    ▼
-              ┌─────────┐     ┌─────────┐
-              │ Model   │────▶│PostgreSQL│
-              └─────────┘     └─────────┘
++---------+     +---------+     +---------+     +---------+
+| Browser |---->| nginx   |---->|Gunicorn |---->| Flask   |
++---------+     +---------+     +---------+     +---------+
+                                                     |
+                    +--------------------------------+
+                    v
+              +---------+     +---------+
+              | Model   |---->|PostgreSQL|
+              +---------+     +---------+
 ```
-
----
 
 ## Dependencies
 
-### Python Packages ([requirements.txt](../../application/requirements.txt))
+### Python Packages (`application/requirements.txt`)
 
 | Package | Purpose |
 |---------|---------|
@@ -225,8 +191,6 @@ gunicorn --bind 0.0.0.0:5001 wsgi:app
 | PostgreSQL | Azure PaaS | Data persistence |
 | nginx | vm-proxy | Reverse proxy, SSL |
 
----
-
 ## Future Evolution
 
 For a production-ready application, this simple structure would evolve:
@@ -240,31 +204,6 @@ For a production-ready application, this simple structure would evolve:
 | No auth | Flask-Login + session management |
 | Single model | Multiple models with relationships |
 
-**Example Production Structure**:
-```
-application/
-├── app/
-│   ├── __init__.py      # App factory
-│   ├── models/
-│   │   ├── __init__.py
-│   │   └── entry.py
-│   ├── routes/
-│   │   ├── __init__.py
-│   │   ├── main.py
-│   │   └── api.py
-│   ├── templates/
-│   │   ├── base.html
-│   │   └── index.html
-│   └── static/
-├── config.py
-├── wsgi.py
-└── requirements.txt
-```
+## Next Level
 
----
-
-## Related Documents
-
-- [C1-context.md](C1-context.md) - C4 Level 1: System Context
-- [C2-containers.md](C2-containers.md) - C4 Level 2: Container diagram
-- [../../application/app.py](../../application/app.py) - Application source code
+See [Deployment](05-deployment.md) for how this system is deployed on Azure infrastructure.
