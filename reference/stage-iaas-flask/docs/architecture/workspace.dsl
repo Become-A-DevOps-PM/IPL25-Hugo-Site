@@ -68,7 +68,12 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                     tags "Bastion"
                 }
                 
-                proxy = container "Reverse Proxy" "SSL termination, HTTPS endpoint, request forwarding" "nginx on Ubuntu 22.04 VM"
+                proxy = container "Reverse Proxy" "SSL termination, HTTPS endpoint, request forwarding" "nginx on Ubuntu 22.04 VM" {
+                    # Components
+                    httpRedirect = component "HTTP Redirect Block" "Redirects HTTP to HTTPS" "nginx server block port 80"
+                    httpsServerBlock = component "HTTPS Server Block" "SSL termination and request handling" "nginx server block port 443"
+                    sslCertificate = component "SSL Certificate" "TLS/SSL certificate for encryption" "Let's Encrypt"
+                }
                 
                 flask = container "Flask Application" "Handles registration logic, serves HTML, REST API" "Python/Gunicorn on Ubuntu 22.04 VM" {
                     tags "Application"
@@ -104,15 +109,28 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
         webinarSystem.proxy -> webinarSystem.flask "Forwards requests" "HTTP/5001"
         webinarSystem.flask -> webinarSystem.database "Reads/writes data" "PostgreSQL/5432"
 
-        # Relationships - Component Level
+        # Relationships - Component Level (Flask)
         webinarSystem.proxy -> webinarSystem.flask.wsgi "HTTP requests" "HTTP/5001"
         webinarSystem.flask.wsgi -> webinarSystem.flask.routes "Forwards requests" "WSGI"
         webinarSystem.flask.routes -> webinarSystem.flask.templates "Renders HTML" "Jinja2 API"
         webinarSystem.flask.routes -> webinarSystem.flask.models "CRUD operations" "Python method calls"
         webinarSystem.flask.models -> webinarSystem.database "SQL queries" "psycopg2"
         webinarSystem.flask.templates -> webinarSystem.browser "Returns HTML" "HTTP Response" {
+            tags "FlaskComponent"
+        }
+
+        # Relationships - Component Level (Proxy)
+        webinarSystem.browser -> webinarSystem.proxy.httpRedirect "HTTP request" "HTTP/80" {
             tags "ComponentLevel"
         }
+        webinarSystem.proxy.httpRedirect -> webinarSystem.browser "301 Redirect to HTTPS" "HTTP Response" {
+            tags "ComponentLevel"
+        }
+        webinarSystem.browser -> webinarSystem.proxy.httpsServerBlock "HTTPS request" "HTTPS/443" {
+            tags "ComponentLevel"
+        }
+        webinarSystem.proxy.httpsServerBlock -> webinarSystem.proxy.sslCertificate "Uses" "TLS"
+        webinarSystem.proxy.httpsServerBlock -> webinarSystem.flask "Forwards to backend" "HTTP/5001"
 
         # Deployment - Azure IaaS
         production = deploymentEnvironment "Production" {
@@ -166,6 +184,15 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             include attendee
             include webinarSystem.browser
             include webinarSystem.proxy
+        }
+
+        # C3 - Component (Reverse Proxy zoom)
+        component webinarSystem.proxy "C3-Components-Proxy" "Component diagram showing nginx internals" {
+            include *
+            include attendee
+            include webinarSystem.browser
+            include webinarSystem.flask
+            exclude relationship.tag==FlaskComponent
         }
 
         # Deployment
