@@ -135,10 +135,10 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
         # Deployment - Azure IaaS
         production = deploymentEnvironment "Production" {
             deploymentNode "User Environment" "User's local machine" "Desktop/Laptop" {
-                deploymentNode "Web Browser" "" "Chrome, Firefox, Safari" {
+                deploymentNode "Web Browser" "User's web browser for accessing the application" "Chrome, Firefox, Safari" {
                     browserInstance = containerInstance webinarSystem.browser
                 }
-                deploymentNode "Terminal" "" "Azure CLI, SSH" {
+                deploymentNode "Terminal" "Command-line interface for administrative tasks" "Azure CLI, SSH" {
                     terminalInstance = containerInstance webinarSystem.terminal
                 }
             }
@@ -150,29 +150,29 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                         nsgBastion = infrastructureNode "NSG Bastion" "Allow SSH from Internet" "Azure NSG" {
                             tags "NSG"
                         }
-                        deploymentNode "Bastion Host" "" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
+                        deploymentNode "Bastion Host" "SSH jump server for secure admin access" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
                             bastionInstance = containerInstance webinarSystem.bastion
                         }
                     }
-                    
+
                     deploymentNode "Web Subnet" "snet-web" "10.0.2.0/24" {
                         nsgWeb = infrastructureNode "NSG Web" "Allow HTTP/HTTPS from Internet" "Azure NSG" {
                             tags "NSG"
                         }
-                        deploymentNode "Reverse Proxy" "" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
+                        deploymentNode "Reverse Proxy" "nginx server for SSL termination" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
                             proxyInstance = containerInstance webinarSystem.proxy
                         }
                     }
-                    
+
                     deploymentNode "App Subnet" "snet-app" "10.0.3.0/24" {
                         nsgApp = infrastructureNode "NSG App" "Allow HTTP from Web Subnet" "Azure NSG" {
                             tags "NSG"
                         }
-                        deploymentNode "Application Server" "" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
+                        deploymentNode "Application Server" "Flask application with Gunicorn" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
                             flaskInstance = containerInstance webinarSystem.flask
                         }
                     }
-                    
+
                     deploymentNode "Data Subnet" "snet-data" "10.0.4.0/24" {
                         nsgData = infrastructureNode "NSG Data" "Allow PostgreSQL from App Subnet" "Azure NSG" {
                             tags "NSG"
