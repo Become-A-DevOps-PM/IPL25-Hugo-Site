@@ -5,7 +5,7 @@
   "description" : "C4 architecture model for the webinar registration system deployed on Azure IaaS",
   "documentation" : { },
   "id" : 1,
-  "lastModifiedDate" : "2025-12-15T14:12:46Z",
+  "lastModifiedDate" : "2025-12-15T14:24:20Z",
   "model" : {
     "deploymentNodes" : [ {
       "children" : [ {
@@ -16,7 +16,7 @@
           "id" : "45",
           "instanceId" : 1,
           "properties" : {
-            "structurizr.dsl.identifier" : "production.61267a61-9fb0-4ed3-8cd9-2fd09a3f696f.0d2f3b3d-54db-4661-92be-ae6c856f6b84.browserInstance"
+            "structurizr.dsl.identifier" : "production.35c7f9aa-106d-458b-8717-739213e7c1f6.d617c60c-ed38-4c96-bb52-386573a67d53.browserInstance"
           },
           "relationships" : [ {
             "description" : "HTTPS requests",
@@ -28,12 +28,13 @@
           } ],
           "tags" : "Container Instance"
         } ],
+        "description" : "User's web browser for accessing the application",
         "environment" : "Production",
         "id" : "44",
         "instances" : "1",
         "name" : "Web Browser",
         "properties" : {
-          "structurizr.dsl.identifier" : "production.61267a61-9fb0-4ed3-8cd9-2fd09a3f696f.0d2f3b3d-54db-4661-92be-ae6c856f6b84"
+          "structurizr.dsl.identifier" : "production.35c7f9aa-106d-458b-8717-739213e7c1f6.d617c60c-ed38-4c96-bb52-386573a67d53"
         },
         "tags" : "Element,Deployment Node",
         "technology" : "Chrome, Firefox, Safari"
@@ -45,7 +46,7 @@
           "id" : "47",
           "instanceId" : 1,
           "properties" : {
-            "structurizr.dsl.identifier" : "production.61267a61-9fb0-4ed3-8cd9-2fd09a3f696f.9d57a3ff-c565-4f25-9aa4-a29f2d115d08.terminalInstance"
+            "structurizr.dsl.identifier" : "production.35c7f9aa-106d-458b-8717-739213e7c1f6.679dfc3c-1dbe-48b9-8974-871ad5247fff.terminalInstance"
           },
           "relationships" : [ {
             "description" : "Connects to",
@@ -57,12 +58,13 @@
           } ],
           "tags" : "Container Instance"
         } ],
+        "description" : "Command-line interface for administrative tasks",
         "environment" : "Production",
         "id" : "46",
         "instances" : "1",
         "name" : "Terminal",
         "properties" : {
-          "structurizr.dsl.identifier" : "production.61267a61-9fb0-4ed3-8cd9-2fd09a3f696f.9d57a3ff-c565-4f25-9aa4-a29f2d115d08"
+          "structurizr.dsl.identifier" : "production.35c7f9aa-106d-458b-8717-739213e7c1f6.679dfc3c-1dbe-48b9-8974-871ad5247fff"
         },
         "tags" : "Element,Deployment Node",
         "technology" : "Azure CLI, SSH"
@@ -73,7 +75,7 @@
       "instances" : "1",
       "name" : "User Environment",
       "properties" : {
-        "structurizr.dsl.identifier" : "production.61267a61-9fb0-4ed3-8cd9-2fd09a3f696f"
+        "structurizr.dsl.identifier" : "production.35c7f9aa-106d-458b-8717-739213e7c1f6"
       },
       "tags" : "Element,Deployment Node",
       "technology" : "Desktop/Laptop"
@@ -88,7 +90,7 @@
               "id" : "53",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.b319ec3d-53bd-4cae-81bd-74ecdc274dbf.7d58b962-0c75-42ee-87d7-cc2e51eff5c4.bastionInstance"
+                "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.cdb44db8-837c-4fb7-83a9-99f46a9d936f.d8c1d7bc-8d48-4e21-9c78-1fb172fcd295.bastionInstance"
               },
               "relationships" : [ {
                 "description" : "SSH",
@@ -107,12 +109,13 @@
               } ],
               "tags" : "Container Instance"
             } ],
+            "description" : "SSH jump server for secure admin access",
             "environment" : "Production",
             "id" : "52",
             "instances" : "1",
             "name" : "Bastion Host",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.b319ec3d-53bd-4cae-81bd-74ecdc274dbf.7d58b962-0c75-42ee-87d7-cc2e51eff5c4"
+              "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.cdb44db8-837c-4fb7-83a9-99f46a9d936f.d8c1d7bc-8d48-4e21-9c78-1fb172fcd295"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Azure VM, Ubuntu 24.04 LTS, Standard_B1s"
@@ -126,7 +129,7 @@
             "id" : "51",
             "name" : "NSG Bastion",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.b319ec3d-53bd-4cae-81bd-74ecdc274dbf.nsgBastion"
+              "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.cdb44db8-837c-4fb7-83a9-99f46a9d936f.nsgBastion"
             },
             "tags" : "Element,Infrastructure Node,NSG",
             "technology" : "Azure NSG"
@@ -134,7 +137,7 @@
           "instances" : "1",
           "name" : "Bastion Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.b319ec3d-53bd-4cae-81bd-74ecdc274dbf"
+            "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.cdb44db8-837c-4fb7-83a9-99f46a9d936f"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.1.0/24"
@@ -147,7 +150,7 @@
               "id" : "58",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.757cfea6-e2eb-42e7-806c-eee8dc6739cb.fdfaf551-d857-4351-ac62-156b2865ba5b.proxyInstance"
+                "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.d9b27c90-5916-4129-8ab4-73bcacda5dbf.8237eece-eff5-4e57-95f7-c5e41d4dc8c9.proxyInstance"
               },
               "relationships" : [ {
                 "description" : "301 Redirect to HTTPS",
@@ -166,12 +169,13 @@
               } ],
               "tags" : "Container Instance"
             } ],
+            "description" : "nginx server for SSL termination",
             "environment" : "Production",
             "id" : "57",
             "instances" : "1",
             "name" : "Reverse Proxy",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.757cfea6-e2eb-42e7-806c-eee8dc6739cb.fdfaf551-d857-4351-ac62-156b2865ba5b"
+              "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.d9b27c90-5916-4129-8ab4-73bcacda5dbf.8237eece-eff5-4e57-95f7-c5e41d4dc8c9"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Azure VM, Ubuntu 24.04 LTS, Standard_B1s"
@@ -185,7 +189,7 @@
             "id" : "56",
             "name" : "NSG Web",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.757cfea6-e2eb-42e7-806c-eee8dc6739cb.nsgWeb"
+              "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.d9b27c90-5916-4129-8ab4-73bcacda5dbf.nsgWeb"
             },
             "tags" : "Element,Infrastructure Node,NSG",
             "technology" : "Azure NSG"
@@ -193,7 +197,7 @@
           "instances" : "1",
           "name" : "Web Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.757cfea6-e2eb-42e7-806c-eee8dc6739cb"
+            "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.d9b27c90-5916-4129-8ab4-73bcacda5dbf"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.2.0/24"
@@ -206,7 +210,7 @@
               "id" : "65",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.45bdadd2-5a42-4baf-baba-42fb53168406.9eae6ba5-ed87-4076-a6ee-c4aec08dfdc9.flaskInstance"
+                "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.b51a59de-0375-4621-a6d7-f28e09a7d15f.8ca67fc8-2eb9-442b-88ca-fb15686dd7f6.flaskInstance"
               },
               "relationships" : [ {
                 "description" : "Returns HTML",
@@ -225,12 +229,13 @@
               } ],
               "tags" : "Container Instance"
             } ],
+            "description" : "Flask application with Gunicorn",
             "environment" : "Production",
             "id" : "64",
             "instances" : "1",
             "name" : "Application Server",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.45bdadd2-5a42-4baf-baba-42fb53168406.9eae6ba5-ed87-4076-a6ee-c4aec08dfdc9"
+              "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.b51a59de-0375-4621-a6d7-f28e09a7d15f.8ca67fc8-2eb9-442b-88ca-fb15686dd7f6"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Azure VM, Ubuntu 24.04 LTS, Standard_B1s"
@@ -244,7 +249,7 @@
             "id" : "63",
             "name" : "NSG App",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.45bdadd2-5a42-4baf-baba-42fb53168406.nsgApp"
+              "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.b51a59de-0375-4621-a6d7-f28e09a7d15f.nsgApp"
             },
             "tags" : "Element,Infrastructure Node,NSG",
             "technology" : "Azure NSG"
@@ -252,7 +257,7 @@
           "instances" : "1",
           "name" : "App Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.45bdadd2-5a42-4baf-baba-42fb53168406"
+            "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.b51a59de-0375-4621-a6d7-f28e09a7d15f"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.3.0/24"
@@ -265,7 +270,7 @@
               "id" : "72",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.99a39d91-f1f5-4103-83d5-2dccd97a2142.d2e9db78-fbf9-462a-8c7a-317ff8633ecd.databaseInstance"
+                "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.74cd5b88-bbc6-43c2-971f-0b3653e2ba08.ba845798-f67d-4670-86cc-ab9d550d4508.databaseInstance"
               },
               "tags" : "Container Instance"
             } ],
@@ -275,7 +280,7 @@
             "instances" : "1",
             "name" : "Azure PostgreSQL Flexible Server",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.99a39d91-f1f5-4103-83d5-2dccd97a2142.d2e9db78-fbf9-462a-8c7a-317ff8633ecd"
+              "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.74cd5b88-bbc6-43c2-971f-0b3653e2ba08.ba845798-f67d-4670-86cc-ab9d550d4508"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Burstable B1ms"
@@ -289,7 +294,7 @@
             "id" : "70",
             "name" : "NSG Data",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.99a39d91-f1f5-4103-83d5-2dccd97a2142.nsgData"
+              "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.74cd5b88-bbc6-43c2-971f-0b3653e2ba08.nsgData"
             },
             "tags" : "Element,Infrastructure Node,NSG",
             "technology" : "Azure NSG"
@@ -297,7 +302,7 @@
           "instances" : "1",
           "name" : "Data Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11.99a39d91-f1f5-4103-83d5-2dccd97a2142"
+            "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274.74cd5b88-bbc6-43c2-971f-0b3653e2ba08"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.4.0/24"
@@ -308,7 +313,7 @@
         "instances" : "1",
         "name" : "Virtual Network",
         "properties" : {
-          "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376.c5fba098-4873-43f5-9b0d-821e817b5f11"
+          "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c.421dccd9-974c-4b74-846b-11321a943274"
         },
         "tags" : "Element,Deployment Node",
         "technology" : "10.0.0.0/16"
@@ -319,7 +324,7 @@
       "instances" : "1",
       "name" : "Azure Cloud",
       "properties" : {
-        "structurizr.dsl.identifier" : "production.9b38c6dd-f02c-41c6-b30d-510f4a796376"
+        "structurizr.dsl.identifier" : "production.e85e53f6-750b-4a83-a40a-62893b735b8c"
       },
       "tags" : "Element,Deployment Node",
       "technology" : "Azure IaaS"
@@ -750,7 +755,7 @@
   },
   "name" : "Webinar Registration Website",
   "properties" : {
-    "structurizr.inspection.error" : "9",
+    "structurizr.inspection.error" : "4",
     "structurizr.inspection.info" : "0",
     "structurizr.inspection.ignore" : "0",
     "structurizr.inspection.warning" : "0"

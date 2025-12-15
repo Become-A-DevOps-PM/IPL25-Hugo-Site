@@ -103,7 +103,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
         
         webinarSystem.browser -> webinarSystem.proxy "HTTPS requests" "HTTPS/443"
         webinarSystem.terminal -> webinarSystem.bastion "Connects to" "Azure CLI, SSH"
-        
+
         webinarSystem.bastion -> webinarSystem.proxy "SSH" "SSH/22"
         webinarSystem.bastion -> webinarSystem.flask "SSH" "SSH/22"
         webinarSystem.proxy -> webinarSystem.flask "Forwards requests" "HTTP/5001"
