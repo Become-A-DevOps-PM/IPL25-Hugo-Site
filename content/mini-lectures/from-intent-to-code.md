@@ -7,6 +7,8 @@ draft = false
 
 [Watch the presentation](/presentations/mini-lectures/from-intent-to-code.html)
 
+[View C4 architecture example](/presentations/mini-lectures/c4-architecture-example/)
+
 ---
 
 Software projects begin with intentions and end with running systems. Between these endpoints lies a progression of increasingly concrete representations—documents, diagrams, and finally code—each serving a distinct purpose in transforming business objectives into operational software. Understanding this **abstraction hierarchy** reveals why planning remains essential despite the inherent uncertainty at each level, and how AI systems complement human judgment in navigating these transitions.
