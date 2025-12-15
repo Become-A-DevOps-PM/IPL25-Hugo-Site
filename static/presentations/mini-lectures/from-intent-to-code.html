@@ -39,72 +39,135 @@
                     TO CODE
                 </h1>
 
-                <p class="subtitle">Navigating the abstraction hierarchy in software planning</p>
-                <p class="course-info">Understanding probabilistic vs deterministic representations</p>
+                <p class="subtitle">From value proposition to value delivery</p>
+                <p class="course-info">Understanding abstraction levels in software planning</p>
 
                 <div class="bottom-accent"></div>
             </section>
 
-            <!-- The Abstraction Hierarchy -->
+            <!-- It Starts with Intent -->
             <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">The Abstraction Hierarchy</h2>
+                <h2 class="slide-header">It Starts with Intent</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">1. Business Intent</span> - Strategic objectives and value propositions</p>
+                    <p><span class="highlight">Intent is the trigger</span> — a business need, an idea, a request. It can be vague or specific.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">2. Requirements Specification</span> - Stakeholder needs and system constraints</p>
+                    <p><span class="highlight">Intent is a value proposition:</span> a statement of what value we want to create</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">3. Product Requirements Document (PRD)</span> - Feature definitions and success criteria</p>
+                    <p><span class="highlight">Running systems are value delivery:</span> that value actually reaching users</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">4. User Stories and Epics</span> - User-centric functionality descriptions</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">5. Backlog Items</span> - Specific, prioritized work units</p>
+                    <p>Everything in between — documents, diagrams, code — <span class="highlight">transforms proposition into delivery</span></p>
                 </div>
             </section>
 
-            <!-- Hierarchy continued -->
+            <!-- Abstraction Levels -->
             <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">The Abstraction Hierarchy (continued)</h2>
+                <h2 class="slide-header">Abstraction Levels</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">6. Definition of Done</span> - Acceptance criteria and completion standards</p>
+                    <p><span class="highlight">1. Business Requirements Document (BRD)</span> — First formalization of intent. Captures the business need in stakeholder language.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">7. Code</span> - Executable implementation (the only deterministic level)</p>
+                    <p><span class="highlight">2. Product Requirements Document (PRD)</span> — Translates business need into product specifications: functional/non-functional requirements, user stories, constraints.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p>Each level provides <span class="highlight">greater specificity</span> than its predecessor while remaining <span class="highlight">incomplete</span> until code executes</p>
+                    <p><span class="highlight">3. Architecture Documentation (C4 Model)</span> — Defines technical design: a hierarchical view that zooms from system context down to code.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>This pattern has gained traction in <span class="highlight">DevOps and the "everything as code" era</span></p>
                 </div>
             </section>
 
-            <!-- Probabilistic vs Deterministic -->
+            <!-- Lenses, Not Phases -->
             <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">Nature of Abstraction Levels</h2>
+                <h2 class="slide-header">Lenses, Not Sequential Phases</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Probabilistic Nature (Levels 1-6):</span> Higher levels operate in the realm of possibility and probability—they leave implementation space open</p>
+                    <p>These abstraction levels are <span class="highlight">lenses on the same system</span>, not waterfall phases</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Deterministic Reality (Level 7):</span> Code transitions from probabilistic to deterministic—it produces specific, measurable behavior</p>
+                    <p>Teams don't complete one level before starting the next — they <span class="highlight">cut through all levels</span> with minimal scope</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">"Code is Truth":</span> Running code is the only artifact that unambiguously describes what the system actually does</p>
+                    <p>Goal: reach <span class="highlight">running software quickly</span>, then iterate to expand</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p>This incompleteness is not a flaw but a <span class="highlight">fundamental characteristic</span> of the planning process</p>
+                    <p>A single feature can have its own slice of <span class="highlight">business context, product spec, architecture, and code</span> — all developed together</p>
+                </div>
+            </section>
+
+            <!-- C4 Model -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">The C4 Model</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Context</span> — Who uses the system and how it fits into its environment</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Containers</span> — The major technical building blocks (applications, databases, servers)</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Components</span> — The internal structure of each container</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Code</span> — The actual implementation</p>
+                </div>
+            </section>
+
+            <!-- Tech Stack & ADRs -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Tech Stack Decisions</h2>
+
+                <div class="fragment info-box">
+                    <p>Technology stack is typically defined at the <span class="highlight">Context level</span> — an early commitment based on PRD constraints and team capabilities</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Choices are documented in <span class="highlight">Architecture Decision Records (ADRs)</span> and guide all subsequent design</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Tech stack decisions are <span class="highlight">pragmatic commitments:</span> proceed with initial choices until concrete evidence proves them inadequate</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Endless deliberation over alternatives <span class="highlight">delays progress without adding value</span></p>
+                </div>
+            </section>
+
+            <!-- Probabilistic to Deterministic -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Probabilistic → Deterministic</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Raw intent</span> permits almost unlimited solutions</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Business requirements</span> narrow the field. <span class="highlight">Product requirements</span> constrain it further. <span class="highlight">Architecture</span> specifies structure.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Code is deterministic:</span> doing exactly what it specifies, with no remaining ambiguity</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>But code is not the destination — <span class="highlight">running software is.</span> Code must be deployed, configured, and operated before it delivers value.</p>
                 </div>
             </section>
 
@@ -113,103 +176,95 @@
                 <h2 class="slide-header">Why Intermediate Levels Matter</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">1. Shared Understanding Across Stakeholders</span> - Different groups engage at different levels, each bringing specialized knowledge that applies most effectively at specific altitudes</p>
+                    <p><span class="highlight">Different Stakeholders, Different Altitudes</span> — Each level enables collaboration between people who think at different altitudes</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">2. Progressive Risk Reduction</span> - Each step down the hierarchy reduces uncertainty, revealing risks at stages where course correction costs less</p>
+                    <p><span class="highlight">Progressive Risk Reduction</span> — Each step down reveals risks earlier, where course correction costs less</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">3. Managing Complexity Through Decomposition</span> - Breaks large systems into tractable units without requiring anyone to hold the entire system in mind</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">4. Preserving Intent Through Implementation</span> - Maintains the reasoning thread from strategic vision through thousands of micro-decisions</p>
+                    <p><span class="highlight">Preserving Intent Through Implementation</span> — Higher levels preserve reasoning behind countless micro-decisions</p>
                 </div>
             </section>
 
-            <!-- AI as Translation Layer -->
+            <!-- The Incompleteness Problem -->
             <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">AI as a Translation Layer</h2>
+                <h2 class="slide-header">The Incompleteness Problem</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Pattern Recognition:</span> AI systems learn relationships between abstraction levels from vast software artifacts</p>
+                    <p>Intermediate levels are always <span class="highlight">incomplete descriptions</span> of the final system — this is a mathematical certainty</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Bidirectional Translation:</span> AI can generate requirements from intent, or extract documentation from code—working in both directions</p>
+                    <p>Planning documents represent <span class="highlight">possibilities, not certainties</span></p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Probabilistic Output:</span> AI translations represent possibilities, not certainties—they provide starting points that accelerate translation but require validation</p>
+                    <p>Implementation reveals constraints and opportunities that <span class="highlight">no upfront planning can anticipate</span></p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Contextual Intelligence:</span> AI with organizational knowledge generates proposals aligned with existing systems, architecture, and team capabilities</p>
+                    <p>Plans don't need to be complete to be useful — the value lies in <span class="highlight">direction and context</span>, not exhaustive specification</p>
+                </div>
+            </section>
+
+            <!-- AI as Translation Partner -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">AI as a Translation Partner</h2>
+
+                <div class="fragment info-box">
+                    <p>AI learns relationships between abstraction levels — <span class="highlight">how intent maps to requirements, requirements to architecture, architecture to code</span></p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Given a business need</span> → AI drafts product requirements</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Given requirements</span> → AI proposes architectural structures</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Given code</span> → AI extracts documentation and updates higher-level artifacts</p>
                 </div>
             </section>
 
             <!-- Human-AI Complementarity -->
             <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">Human-AI Complementarity</h2>
+                <h2 class="slide-header">The Complementary Partnership</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">AI Excels Upward (Concrete → Abstract):</span> Given code, AI identifies patterns, extracts functionality, generates documentation—remarkable at recognizing what implementations represent</p>
+                    <p><span class="highlight">Humans excel downward (Abstract → Concrete):</span> taking nebulous objectives and imagining specific features</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Humans Excel Downward (Abstract → Concrete):</span> From nebulous objectives, humans imagine specific features, envision experiences, exercise judgment about what matters</p>
+                    <p><span class="highlight">AI excels upward (Concrete → Abstract):</span> identifying patterns, generating documentation, proposing higher-level descriptions</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Complementary Partnership:</span> Humans drive intent into specification; AI generates drafts and maintains alignment; together they navigate the hierarchy more effectively</p>
+                    <p><span class="highlight">Bidirectional flow:</span> Human intent drives downward specification while AI maintains upward coherence</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Bidirectional Feedback Loop:</span> Human intent drives downward while AI maintains upward coherence—creating alignment neither could achieve alone</p>
-                </div>
-            </section>
-
-            <!-- Practical Implications -->
-            <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">Practical Implications for PM</h2>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">Perfection Less Critical:</span> Since higher levels are inherently probabilistic, investing effort to eliminate all ambiguity wastes resources</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">Iteration Cycles Shorten:</span> Translation between levels accelerates—moving from intent to backlog in hours rather than weeks</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">Documentation Maintenance Automated:</span> AI propagates changes through abstraction levels, keeping specifications aligned with reality</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">Tighter Strategic Coupling:</span> AI-assisted translation maintains connection between business vision and daily implementation</p>
+                    <p>Together they navigate the hierarchy <span class="highlight">more effectively than either could alone</span></p>
                 </div>
             </section>
 
-            <!-- Key Takeaway -->
+            <!-- Key Takeaways -->
             <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">Key Takeaway</h2>
+                <h2 class="slide-header">Key Takeaways</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">The Progression:</span> Software moves through abstraction levels from business intent to executable code</p>
+                    <p><span class="highlight">1. Intent → Running Systems</span><br>Software projects transform value propositions into value delivery through progressive formalization: BRD → PRD → C4 → Code → Running Software</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">The Reality:</span> Each level operates probabilistically until code produces deterministic behavior</p>
+                    <p><span class="highlight">2. Lenses, Not Phases</span><br>Abstraction levels are perspectives you cut through together, not sequential gates. Get to running software fast, then iterate.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">The Collaboration:</span> AI translates between levels (excelling upward) while humans guide direction (excelling downward)</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">The Outcome:</span> Faster iteration, better alignment, and more sustainable planning practices across the abstraction hierarchy</p>
+                    <p><span class="highlight">3. Humans Down, AI Up</span><br>Humans drive intent into concrete specifications. AI maintains coherence upward. This complementary partnership enables faster, more aligned delivery.</p>
                 </div>
             </section>
 
