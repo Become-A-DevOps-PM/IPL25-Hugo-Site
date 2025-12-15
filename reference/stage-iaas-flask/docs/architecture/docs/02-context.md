@@ -4,13 +4,13 @@
 
 This document provides the highest level view of the Webinar Registration Website system, showing how it fits into the broader environment of users and external systems.
 
-## System Context Diagram
+### System Context Diagram
 
 ![](embed:C1-Context)
 
-## Context Description
+### Context Description
 
-### The System
+#### The System
 
 **Webinar Registration Website** is a web application that:
 
@@ -20,7 +20,7 @@ This document provides the highest level view of the Webinar Registration Websit
 - Runs entirely on Azure infrastructure (IaaS approach)
 - Includes the web frontend (HTML/CSS/JS rendered in user's browser)
 
-### Users (Actors)
+#### Users (Actors)
 
 | Actor | Description | Interaction |
 |-------|-------------|-------------|
@@ -28,7 +28,7 @@ This document provides the highest level view of the Webinar Registration Websit
 | **Marketing Administrator** | Internal staff responsible for managing webinar events | View registration lists via browser (HTTPS) |
 | **System Administrator** | IT operations staff responsible for infrastructure | Deploy, configure, and maintain via terminal (SSH) |
 
-## Key Architectural Decisions
+### Key Architectural Decisions
 
 1. **Pure IaaS Approach**: Traditional infrastructure model using self-managed VMs on Azure
 2. **Python Flask**: Lightweight web framework with Jinja2 templating (SSR) and SQLAlchemy ORM
@@ -36,7 +36,7 @@ This document provides the highest level view of the Webinar Registration Websit
 4. **SSL/TLS Encryption**: Self-signed certificates for learning environment (Let's Encrypt recommended for production)
 5. **No External Identity Provider**: Simple application without authentication requirements for attendee registration
 
-## Quality Attributes
+### Quality Attributes
 
 From the PRD, the key non-functional requirements affecting architecture:
 
@@ -47,16 +47,16 @@ From the PRD, the key non-functional requirements affecting architecture:
 | **Capacity** | Support 100 concurrent users | Single app server sufficient |
 | **Security** | HTTPS only, OWASP guidelines | SSL termination at proxy, bastion host for SSH access, private subnets for app/data tiers, NSGs restricting traffic flow |
 
-## Scope Boundary
+### Scope Boundary
 
-### In Scope
+#### In Scope
 
 - Registration form and data persistence
 - Admin view of registrations
 - HTTPS encryption
 - Basic health monitoring
 
-### Out of Scope (for this stage)
+#### Out of Scope (for this stage)
 
 - User authentication/authorization
 - Email notifications
@@ -64,6 +64,6 @@ From the PRD, the key non-functional requirements affecting architecture:
 - Multi-region deployment
 - Auto-scaling
 
-## Next Level
+### Next Level
 
 See [Containers (C2)](03-containers.md) for the technical building blocks that make up this system.

@@ -6,13 +6,13 @@ This document zooms into the Webinar Registration Website system to show the hig
 
 > **C4 "Container"** = A separately deployable/runnable unit (VM, application, database), NOT a Docker container.
 
-## Container Diagram
+### Container Diagram
 
 ![](embed:C2-Containers-Full)
 
-## Container Inventory
+### Container Inventory
 
-### Compute Containers
+#### Compute Containers
 
 | Container | Technology | Purpose | Network Location |
 |-----------|------------|---------|------------------|
@@ -21,7 +21,7 @@ This document zooms into the Webinar Registration Website system to show the hig
 | **Flask Application** | Python 3 + Gunicorn on Ubuntu 24.04 | Business logic, HTML rendering, REST endpoints | `snet-app` (10.0.3.0/24), Private only |
 | **PostgreSQL Database** | Azure PostgreSQL Flexible Server | Persistent data storage | `snet-data` (10.0.4.0/24), Private endpoint |
 
-### Supporting Infrastructure
+#### Supporting Infrastructure
 
 | Component | Purpose |
 |-----------|---------|
@@ -29,21 +29,21 @@ This document zooms into the Webinar Registration Website system to show the hig
 | **NSGs** | Network Security Groups per subnet controlling traffic flow |
 | **ASGs** | Application Security Groups for role-based rules |
 
-## Network Flow
+### Network Flow
 
-### User Traffic (Registration)
+#### User Traffic (Registration)
 
 ```
 Internet -> Public IP (pip-proxy) -> nginx:443 -> vm-app:5001 -> PostgreSQL:5432
 ```
 
-### Administrative Access
+#### Administrative Access
 
 ```
 Internet -> Public IP (pip-bastion) -> vm-bastion:22 -> (SSH tunnel) -> vm-proxy/vm-app:22
 ```
 
-### Security Boundaries
+#### Security Boundaries
 
 ```
 +-------------------------------------------------------------------------+
@@ -66,9 +66,9 @@ Internet -> Public IP (pip-bastion) -> vm-bastion:22 -> (SSH tunnel) -> vm-proxy
 +------------------------------------------------------------------------+
 ```
 
-## Container Details
+### Container Details
 
-### 1. Bastion Host (`vm-bastion`)
+#### 1. Bastion Host (`vm-bastion`)
 
 **Purpose**: Secure administrative access without exposing internal VMs
 
@@ -81,7 +81,7 @@ Internet -> Public IP (pip-bastion) -> vm-bastion:22 -> (SSH tunnel) -> vm-proxy
 | Outbound Rules | SSH (22) to internal VMs |
 | Security | Fail2ban (3 strikes, 1 hour ban) |
 
-### 2. Reverse Proxy (`vm-proxy`)
+#### 2. Reverse Proxy (`vm-proxy`)
 
 **Purpose**: SSL termination, public endpoint, future load balancing
 
@@ -102,7 +102,7 @@ Internet -> Public IP (pip-bastion) -> vm-bastion:22 -> (SSH tunnel) -> vm-proxy
 - Proxy headers (X-Real-IP, X-Forwarded-For, X-Forwarded-Proto)
 - Upstream: `http://vm-app:5001`
 
-### 3. Flask Application (`vm-app`)
+#### 3. Flask Application (`vm-app`)
 
 **Purpose**: Core application logic and data access
 
@@ -125,7 +125,7 @@ Internet -> Public IP (pip-bastion) -> vm-bastion:22 -> (SSH tunnel) -> vm-proxy
 /etc/systemd/system/flask-app.service
 ```
 
-### 4. PostgreSQL Database
+#### 4. PostgreSQL Database
 
 **Purpose**: Persistent storage for registration data
 
@@ -140,7 +140,7 @@ Internet -> Public IP (pip-bastion) -> vm-bastion:22 -> (SSH tunnel) -> vm-proxy
 
 > **Note**: This is the only PaaS component. We use managed PostgreSQL for practical reasons (backups, HA, patching) while keeping compute as IaaS for learning purposes.
 
-## Technology Choices
+### Technology Choices
 
 | Decision | Choice | Rationale |
 |----------|--------|-----------|
@@ -150,7 +150,7 @@ Internet -> Public IP (pip-bastion) -> vm-bastion:22 -> (SSH tunnel) -> vm-proxy
 | Process Manager | systemd | Standard on modern Ubuntu, automatic restarts, logging |
 | Infrastructure | Azure Bicep | Declarative IaC, native Azure support, good learning value |
 
-## Deployment Pipeline
+### Deployment Pipeline
 
 ```
 +-------------+    +-------------+    +-------------+
@@ -165,6 +165,6 @@ Internet -> Public IP (pip-bastion) -> vm-bastion:22 -> (SSH tunnel) -> vm-proxy
  - PostgreSQL        - Systemd units     - Start service
 ```
 
-## Next Level
+### Next Level
 
 See [Components (C3)](04-components.md) for the internal structure of the Flask application.

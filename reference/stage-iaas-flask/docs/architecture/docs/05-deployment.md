@@ -4,13 +4,13 @@
 
 This document shows how the Webinar Registration Website is deployed on Azure infrastructure using a pure IaaS approach.
 
-## Deployment Diagram
+### Deployment Diagram
 
 ![](embed:Deployment)
 
-## Infrastructure Overview
+### Infrastructure Overview
 
-### Network Topology
+#### Network Topology
 
 | Subnet | CIDR | NSG | Purpose |
 |--------|------|-----|---------|
@@ -19,7 +19,7 @@ This document shows how the Webinar Registration Website is deployed on Azure in
 | `snet-app` | 10.0.3.0/24 | `nsg-app` | Application server (internal only) |
 | `snet-data` | 10.0.4.0/24 | `nsg-data` | PostgreSQL database (internal only) |
 
-### Virtual Machines
+#### Virtual Machines
 
 | VM | Subnet | Public IP | Size | Purpose |
 |----|--------|-----------|------|---------|
@@ -27,15 +27,15 @@ This document shows how the Webinar Registration Website is deployed on Azure in
 | `vm-proxy` | snet-web | Yes | Standard_B1s | nginx reverse proxy |
 | `vm-app` | snet-app | No | Standard_B1s | Flask application |
 
-### Managed Services
+#### Managed Services
 
 | Service | SKU | Purpose |
 |---------|-----|---------|
 | PostgreSQL Flexible Server | Burstable B1ms | Database (the only PaaS component) |
 
-## Security Architecture
+### Security Architecture
 
-### Network Security Groups (NSGs)
+#### Network Security Groups (NSGs)
 
 Each subnet has an NSG controlling inbound/outbound traffic:
 
@@ -58,7 +58,7 @@ Each subnet has an NSG controlling inbound/outbound traffic:
 - Allow PostgreSQL (5432) from snet-app
 - Deny all other inbound
 
-### Application Security Groups (ASGs)
+#### Application Security Groups (ASGs)
 
 ASGs provide role-based security rules:
 
@@ -68,9 +68,9 @@ ASGs provide role-based security rules:
 | `asg-proxy` | vm-proxy | Source for HTTP to app server |
 | `asg-app` | vm-app | Target for application traffic |
 
-## Deployment Process
+### Deployment Process
 
-### Infrastructure Provisioning
+#### Infrastructure Provisioning
 
 ```bash
 # One-command deployment
@@ -84,7 +84,7 @@ ASGs provide role-based security rules:
 ./scripts/verification-tests.sh    # Run tests
 ```
 
-### Cloud-init Configuration
+#### Cloud-init Configuration
 
 Each VM is configured automatically via cloud-init:
 
@@ -94,7 +94,7 @@ Each VM is configured automatically via cloud-init:
 | vm-proxy | `proxy.yaml` | nginx, self-signed SSL cert |
 | vm-app | `app.yaml` | Python venv, systemd service, flask-app user |
 
-### Application Deployment
+#### Application Deployment
 
 The Flask application is deployed via SSH through the bastion:
 
@@ -105,7 +105,7 @@ The Flask application is deployed via SSH through the bastion:
 4. Start flask-app systemd service
 ```
 
-## Cost Estimate
+### Cost Estimate
 
 | Resource | SKU | Monthly Cost |
 |----------|-----|--------------|
@@ -115,7 +115,7 @@ The Flask application is deployed via SSH through the bastion:
 | Storage | 3x 30GB | ~$3 |
 | **Total** | | **~$44/month** |
 
-## Naming Conventions
+### Naming Conventions
 
 Following Azure Cloud Adoption Framework (CAF):
 
@@ -128,7 +128,7 @@ Following Azure Cloud Adoption Framework (CAF):
 | VM | `vm-{role}` | `vm-proxy` |
 | PostgreSQL | `psql-{project}-{env}` | `psql-flask-bicep-dev` |
 
-## Infrastructure as Code
+### Infrastructure as Code
 
 All infrastructure is defined in Bicep:
 
@@ -143,7 +143,7 @@ infrastructure/
     └── database.bicep      # PostgreSQL + private DNS
 ```
 
-## Related Documentation
+### Related Documentation
 
 - [Overview](01-overview.md) - Project overview
 - [System Context](02-context.md) - C1 diagram

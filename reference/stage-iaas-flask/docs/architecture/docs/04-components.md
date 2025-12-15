@@ -6,19 +6,19 @@ This document zooms into the Flask Application container to show its internal st
 
 > **Note**: For a simple Flask application like this one, a component diagram may be more detailed than strictly necessary. We include it here for educational completeness.
 
-## Flask Application Components
+### Flask Application Components
 
 ![](embed:C3-Components)
 
-## Reverse Proxy Components
+### Reverse Proxy Components
 
 The nginx reverse proxy also has internal components worth understanding:
 
 ![](embed:C3-Components-Proxy)
 
-## Component Inventory
+### Component Inventory
 
-### Application Components
+#### Application Components
 
 | Component | Technology | Responsibility | Source |
 |-----------|------------|----------------|--------|
@@ -27,9 +27,9 @@ The nginx reverse proxy also has internal components worth understanding:
 | **Data Models** | SQLAlchemy | Object-relational mapping, database schema | `app.py` (Entry class) |
 | **WSGI Server** | Gunicorn | Production HTTP server, worker processes | `wsgi.py` |
 
-## Component Details
+### Component Details
 
-### 1. Route Handlers
+#### 1. Route Handlers
 
 The application exposes three HTTP endpoints:
 
@@ -57,7 +57,7 @@ def health():
     # Health check endpoint
 ```
 
-### 2. Template Engine
+#### 2. Template Engine
 
 Uses Jinja2 (Flask's default) with inline template definition:
 
@@ -76,7 +76,7 @@ Uses Jinja2 (Flask's default) with inline template definition:
 - `{{ entry.created_at.strftime() }}` - Method calls
 - `{% else %}` - Empty state handling
 
-### 3. Data Models
+#### 3. Data Models
 
 Single model representing a registration entry:
 
@@ -98,7 +98,7 @@ class Entry(db.Model):
 | Read recent | `Entry.query.order_by(...).limit(10)` | SELECT ... ORDER BY ... LIMIT 10 |
 | Count | `Entry.query.count()` | SELECT COUNT(*) FROM entries |
 
-### 4. WSGI Server
+#### 4. WSGI Server
 
 **Entry Point** (`application/wsgi.py`):
 
@@ -121,9 +121,9 @@ gunicorn --bind 0.0.0.0:5001 wsgi:app
 | Workers | 1 (default) | Single worker sufficient for small load |
 | Module | `wsgi:app` | Import `app` object from `wsgi.py` |
 
-## Data Flow
+### Data Flow
 
-### Registration Flow (Happy Path)
+#### Registration Flow (Happy Path)
 
 ```
 1. User submits form
@@ -158,7 +158,7 @@ gunicorn --bind 0.0.0.0:5001 wsgi:app
 8. Return HTML to user
 ```
 
-### Request/Response Cycle
+#### Request/Response Cycle
 
 ```
 +---------+     +---------+     +---------+     +---------+
@@ -172,9 +172,9 @@ gunicorn --bind 0.0.0.0:5001 wsgi:app
               +---------+     +---------+
 ```
 
-## Dependencies
+### Dependencies
 
-### Python Packages (`application/requirements.txt`)
+#### Python Packages (`application/requirements.txt`)
 
 | Package | Purpose |
 |---------|---------|
@@ -183,7 +183,7 @@ gunicorn --bind 0.0.0.0:5001 wsgi:app
 | `gunicorn` | Production WSGI server |
 | `psycopg2-binary` | PostgreSQL driver |
 
-### External Dependencies
+#### External Dependencies
 
 | Dependency | Source | Purpose |
 |------------|--------|---------|
@@ -191,7 +191,7 @@ gunicorn --bind 0.0.0.0:5001 wsgi:app
 | PostgreSQL | Azure PaaS | Data persistence |
 | nginx | vm-proxy | Reverse proxy, SSL |
 
-## Future Evolution
+### Future Evolution
 
 For a production-ready application, this simple structure would evolve:
 
@@ -204,6 +204,6 @@ For a production-ready application, this simple structure would evolve:
 | No auth | Flask-Login + session management |
 | Single model | Multiple models with relationships |
 
-## Next Level
+### Next Level
 
 See [Deployment](05-deployment.md) for how this system is deployed on Azure infrastructure.
