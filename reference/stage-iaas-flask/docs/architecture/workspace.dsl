@@ -148,18 +148,8 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             autolayout lr
         }
 
-        # C2 - Container (main user flow)
-        container webinarSystem "C2-Containers" "Container diagram showing the technical building blocks" {
-            include attendee
-            include webinarSystem.browser
-            include webinarSystem.proxy
-            include webinarSystem.flask
-            include webinarSystem.database
-            autolayout lr
-        }
-
-        # C2b - Container (with admin access)
-        container webinarSystem "C2-Containers-Admin" "Container diagram including administrative access" {
+        # C2 - Container (full view with all actors)
+        container webinarSystem "C2-Containers-Full" "Container diagram showing the complete system" {
             include *
             exclude relationship.tag==ComponentLevel
         }

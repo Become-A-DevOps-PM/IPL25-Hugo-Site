@@ -6,7 +6,7 @@
   "documentation" : { },
   "id" : 1,
   "lastModifiedAgent" : "structurizr-ui",
-  "lastModifiedDate" : "2025-12-15T12:20:08Z",
+  "lastModifiedDate" : "2025-12-15T12:25:09Z",
   "model" : {
     "deploymentNodes" : [ {
       "children" : [ {
@@ -19,7 +19,7 @@
               "id" : "38",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.e71b3b9e-b776-49d3-8cf2-9c81e7c8f68a.738469bf-579d-411a-99d2-a0798b1a20ac.bastionInstance"
+                "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.361a95f6-cd00-473c-8f1a-381a0745222f.1d7d1254-8cb0-48e3-ac6d-d9c08c257d24.bastionInstance"
               },
               "relationships" : [ {
                 "description" : "SSH tunnel",
@@ -44,7 +44,7 @@
             "instances" : "1",
             "name" : "vm-bastion",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.e71b3b9e-b776-49d3-8cf2-9c81e7c8f68a.738469bf-579d-411a-99d2-a0798b1a20ac"
+              "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.361a95f6-cd00-473c-8f1a-381a0745222f.1d7d1254-8cb0-48e3-ac6d-d9c08c257d24"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Standard_B1s"
@@ -55,7 +55,7 @@
           "instances" : "1",
           "name" : "Bastion Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.e71b3b9e-b776-49d3-8cf2-9c81e7c8f68a"
+            "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.361a95f6-cd00-473c-8f1a-381a0745222f"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.1.0/24"
@@ -68,7 +68,7 @@
               "id" : "41",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.7db60a82-e077-403f-94b0-d930687bf08f.235ea04f-a411-49e8-8a82-e67230e8d5bd.proxyInstance"
+                "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.6e94892d-fcdb-4735-99bd-08277c5c51c0.9d88bf1a-b57f-40d8-9bff-c12d3e5aa106.proxyInstance"
               },
               "relationships" : [ {
                 "description" : "Forwards requests",
@@ -86,7 +86,7 @@
             "instances" : "1",
             "name" : "vm-proxy",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.7db60a82-e077-403f-94b0-d930687bf08f.235ea04f-a411-49e8-8a82-e67230e8d5bd"
+              "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.6e94892d-fcdb-4735-99bd-08277c5c51c0.9d88bf1a-b57f-40d8-9bff-c12d3e5aa106"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Standard_B1s"
@@ -97,7 +97,7 @@
           "instances" : "1",
           "name" : "Web Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.7db60a82-e077-403f-94b0-d930687bf08f"
+            "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.6e94892d-fcdb-4735-99bd-08277c5c51c0"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.2.0/24"
@@ -110,7 +110,7 @@
               "id" : "45",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.f1919573-4be6-410b-b5f2-52905751335c.a1fd0b4c-9869-4d97-ac54-c073e0dc96b2.flaskInstance"
+                "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.b10caf1f-ef6a-4d73-be61-3ff70c5ba054.f04fd6f6-60dc-4261-aae6-bfd0eb87240b.flaskInstance"
               },
               "relationships" : [ {
                 "description" : "Reads/writes data",
@@ -128,7 +128,7 @@
             "instances" : "1",
             "name" : "vm-app",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.f1919573-4be6-410b-b5f2-52905751335c.a1fd0b4c-9869-4d97-ac54-c073e0dc96b2"
+              "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.b10caf1f-ef6a-4d73-be61-3ff70c5ba054.f04fd6f6-60dc-4261-aae6-bfd0eb87240b"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Standard_B1s"
@@ -139,7 +139,7 @@
           "instances" : "1",
           "name" : "App Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.f1919573-4be6-410b-b5f2-52905751335c"
+            "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.b10caf1f-ef6a-4d73-be61-3ff70c5ba054"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.3.0/24"
@@ -152,7 +152,7 @@
               "id" : "50",
               "instanceId" : 1,
               "properties" : {
-                "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.96aadc65-74f8-491a-9661-14447208b8da.8b5ac85a-f8de-43f6-b21d-d4bba7f93442.databaseInstance"
+                "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.b7bc4f97-cdc7-4c34-95a4-fce5092d72ba.5ae3da16-590d-4f3f-ac5c-662be78c63d2.databaseInstance"
               },
               "tags" : "Container Instance"
             } ],
@@ -162,7 +162,7 @@
             "instances" : "1",
             "name" : "Azure PostgreSQL Flexible Server",
             "properties" : {
-              "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.96aadc65-74f8-491a-9661-14447208b8da.8b5ac85a-f8de-43f6-b21d-d4bba7f93442"
+              "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.b7bc4f97-cdc7-4c34-95a4-fce5092d72ba.5ae3da16-590d-4f3f-ac5c-662be78c63d2"
             },
             "tags" : "Element,Deployment Node",
             "technology" : "Burstable B1ms"
@@ -173,7 +173,7 @@
           "instances" : "1",
           "name" : "Data Subnet",
           "properties" : {
-            "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e.96aadc65-74f8-491a-9661-14447208b8da"
+            "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108.b7bc4f97-cdc7-4c34-95a4-fce5092d72ba"
           },
           "tags" : "Element,Deployment Node",
           "technology" : "10.0.4.0/24"
@@ -184,7 +184,7 @@
         "instances" : "1",
         "name" : "Virtual Network",
         "properties" : {
-          "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef.009d1c1e-6bd8-43d7-b019-8da066aae22e"
+          "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b.41718b85-ab97-4520-99e9-e98c41dc0108"
         },
         "tags" : "Element,Deployment Node",
         "technology" : "10.0.0.0/16"
@@ -195,7 +195,7 @@
       "instances" : "1",
       "name" : "Azure Cloud",
       "properties" : {
-        "structurizr.dsl.identifier" : "production.36506bac-35e2-4f53-afd8-cc6d9a6377ef"
+        "structurizr.dsl.identifier" : "production.bc8e4401-d0d3-4570-b885-9659f074638b"
       },
       "tags" : "Element,Deployment Node",
       "technology" : "Azure IaaS"
@@ -554,47 +554,43 @@
     "componentViews" : [ {
       "containerId" : "9",
       "description" : "Component diagram showing Flask application internals",
-      "dimensions" : {
-        "height" : 1486,
-        "width" : 5322
-      },
       "elements" : [ {
         "id" : "1",
-        "x" : 199,
-        "y" : 145
+        "x" : 0,
+        "y" : 0
       }, {
         "id" : "5",
-        "x" : 886,
-        "y" : 191
+        "x" : 0,
+        "y" : 0
       }, {
         "id" : "8",
-        "x" : 1654,
-        "y" : 186
+        "x" : 0,
+        "y" : 0
       }, {
         "id" : "10",
-        "x" : 3153,
-        "y" : 183
+        "x" : 0,
+        "y" : 0
       }, {
         "id" : "11",
-        "x" : 3146,
-        "y" : 731
+        "x" : 0,
+        "y" : 0
       }, {
         "id" : "12",
-        "x" : 3906,
-        "y" : 190
+        "x" : 0,
+        "y" : 0
       }, {
         "id" : "13",
-        "x" : 2403,
-        "y" : 183
+        "x" : 0,
+        "y" : 0
       }, {
         "id" : "14",
-        "x" : 4651,
-        "y" : 190
+        "x" : 0,
+        "y" : 0
       } ],
       "externalContainerBoundariesVisible" : false,
       "key" : "C3-Components",
       "name" : "Component View: Webinar Registration Website - Flask Application",
-      "order" : 4,
+      "order" : 3,
       "relationships" : [ {
         "id" : "18"
       }, {
@@ -610,16 +606,12 @@
       }, {
         "id" : "31"
       }, {
-        "id" : "32",
-        "vertices" : [ {
-          "x" : 1106,
-          "y" : 886
-        } ]
+        "id" : "32"
       } ]
     } ],
     "configuration" : {
       "branding" : { },
-      "lastSavedView" : "C2-Containers",
+      "lastSavedView" : "C2-Containers-Full",
       "metadataSymbols" : "SquareBrackets",
       "styles" : {
         "elements" : [ {
@@ -677,111 +669,52 @@
       "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ]
     },
     "containerViews" : [ {
-      "automaticLayout" : {
-        "applied" : true,
-        "edgeSeparation" : 0,
-        "implementation" : "Graphviz",
-        "nodeSeparation" : 300,
-        "rankDirection" : "LeftRight",
-        "rankSeparation" : 300,
-        "vertices" : false
-      },
-      "description" : "Container diagram showing the technical building blocks",
+      "description" : "Container diagram showing the complete system",
       "dimensions" : {
-        "height" : 2102,
-        "width" : 2390
+        "height" : 2225,
+        "width" : 3820
       },
       "elements" : [ {
         "id" : "1",
-        "x" : 245,
-        "y" : 143
-      }, {
-        "id" : "5",
-        "x" : 970,
-        "y" : 752
-      }, {
-        "id" : "8",
-        "x" : 1720,
-        "y" : 1206
-      }, {
-        "id" : "9",
-        "x" : 220,
-        "y" : 1352
-      }, {
-        "id" : "14",
-        "x" : 970,
-        "y" : 1352
-      } ],
-      "externalSoftwareSystemBoundariesVisible" : false,
-      "key" : "C2-Containers",
-      "name" : "Container View: Webinar Registration Website",
-      "order" : 2,
-      "relationships" : [ {
-        "id" : "18"
-      }, {
-        "id" : "21"
-      }, {
-        "id" : "25",
-        "vertices" : [ {
-          "x" : 1420,
-          "y" : 1802
-        }, {
-          "x" : 970,
-          "y" : 1802
-        } ]
-      }, {
-        "id" : "26"
-      }, {
-        "id" : "33"
-      } ],
-      "softwareSystemId" : "4"
-    }, {
-      "description" : "Container diagram including administrative access",
-      "dimensions" : {
-        "height" : 1912,
-        "width" : 3748
-      },
-      "elements" : [ {
-        "id" : "1",
-        "x" : 199,
-        "y" : 590
+        "x" : 190,
+        "y" : 520
       }, {
         "id" : "2",
-        "x" : 213,
-        "y" : 142
+        "x" : 190,
+        "y" : 80
       }, {
         "id" : "3",
-        "x" : 229,
-        "y" : 1195
+        "x" : 195,
+        "y" : 1040
       }, {
         "id" : "5",
-        "x" : 924,
-        "y" : 655
+        "x" : 920,
+        "y" : 575
       }, {
         "id" : "6",
-        "x" : 929,
-        "y" : 1255
+        "x" : 930,
+        "y" : 1090
       }, {
         "id" : "7",
-        "x" : 1664,
-        "y" : 1250
+        "x" : 1670,
+        "y" : 1100
       }, {
         "id" : "8",
-        "x" : 1664,
-        "y" : 650
+        "x" : 1670,
+        "y" : 560
       }, {
         "id" : "9",
-        "x" : 2364,
-        "y" : 655
+        "x" : 2360,
+        "y" : 555
       }, {
         "id" : "14",
-        "x" : 3077,
-        "y" : 630
+        "x" : 3085,
+        "y" : 555
       } ],
       "externalSoftwareSystemBoundariesVisible" : false,
-      "key" : "C2-Containers-Admin",
+      "key" : "C2-Containers-Full",
       "name" : "Container View: Webinar Registration Website",
-      "order" : 3,
+      "order" : 2,
       "relationships" : [ {
         "id" : "18"
       }, {
@@ -874,7 +807,7 @@
       "environment" : "Production",
       "key" : "Deployment",
       "name" : "Deployment View: Webinar Registration Website - Production",
-      "order" : 5,
+      "order" : 4,
       "relationships" : [ {
         "id" : "42"
       }, {
