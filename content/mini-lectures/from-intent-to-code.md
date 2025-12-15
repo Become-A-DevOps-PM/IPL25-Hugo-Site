@@ -17,11 +17,11 @@ Everything begins with **intent**—a business need, an idea, a request. Intent 
 
 Intent is a **value proposition**: a statement of what value we want to create. Running systems are the **value delivery**: that value actually reaching users. Everything in between—documents, diagrams, code—transforms proposition into delivery.
 
-Intent itself is not a document. It might be a conversation, an email, a slide in a presentation, or simply an understood organizational need. The first task in any project is capturing and formalizing this intent into structured documentation that eventually becomes code—and code that eventually becomes operational systems serving real users.
+Intent itself is not a document. It might be a conversation, an email, a slide in a presentation, or simply an understood organizational need. The first task in any project is capturing this intent and formalizing it through structured documentation—ultimately producing code that runs as operational systems serving real users.
 
-## The Three-Layer Model
+## Abstraction Levels
 
-Software development formalizes intent through three foundational document types, each capturing the same system from a different perspective:
+One pattern that has gained traction—particularly in DevOps and the "everything as code" era—formalizes intent through three document types, each capturing the same system from a different perspective:
 
 1. **Business Requirements Document (BRD)** - The first formalization of intent. Captures the business need in stakeholder language: what they want, who needs it, and what success looks like from their perspective. Provides enough context on *why* to make the *what* meaningful.
 
@@ -29,17 +29,19 @@ Software development formalizes intent through three foundational document types
 
 3. **Architecture Documentation (C4 Model)** - Defines the technical design: a hierarchical view that progressively zooms from system context down to code structure.
 
+These abstraction levels are lenses, not sequential phases. Teams don't complete one level before starting the next—they cut through all levels with minimal scope to reach running software quickly, then iterate to expand. A single feature can have its own slice of business context, product specification, architectural design, and working code, all developed together.
+
 The C4 model itself contains four levels of abstraction:
-- **Context** - Who uses the system and how it fits into its environment. This is also where the technology stack is first defined—an early commitment based on PRD constraints and team capabilities. These choices are documented in Architecture Decision Records (ADRs) and guide all subsequent design work.
-- **Containers** - The major technical building blocks (applications, databases, servers) that implement the chosen technology stack
+- **Context** - Who uses the system and how it fits into its environment
+- **Containers** - The major technical building blocks (applications, databases, servers)
 - **Components** - The internal structure of each container
 - **Code** - The actual implementation
 
-Tech stack decisions made at the Context level are pragmatic commitments: teams proceed with their initial choices until concrete evidence proves them inadequate. Endless deliberation over technology alternatives delays progress without adding value.
+The technology stack is typically defined at the Context level—an early commitment based on PRD constraints and team capabilities. These choices are documented in Architecture Decision Records (ADRs) and guide all subsequent design. Tech stack decisions are pragmatic commitments: teams proceed with their initial choices until concrete evidence proves them inadequate. Endless deliberation over alternatives delays progress without adding value.
 
 This progression—intent to BRD to PRD to C4—moves from probabilistic to deterministic. Raw intent permits almost unlimited solutions. Business requirements narrow the field. Product requirements constrain it further. Architecture specifies structure. Code is the final artifact: deterministic, doing exactly what it specifies, with no remaining ambiguity. But code is not the destination—running software is. Code must be deployed, configured, and operated before it delivers value.
 
-## Why Intermediate Layers Matter
+## Why Intermediate Levels Matter
 
 The probabilistic nature of higher abstraction levels raises an obvious question: if only code determines system behavior, why maintain intermediate representations that remain inherently incomplete?
 
@@ -47,7 +49,7 @@ The probabilistic nature of higher abstraction levels raises an obvious question
 
 Business stakeholders articulate strategic intent in the BRD—they cannot directly specify code because they lack technical context. Engineers cannot divine business strategy from technical constraints alone—they lack market context.
 
-The PRD creates an interface where business and technical expertise intersect. Architecture documentation bridges product requirements and engineering implementation. Each layer enables collaboration between people who think at different altitudes.
+The PRD creates an interface where business and technical expertise intersect. Architecture documentation bridges product requirements and engineering implementation. Each level enables collaboration between people who think at different altitudes.
 
 ### Progressive Risk Reduction
 
@@ -93,8 +95,8 @@ This bidirectional flow creates a feedback loop where human intent drives downwa
 
 ## Summary
 
-Software projects begin with intent—a trigger that may be vague or specific—and progressively formalize it through abstraction layers: BRD captures the business need, PRD defines product specifications, and C4 architecture specifies technical design, zooming from system context through containers and components down to code. Code is the final artifact, but running software serving users is the actual goal.
+Software projects begin with intent—a trigger that may be vague or specific—and progressively formalize it through abstraction levels: BRD captures the business need, PRD defines product specifications, and C4 architecture specifies technical design, zooming from system context through containers and components down to code. Code is the final artifact, but running software serving users is the actual goal.
 
-Each layer operates probabilistically until code produces deterministic behavior. These intermediate layers remain necessary because they enable collaboration across stakeholder groups, reduce risk progressively, and preserve the original intent through implementation.
+Each level operates probabilistically until code produces deterministic behavior. These intermediate levels remain necessary because they enable collaboration across stakeholder groups, reduce risk progressively, and preserve the original intent through implementation.
 
-AI systems translate between these layers, excelling at moving from concrete to abstract while humans excel at moving from abstract to concrete. This complementary relationship enables faster iteration, better alignment, and sustainable practices across the abstraction hierarchy.
+AI systems translate between these levels, excelling at moving from concrete to abstract while humans excel at moving from abstract to concrete. This complementary relationship enables faster iteration, better alignment, and sustainable practices across the abstraction hierarchy.
