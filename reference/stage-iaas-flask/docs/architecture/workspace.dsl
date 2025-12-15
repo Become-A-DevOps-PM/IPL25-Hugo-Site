@@ -64,7 +64,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             
             # Server-side Containers
             group "Back-end" {
-                bastion = container "Bastion Host" "Secure SSH entry point for administrative access" "Fail2ban" {
+                bastion = container "Bastion Host" "Secure SSH entry point for administrative access" "Ubuntu 24.04, Fail2ban" {
                     tags "Bastion"
                 }
                 
@@ -72,7 +72,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                     # Components
                     httpRedirect = component "HTTP Redirect Block" "Redirects HTTP to HTTPS" "nginx server block port 80"
                     httpsServerBlock = component "HTTPS Server Block" "SSL termination and request handling" "nginx server block port 443"
-                    sslCertificate = component "SSL Certificate" "TLS/SSL certificate for encryption" "Let's Encrypt"
+                    sslCertificate = component "SSL Certificate" "TLS/SSL certificate for encryption" "Self-signed (OpenSSL)"
                 }
                 
                 flask = container "Flask Application" "Handles registration logic, serves HTML" "Python/Gunicorn" {
