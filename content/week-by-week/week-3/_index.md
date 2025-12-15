@@ -20,3 +20,9 @@ Understand the concepts behind data storage and web applications:
 Put theory into practice:
 
 - [Application Development Exercises](/exercises/application-development/) - From local Flask development to VM deployment
+
+## Recap
+
+Review the key concepts from this week:
+
+- [Week 3 Technical Recap](/presentations/week-3-recap-slides/) - Summary of storage, HTTP, Flask architecture, and production deployment

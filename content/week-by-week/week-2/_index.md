@@ -19,3 +19,9 @@ Understand the concepts behind network infrastructure:
 Put theory into practice:
 
 - [Network Foundation Exercises](/exercises/network-foundation/) - From portal-based VNet creation to command-line automation
+
+## Recap
+
+Review the key concepts from this week:
+
+- [Week 2 Technical Recap](/presentations/week-2-recap-slides/) - Summary of IP addressing, firewalls, and network architecture
