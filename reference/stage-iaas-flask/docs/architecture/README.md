@@ -84,7 +84,21 @@ To export the entire workspace (diagrams, documentation, ADRs) as a static HTML 
 
 #### Generate the Site
 
-From the architecture folder:
+**Option A: Using workspace.json (preserves manual layout)**
+
+If you've manually arranged diagrams in Structurizr Lite, use the JSON file to preserve your layout:
+
+```bash
+docker run --rm -v "$(pwd):/workspace" \
+  ghcr.io/avisi-cloud/structurizr-site-generatr \
+  generate-site \
+  --workspace-file /workspace/workspace.json \
+  --output-dir /workspace/build
+```
+
+**Option B: Using workspace.dsl (auto-layout)**
+
+If you prefer auto-layout or haven't customized the diagram positions:
 
 ```bash
 docker run --rm -v "$(pwd):/workspace" \
@@ -94,17 +108,19 @@ docker run --rm -v "$(pwd):/workspace" \
   --output-dir /workspace/build
 ```
 
-Or from the project root:
+**From the project root** (using JSON for manual layout):
 
 ```bash
 docker run --rm -v "$(pwd)/reference/stage-iaas-flask/docs/architecture:/workspace" \
   ghcr.io/avisi-cloud/structurizr-site-generatr \
   generate-site \
-  --workspace-file /workspace/workspace.dsl \
+  --workspace-file /workspace/workspace.json \
   --output-dir /workspace/build
 ```
 
 The generated site will be in the `build/` folder.
+
+> **Note**: The `workspace.json` file is updated when you save from Structurizr Lite (click "Save workspace" in the UI). Always save after making layout changes to keep the JSON in sync.
 
 #### View the Generated Site
 
