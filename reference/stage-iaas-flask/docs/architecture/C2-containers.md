@@ -34,7 +34,7 @@ C4Container
 
     Container_Boundary(azure, "Azure Cloud (IaaS)") {
         Container_Boundary(bastion_subnet, "Bastion Subnet (10.0.1.0/24)") {
-            Container(bastion, "Bastion Host", "Ubuntu 22.04 VM", "SSH jump server for secure administrative access")
+            Container(bastion, "Bastion Host", "Ubuntu 24.04 VM", "SSH jump server for secure administrative access")
         }
 
         Container_Boundary(web_subnet, "Web Subnet (10.0.2.0/24)") {
@@ -69,9 +69,9 @@ C4Container
 
 | Container | Technology | Purpose | Network Location |
 |-----------|------------|---------|------------------|
-| **Bastion Host** | Ubuntu 22.04 LTS | Secure SSH entry point; no direct access to app servers from internet | `snet-bastion` (10.0.1.0/24), Public IP |
-| **Reverse Proxy** | nginx on Ubuntu 22.04 | SSL termination, load balancing (future), security headers | `snet-web` (10.0.2.0/24), Public IP |
-| **Flask Application** | Python 3 + Gunicorn on Ubuntu 22.04 | Business logic, HTML rendering, REST endpoints | `snet-app` (10.0.3.0/24), Private only |
+| **Bastion Host** | Ubuntu 24.04 LTS | Secure SSH entry point; no direct access to app servers from internet | `snet-bastion` (10.0.1.0/24), Public IP |
+| **Reverse Proxy** | nginx on Ubuntu 24.04 | SSL termination, load balancing (future), security headers | `snet-web` (10.0.2.0/24), Public IP |
+| **Flask Application** | Python 3 + Gunicorn on Ubuntu 24.04 | Business logic, HTML rendering, REST endpoints | `snet-app` (10.0.3.0/24), Private only |
 | **PostgreSQL Database** | Azure PostgreSQL Flexible Server | Persistent data storage | `snet-data` (10.0.4.0/24), Private endpoint |
 
 ### Supporting Infrastructure
@@ -129,7 +129,7 @@ Internet → Public IP (pip-bastion) → vm-bastion:22 → (SSH tunnel) → vm-p
 
 | Aspect | Detail |
 |--------|--------|
-| Image | Ubuntu 22.04 LTS |
+| Image | Ubuntu 24.04 LTS |
 | Size | Standard_B1s (1 vCPU, 1GB RAM) |
 | Public IP | Yes (`pip-bastion`) |
 | Inbound Rules | SSH (22) from Internet |
@@ -142,7 +142,7 @@ Internet → Public IP (pip-bastion) → vm-bastion:22 → (SSH tunnel) → vm-p
 
 | Aspect | Detail |
 |--------|--------|
-| Image | Ubuntu 22.04 LTS |
+| Image | Ubuntu 24.04 LTS |
 | Size | Standard_B1s |
 | Public IP | Yes (`pip-proxy`) |
 | Software | nginx |
@@ -163,7 +163,7 @@ Internet → Public IP (pip-bastion) → vm-bastion:22 → (SSH tunnel) → vm-p
 
 | Aspect | Detail |
 |--------|--------|
-| Image | Ubuntu 22.04 LTS |
+| Image | Ubuntu 24.04 LTS |
 | Size | Standard_B1s |
 | Public IP | **No** (security: internal only) |
 | Runtime | Python 3 + Gunicorn WSGI server |
@@ -188,9 +188,9 @@ Internet → Public IP (pip-bastion) → vm-bastion:22 → (SSH tunnel) → vm-p
 |--------|--------|
 | Service | Azure Database for PostgreSQL Flexible Server |
 | SKU | Burstable B1ms (1 vCPU, 2GB) |
-| Version | PostgreSQL 15 |
+| Version | PostgreSQL 16 |
 | Access | Private endpoint in `snet-data` |
-| Database | `flaskdb` |
+| Database | `flask` |
 | SSL | Required (`sslmode=require`) |
 
 > **Note**: This is the only PaaS component. We use managed PostgreSQL for practical reasons (backups, HA, patching) while keeping compute as IaaS for learning purposes.

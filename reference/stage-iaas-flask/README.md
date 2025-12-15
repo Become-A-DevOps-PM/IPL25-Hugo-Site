@@ -68,10 +68,9 @@ stage-iaas-flask/
 │   └── scripts/              # Provisioning helpers
 │
 ├── application/               # Flask application source
-│   ├── app.py                # Application factory
-│   ├── models.py             # SQLAlchemy models
-│   ├── requirements.txt      # Python dependencies
-│   └── templates/            # Jinja2 templates
+│   ├── app.py                # Main application (routes, models, inline templates)
+│   ├── wsgi.py               # Gunicorn WSGI entry point
+│   └── requirements.txt      # Python dependencies
 │
 ├── deploy/                    # Application deployment
 │   └── deploy.sh             # Copy code, configure, start service
@@ -82,8 +81,7 @@ stage-iaas-flask/
 │   ├── wait-for-flask-app.sh
 │   └── verification-tests.sh
 │
-├── config.sh                  # Central configuration (all shared variables)
-└── LESSONS-LEARNED.md         # Issues encountered and solutions
+└── config.sh                  # Central configuration (all shared variables)
 ```
 
 ## Naming Conventions
@@ -312,13 +310,9 @@ If you prefer to run steps individually:
 
 ## Troubleshooting
 
-See [LESSONS-LEARNED.md](LESSONS-LEARNED.md) for common issues and solutions:
+Common issues and solutions:
 
-1. Cloud-init `users:` directive replacing default users
-2. SSH ProxyJump host key verification failures
-3. Database not created automatically
-4. Bicep linter warnings
-5. Cloud-init embedded in Bicep files
-6. Environment file naming
-7. Script naming and organization
-8. Hardcoded file lists in deployment
+1. **Cloud-init `users:` directive replacing default users** - Use `runcmd` to create users instead
+2. **SSH ProxyJump host key verification** - Add bastion to known_hosts first
+3. **Database not created automatically** - Bicep creates database via `databases` child resource
+4. **PostgreSQL takes 10-15 minutes** - Be patient during initial provisioning

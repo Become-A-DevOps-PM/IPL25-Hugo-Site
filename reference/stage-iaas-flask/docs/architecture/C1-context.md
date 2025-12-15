@@ -73,7 +73,7 @@ flowchart LR
 1. **Pure IaaS Approach**: Traditional infrastructure model using self-managed VMs available on Azure
 2. **Python Flask**: Lightweight web framework with Jinja2 templating (SSR) and SQLAlchemy ORM
 3. **PostgreSQL**: Robust open-source relational database, available as PaaS on Azure (Flexible Server)
-4. **SSL/TLS Encryption**: Trusted certificates freely available via Let's Encrypt with automated renewal
+4. **SSL/TLS Encryption**: Self-signed certificates for learning environment (Let's Encrypt recommended for production)
 5. **No External Identity Provider**: Simple application without authentication requirements for attendee registration
 
 ---
