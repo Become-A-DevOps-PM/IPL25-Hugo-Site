@@ -138,24 +138,28 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                 deploymentNode "Virtual Network" "vnet-flask-bicep-dev" "10.0.0.0/16" {
                     
                     deploymentNode "Bastion Subnet" "snet-bastion" "10.0.1.0/24" {
-                        deploymentNode "vm-bastion" "Ubuntu 22.04 LTS" "Standard_B1s" {
+                        nsgBastion = infrastructureNode "NSG Bastion" "Allow SSH from Internet" "Azure NSG"
+                        deploymentNode "Bastion Host" "" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
                             bastionInstance = containerInstance webinarSystem.bastion
                         }
                     }
                     
                     deploymentNode "Web Subnet" "snet-web" "10.0.2.0/24" {
-                        deploymentNode "vm-proxy" "Ubuntu 22.04 LTS" "Standard_B1s" {
+                        nsgWeb = infrastructureNode "NSG Web" "Allow HTTP/HTTPS from Internet" "Azure NSG"
+                        deploymentNode "Reverse Proxy" "" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
                             proxyInstance = containerInstance webinarSystem.proxy
                         }
                     }
                     
                     deploymentNode "App Subnet" "snet-app" "10.0.3.0/24" {
-                        deploymentNode "vm-app" "Ubuntu 22.04 LTS" "Standard_B1s" {
+                        nsgApp = infrastructureNode "NSG App" "Allow HTTP from Web Subnet" "Azure NSG"
+                        deploymentNode "Application Server" "" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
                             flaskInstance = containerInstance webinarSystem.flask
                         }
                     }
                     
                     deploymentNode "Data Subnet" "snet-data" "10.0.4.0/24" {
+                        nsgData = infrastructureNode "NSG Data" "Allow PostgreSQL from App Subnet" "Azure NSG"
                         deploymentNode "Azure PostgreSQL Flexible Server" "psql-flask-bicep-dev" "Burstable B1ms" {
                             databaseInstance = containerInstance webinarSystem.database
                         }
@@ -200,7 +204,6 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
         # Deployment
         deployment webinarSystem production "Deployment" "Azure IaaS deployment architecture" {
             include *
-            autolayout lr
         }
 
         styles {
