@@ -9,8 +9,8 @@ tags:
   - c4-model
   - components
 related:
-  - README.md
-  - containers.md
+  - C1-context.md
+  - C2-containers.md
   - ../PRD.md
 ---
 
@@ -265,6 +265,6 @@ application/
 
 ## Related Documents
 
-- [README.md](README.md) - C4 Level 1: System Context
-- [containers.md](containers.md) - C4 Level 2: Container diagram
+- [C1-context.md](C1-context.md) - C4 Level 1: System Context
+- [C2-containers.md](C2-containers.md) - C4 Level 2: Container diagram
 - [../../application/app.py](../../application/app.py) - Application source code

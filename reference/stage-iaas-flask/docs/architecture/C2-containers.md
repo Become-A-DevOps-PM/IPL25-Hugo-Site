@@ -9,8 +9,8 @@ tags:
   - c4-model
   - containers
 related:
-  - README.md
-  - components.md
+  - C1-context.md
+  - C3-components.md
   - ../PRD.md
 ---
 
@@ -228,6 +228,6 @@ Internet → Public IP (pip-bastion) → vm-bastion:22 → (SSH tunnel) → vm-p
 
 ## Related Documents
 
-- [README.md](README.md) - C4 Level 1: System Context
-- [components.md](components.md) - C4 Level 3: Flask Application Components
+- [C1-context.md](C1-context.md) - C4 Level 1: System Context
+- [C3-components.md](C3-components.md) - C4 Level 3: Flask Application Components
 - [../../infrastructure/main.bicep](../../infrastructure/main.bicep) - Infrastructure as Code

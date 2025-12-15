@@ -1,0 +1,203 @@
+workspace "Webinar Registration Website" "C4 architecture model for the webinar registration system deployed on Azure IaaS" {
+
+    !identifiers hierarchical
+    
+    configuration {
+        scope softwaresystem
+    }
+
+    model {
+        # Actors
+        attendee = person "Event Attendee" "Primary actor - registers for and attends webinars" {
+            tags "Primary Actor"
+            properties {
+                "Actor Type" "Primary"
+                "Frequency" "High"
+                "Trust Level" "External, untrusted"
+            }
+            perspectives {
+                "Business" "Main customer touchpoint, drives webinar attendance"
+                "Security" "External user, requires input validation"
+            }
+        }
+        admin = person "Marketing Administrator" "Supporting actor - manages webinars and views registrations" {
+            tags "Secondary Actor"
+            properties {
+                "Actor Type" "Secondary"
+                "Frequency" "Medium"
+                "Trust Level" "Internal, trusted"
+            }
+            perspectives {
+                "Business" "Monitors registration success, plans capacity"
+                "Security" "Internal user, future: requires authentication"
+            }
+        }
+        sysadmin = person "System Administrator" "Supporting actor - deploys and maintains infrastructure" {
+            tags "Secondary Actor"
+            properties {
+                "Actor Type" "Secondary"
+                "Frequency" "Low"
+                "Trust Level" "Internal, privileged"
+            }
+            perspectives {
+                "Business" "Ensures system availability and performance"
+                "Security" "Privileged access via SSH through bastion host"
+            }
+        }
+
+        # The System
+        webinarSystem = softwareSystem "Webinar Registration Website" "Allows attendees to register for webinars and administrators to manage events" {
+            
+            !docs docs
+            !adrs adrs
+            
+            # Containers
+            bastion = container "Bastion Host" "Secure SSH entry point for administrative access" "Ubuntu 22.04 VM"
+            
+            proxy = container "Reverse Proxy" "SSL termination, HTTPS endpoint, request forwarding" "nginx on Ubuntu 22.04 VM" {
+                tags "Web Server"
+            }
+            
+            flask = container "Flask Application" "Handles registration logic, serves HTML, REST API" "Python/Gunicorn on Ubuntu 22.04 VM" {
+                tags "Application"
+                
+                # Components
+                routes = component "Route Handlers" "HTTP request handling, form processing" "Flask @app.route"
+                templates = component "Template Engine" "HTML rendering with data binding" "Jinja2"
+                models = component "Data Models" "Database abstraction, ORM" "SQLAlchemy"
+                wsgi = component "WSGI Server" "Production HTTP server, process management" "Gunicorn"
+            }
+            
+            database = container "PostgreSQL Database" "Stores registration data persistently" "Azure PostgreSQL Flexible Server" {
+                tags "Database"
+            }
+        }
+
+        # Relationships - Context Level
+        attendee -> webinarSystem "Registers for webinars" "HTTPS"
+        admin -> webinarSystem "Views registrations" "HTTPS"
+        sysadmin -> webinarSystem "Deploys and maintains" "SSH"
+
+        # Relationships - Container Level
+        attendee -> webinarSystem.proxy "Registers via browser" "HTTPS/443"
+        admin -> webinarSystem.proxy "Views registrations" "HTTPS/443"
+        sysadmin -> webinarSystem.bastion "Connects via terminal" "SSH/22"
+        
+        webinarSystem.bastion -> webinarSystem.proxy "SSH tunnel" "SSH/22"
+        webinarSystem.bastion -> webinarSystem.flask "SSH tunnel" "SSH/22"
+        webinarSystem.proxy -> webinarSystem.flask "Forwards requests" "HTTP/5001"
+        webinarSystem.flask -> webinarSystem.database "Reads/writes data" "PostgreSQL/5432"
+
+        # Relationships - Component Level
+        webinarSystem.proxy -> webinarSystem.flask.wsgi "HTTP requests" "HTTP/5001"
+        webinarSystem.flask.wsgi -> webinarSystem.flask.routes "Forwards requests" "WSGI"
+        webinarSystem.flask.routes -> webinarSystem.flask.templates "Renders HTML" "Jinja2 API"
+        webinarSystem.flask.routes -> webinarSystem.flask.models "CRUD operations" "Python method calls"
+        webinarSystem.flask.models -> webinarSystem.database "SQL queries" "psycopg2"
+
+        # Deployment - Azure IaaS
+        production = deploymentEnvironment "Production" {
+            deploymentNode "Azure Cloud" "Microsoft Azure public cloud infrastructure" "Azure IaaS" {
+                deploymentNode "Virtual Network" "vnet-flask-bicep-dev" "10.0.0.0/16" {
+                    
+                    deploymentNode "Bastion Subnet" "snet-bastion" "10.0.1.0/24" {
+                        deploymentNode "vm-bastion" "Ubuntu 22.04 LTS" "Standard_B1s" {
+                            bastionInstance = containerInstance webinarSystem.bastion
+                        }
+                    }
+                    
+                    deploymentNode "Web Subnet" "snet-web" "10.0.2.0/24" {
+                        deploymentNode "vm-proxy" "Ubuntu 22.04 LTS" "Standard_B1s" {
+                            proxyInstance = containerInstance webinarSystem.proxy
+                        }
+                    }
+                    
+                    deploymentNode "App Subnet" "snet-app" "10.0.3.0/24" {
+                        deploymentNode "vm-app" "Ubuntu 22.04 LTS" "Standard_B1s" {
+                            flaskInstance = containerInstance webinarSystem.flask
+                        }
+                    }
+                    
+                    deploymentNode "Data Subnet" "snet-data" "10.0.4.0/24" {
+                        deploymentNode "Azure PostgreSQL Flexible Server" "psql-flask-bicep-dev" "Burstable B1ms" {
+                            databaseInstance = containerInstance webinarSystem.database
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    views {
+        # C1 - System Context
+        systemContext webinarSystem "C1-Context" "System Context diagram showing actors and the system" {
+            include *
+            autolayout lr
+        }
+
+        # C2 - Container (main user flow)
+        container webinarSystem "C2-Containers" "Container diagram showing the technical building blocks" {
+            include attendee
+            include webinarSystem.proxy
+            include webinarSystem.flask
+            include webinarSystem.database
+            autolayout lr
+        }
+
+        # C2b - Container (with admin access)
+        container webinarSystem "C2-Containers-Admin" "Container diagram including administrative access" {
+            include *
+        }
+
+        # C3 - Component (Flask Application)
+        component webinarSystem.flask "C3-Components" "Component diagram showing Flask application internals" {
+            include *
+            autolayout lr
+        }
+
+        # Deployment
+        deployment webinarSystem production "Deployment" "Azure IaaS deployment architecture" {
+            include *
+            autolayout lr
+        }
+
+        styles {
+            element "Person" {
+                shape Person
+                background #08427B
+                color #ffffff
+            }
+            element "Primary Actor" {
+                background #08427B
+                color #ffffff
+            }
+            element "Secondary Actor" {
+                background #999999
+                color #ffffff
+            }
+            element "Software System" {
+                background #438DD5
+                color #ffffff
+            }
+            element "Container" {
+                background #438DD5
+                color #ffffff
+            }
+            element "Component" {
+                background #85BBF0
+                color #000000
+            }
+            element "Database" {
+                shape Cylinder
+                background #438DD5
+                color #ffffff
+            }
+            element "Web Server" {
+                shape WebBrowser
+            }
+        }
+
+        theme default
+    }
+
+}
