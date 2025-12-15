@@ -21,7 +21,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             }
         }
         admin = person "Marketing Administrator" "Supporting actor - manages webinars and views registrations" {
-            tags "Tertiary Actor"
+            tags "Primary Actor"
             properties {
                 "Actor Type" "Secondary"
                 "Frequency" "Medium"
@@ -52,31 +52,37 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             !adrs adrs
             
             # Client-side Containers
-            browser = container "Web Browser" "Renders HTML, executes JavaScript, user interaction" "Chrome, Firefox, Safari, Edge" {
-                tags "Client" "Primary Client"
-            }
-            
-            terminal = container "Terminal" "Command-line interface for administrative access" "Azure CLI, SSH" {
-                tags "Client" "Secondary Client"
+            group "Front-end" {
+                browser = container "Web Browser" "Renders HTML, executes JavaScript, user interaction" "Chrome, Firefox, Safari, Edge" {
+                    tags "Client" "Primary Client"
+                }
+                
+                terminal = container "Terminal" "Command-line interface for administrative access" "Azure CLI, SSH" {
+                    tags "Client" "Secondary Client"
+                }
             }
             
             # Server-side Containers
-            bastion = container "Bastion Host" "Secure SSH entry point for administrative access" "Ubuntu 22.04 VM"
-            
-            proxy = container "Reverse Proxy" "SSL termination, HTTPS endpoint, request forwarding" "nginx on Ubuntu 22.04 VM"
-            
-            flask = container "Flask Application" "Handles registration logic, serves HTML, REST API" "Python/Gunicorn on Ubuntu 22.04 VM" {
-                tags "Application"
+            group "Back-end" {
+                bastion = container "Bastion Host" "Secure SSH entry point for administrative access" "Ubuntu 22.04 VM" {
+                    tags "Bastion"
+                }
                 
-                # Components
-                routes = component "Route Handlers" "HTTP request handling, form processing" "Flask @app.route"
-                templates = component "Template Engine" "HTML rendering with data binding" "Jinja2"
-                models = component "Data Models" "Database abstraction, ORM" "SQLAlchemy"
-                wsgi = component "WSGI Server" "Production HTTP server, process management" "Gunicorn"
-            }
-            
-            database = container "PostgreSQL Database" "Stores registration data persistently" "Azure PostgreSQL Flexible Server" {
-                tags "Database"
+                proxy = container "Reverse Proxy" "SSL termination, HTTPS endpoint, request forwarding" "nginx on Ubuntu 22.04 VM"
+                
+                flask = container "Flask Application" "Handles registration logic, serves HTML, REST API" "Python/Gunicorn on Ubuntu 22.04 VM" {
+                    tags "Application"
+                    
+                    # Components
+                    routes = component "Route Handlers" "HTTP request handling, form processing" "Flask @app.route"
+                    templates = component "Template Engine" "HTML rendering with data binding" "Jinja2"
+                    models = component "Data Models" "Database abstraction, ORM" "SQLAlchemy"
+                    wsgi = component "WSGI Server" "Production HTTP server, process management" "Gunicorn"
+                }
+                
+                database = container "PostgreSQL Database" "Stores registration data persistently" "Azure PostgreSQL Flexible Server" {
+                    tags "Database"
+                }
             }
         }
 
@@ -201,6 +207,10 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             element "Database" {
                 shape Cylinder
                 background #438DD5
+                color #ffffff
+            }
+            element "Bastion" {
+                background #999999
                 color #ffffff
             }
             element "Client" {
