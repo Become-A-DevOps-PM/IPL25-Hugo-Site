@@ -7,9 +7,19 @@ This folder contains the C4 model architecture documentation for the Webinar Reg
 | File | Description |
 |------|-------------|
 | [workspace.dsl](workspace.dsl) | Structurizr DSL - single source of truth for all diagrams |
-| [C1-context.md](C1-context.md) | Level 1: System Context |
-| [C2-containers.md](C2-containers.md) | Level 2: Containers |
-| [C3-components.md](C3-components.md) | Level 3: Components |
+| [workspace.json](workspace.json) | Compiled workspace with layout information |
+| [docs/](docs/) | Documentation imported by Structurizr via `!docs` |
+| [adrs/](adrs/) | Architecture Decision Records imported via `!adrs` |
+
+### Documentation Files
+
+| File | Description |
+|------|-------------|
+| [docs/01-overview.md](docs/01-overview.md) | Project overview and quick links |
+| [docs/02-context.md](docs/02-context.md) | Level 1: System Context |
+| [docs/03-containers.md](docs/03-containers.md) | Level 2: Containers |
+| [docs/04-components.md](docs/04-components.md) | Level 3: Components |
+| [docs/05-deployment.md](docs/05-deployment.md) | Azure IaaS Deployment |
 
 ## Viewing Diagrams with Structurizr Lite
 
@@ -43,8 +53,9 @@ Structurizr Lite will render the `workspace.dsl` file and provide:
 
 - **Interactive diagrams** - Click to navigate, zoom in/out
 - **Multiple views** - Context, Container, Component, and Deployment diagrams
+- **Documentation tab** - Your markdown docs with embedded diagrams
+- **Decisions tab** - Architecture Decision Records (ADRs)
 - **Auto-generated legend** - Consistent styling across all diagrams
-- **Export options** - PNG, SVG, PlantUML, Mermaid, and more
 
 ### Making Changes
 
@@ -62,6 +73,66 @@ From the Structurizr Lite UI, you can export diagrams as:
 - DOT (Graphviz)
 
 This allows you to include rendered diagrams in other documentation or presentations.
+
+### Generating a Static Website
+
+To export the entire workspace (diagrams, documentation, ADRs) as a static HTML website, use [Structurizr Site Generatr](https://github.com/avisi-cloud/structurizr-site-generatr).
+
+#### Prerequisites
+
+- Docker installed on your machine
+
+#### Generate the Site
+
+From the architecture folder:
+
+```bash
+docker run --rm -v "$(pwd):/workspace" \
+  ghcr.io/avisi-cloud/structurizr-site-generatr \
+  generate-site \
+  --workspace-file /workspace/workspace.dsl \
+  --output-dir /workspace/build
+```
+
+Or from the project root:
+
+```bash
+docker run --rm -v "$(pwd)/reference/stage-iaas-flask/docs/architecture:/workspace" \
+  ghcr.io/avisi-cloud/structurizr-site-generatr \
+  generate-site \
+  --workspace-file /workspace/workspace.dsl \
+  --output-dir /workspace/build
+```
+
+The generated site will be in the `build/` folder.
+
+#### View the Generated Site
+
+```bash
+# Simple Python HTTP server
+cd build
+python3 -m http.server 8000
+# Open http://localhost:8000
+```
+
+#### What's Included
+
+The generated static site includes:
+
+- All diagrams in SVG and PNG format
+- Documentation pages (from `docs/` folder)
+- Architecture Decision Records (from `adrs/` folder)
+- Interactive model explorer
+- Downloadable PlantUML sources
+
+#### Deploying
+
+The `build/` folder can be deployed to:
+
+- GitHub Pages
+- AWS S3 + CloudFront
+- Azure Blob Storage + CDN
+- Any static web hosting
 
 ## Related Documents
 
