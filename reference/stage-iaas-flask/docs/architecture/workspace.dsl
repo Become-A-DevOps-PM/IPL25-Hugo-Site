@@ -20,7 +20,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                 "Security" "External user, requires input validation"
             }
         }
-        admin = person "Marketing Administrator" "Supporting actor - manages webinars and views registrations" {
+        admin = person "Marketing Admin" "Supporting actor - manages webinars and views registrations" {
             tags "Primary Actor"
             properties {
                 "Actor Type" "Secondary"
@@ -32,7 +32,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                 "Security" "Internal user, future: requires authentication"
             }
         }
-        sysadmin = person "System Administrator" "Supporting actor - deploys and maintains infrastructure" {
+        sysadmin = person "SysAdmin" "Supporting actor - deploys and maintains infrastructure" {
             tags "Secondary Actor"
             properties {
                 "Actor Type" "Secondary"
@@ -53,7 +53,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             
             # Client-side Containers
             group "Front-end" {
-                browser = container "Web Browser" "Renders HTML, executes JavaScript, user interaction" "Chrome, Firefox, Safari, Edge" {
+                browser = container "Web Browser" "Renders HTML, JavaScript and CSS" "Chrome, Firefox, Safari" {
                     tags "Client" "Primary Client"
                 }
                 
@@ -64,18 +64,18 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             
             # Server-side Containers
             group "Back-end" {
-                bastion = container "Bastion Host" "Secure SSH entry point for administrative access" "Ubuntu 22.04 VM" {
+                bastion = container "Bastion Host" "Secure SSH entry point for administrative access" "Fail2ban" {
                     tags "Bastion"
                 }
                 
-                proxy = container "Reverse Proxy" "SSL termination, HTTPS endpoint, request forwarding" "nginx on Ubuntu 22.04 VM" {
+                proxy = container "Reverse Proxy" "SSL offloading and request forwarding" "nginx, OpenSSL" {
                     # Components
                     httpRedirect = component "HTTP Redirect Block" "Redirects HTTP to HTTPS" "nginx server block port 80"
                     httpsServerBlock = component "HTTPS Server Block" "SSL termination and request handling" "nginx server block port 443"
                     sslCertificate = component "SSL Certificate" "TLS/SSL certificate for encryption" "Let's Encrypt"
                 }
                 
-                flask = container "Flask Application" "Handles registration logic, serves HTML, REST API" "Python/Gunicorn on Ubuntu 22.04 VM" {
+                flask = container "Flask Application" "Handles registration logic, serves HTML" "Python/Gunicorn" {
                     tags "Application"
                     
                     # Components
@@ -85,7 +85,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                     wsgi = component "WSGI Server" "Production HTTP server, process management" "Gunicorn"
                 }
                 
-                database = container "PostgreSQL Database" "Stores registration data persistently" "Azure PostgreSQL Flexible Server" {
+                database = container "PostgreSQL Database" "Stores registration data persistently" "Managed PostgreSQL" {
                     tags "Database"
                 }
             }
@@ -104,8 +104,8 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
         webinarSystem.browser -> webinarSystem.proxy "HTTPS requests" "HTTPS/443"
         webinarSystem.terminal -> webinarSystem.bastion "Connects to" "Azure CLI, SSH"
         
-        webinarSystem.bastion -> webinarSystem.proxy "SSH tunnel" "SSH/22"
-        webinarSystem.bastion -> webinarSystem.flask "SSH tunnel" "SSH/22"
+        webinarSystem.bastion -> webinarSystem.proxy "SSH" "SSH/22"
+        webinarSystem.bastion -> webinarSystem.flask "SSH" "SSH/22"
         webinarSystem.proxy -> webinarSystem.flask "Forwards requests" "HTTP/5001"
         webinarSystem.flask -> webinarSystem.database "Reads/writes data" "PostgreSQL/5432"
 
@@ -176,6 +176,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
         container webinarSystem "C2-Containers-Full" "Container diagram showing the complete system" {
             include *
             exclude relationship.tag==ComponentLevel
+            exclude relationship.tag==FlaskComponent
         }
 
         # C3 - Component (Flask Application)
@@ -192,6 +193,7 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             include attendee
             include webinarSystem.browser
             include webinarSystem.flask
+            include webinarSystem.database
             exclude relationship.tag==FlaskComponent
         }
 
