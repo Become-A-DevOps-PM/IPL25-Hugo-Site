@@ -2,7 +2,7 @@
 title = "AI as Co-worker"
 weight = 1
 date = 2024-12-08
-draft = true
+draft = false
 +++
 
 [Watch the presentation](/presentations/mini-lectures/ai-as-co-worker.html)
