@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <title>Implementation Strategies: Designing Feedback Loops</title>
+    <title>Implementation Strategies - DevOps PM IPL25</title>
 
     <!-- Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-50TPJY0FZH"></script>
@@ -31,7 +31,7 @@
                 <div class="corner-accent"></div>
 
                 <div class="course-badge">
-                    <span>DEVOPS PROJECT MANAGEMENT</span>
+                    <span>IPL25</span>
                 </div>
 
                 <h1 class="main-title">
@@ -39,55 +39,51 @@
                     STRATEGIES
                 </h1>
 
-                <p class="subtitle">Designing Feedback Loops</p>
-                <p class="course-info">Building Software Under Uncertainty</p>
+                <p class="subtitle">Designing Feedback Loops Under Uncertainty</p>
+                <p class="course-info">DevOps Project Management • 2025</p>
 
                 <div class="bottom-accent"></div>
             </section>
 
-            <!-- The Core Challenge -->
+            <!-- The Key Reframe -->
             <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">The Core Challenge</h2>
+                <h2 class="slide-header">The Key Reframe</h2>
 
                 <div class="fragment info-box">
-                    <p>Development must begin <span class="highlight">before complete information exists</span> — requirements remain unclear, technical approaches are untested, user needs evolve</p>
+                    <p><span class="highlight">Stop asking:</span> "How do we build this system?"</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p>Traditional waterfall approaches attempt to resolve all uncertainty during planning, but <span class="highlight">comprehensive upfront analysis cannot predict</span> the complex interactions that emerge during implementation</p>
+                    <p><span class="highlight">Start asking:</span> "What do we need to learn, and how do we learn it efficiently?"</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p>The alternative: design <span class="highlight">feedback loops</span> — structured mechanisms for gathering information through implementation itself</p>
+                    <p>Development must begin before complete information exists. Attempting to resolve all uncertainty through upfront analysis does not work—complex interactions only emerge during implementation.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p>Reframe the question from <span class="highlight">"how do we build this system?"</span> to <span class="highlight">"what do we need to learn, and how do we design experiments to learn it efficiently?"</span></p>
+                    <p>The alternative: design <span class="highlight">feedback loops</span>—build strategic pieces of the system to answer specific questions and produce evidence for decision-making.</p>
                 </div>
             </section>
 
             <!-- MVP Strategy -->
             <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">Minimum Viable Product (MVP)</h2>
+                <h2 class="slide-header">Minimum Viable Product</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Definition:</span> The smallest set of functionality that provides genuine value to users — emphasis on "viable"</p>
+                    <p><span class="highlight">Core question:</span> Do users value this solution?</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Purpose:</span> Test fundamental assumptions about product-market fit. Does the core value proposition resonate? Will people actually use this?</p>
+                    <p>The smallest set of functionality that provides <span class="highlight">genuine value</span>. Emphasis on "viable"—users can adopt it for real work, not a demo or prototype.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Approach:</span> Ruthless prioritization — features excluded not because they lack value, but because they can be deferred</p>
+                    <p>Ruthless prioritization: features excluded not because they lack value, but because they can be deferred. Reach users quickly, then let feedback guide development.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Trade-off:</span> Ships with known limitations (lower code quality, minimal error handling, adequate performance) to validate core assumptions quickly</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">Example:</span> Project management app with only task creation, assignment, and status updates — no attachments, time tracking, or reporting dashboards</p>
+                    <p><span class="highlight">Trade-off:</span> Ships with known limitations—lower code quality, minimal error handling. Investing in polish before validating core assumptions wastes effort.</p>
                 </div>
             </section>
 
@@ -96,23 +92,19 @@
                 <h2 class="slide-header">Walking Skeleton</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Definition:</span> A thin but complete slice through all system layers, from user interface through business logic to data persistence</p>
+                    <p><span class="highlight">Core question:</span> Does our architecture work end-to-end?</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Purpose:</span> Prove that system architecture functions end-to-end — components integrate, deployment works, technical approach is sound</p>
+                    <p>A thin but complete slice through all system layers: UI → business logic → data persistence. Just enough code to prove the <span class="highlight">plumbing works</span>.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Approach:</span> Execute one simple scenario completely through all layers — just enough code to prove the plumbing works</p>
+                    <p>Reveals integration problems early: authentication, serialization, network config, database connections—all become concrete when cost of fixing is minimal.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Benefit:</span> Reveals integration problems early when cost of addressing them is minimal — authentication, serialization, network config, database connections</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">Limitation:</span> Provides minimal user value initially — users cannot evaluate meaningfully until several iterations flesh out the skeleton</p>
+                    <p><span class="highlight">Trade-off:</span> Minimal user value initially. Users cannot evaluate meaningfully until several iterations flesh out the skeleton with real functionality.</p>
                 </div>
             </section>
 
@@ -121,23 +113,19 @@
                 <h2 class="slide-header">Rapid Prototyping</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Definition:</span> Quick, disposable experiments to explore possibilities and gather feedback — explicitly NOT production code</p>
+                    <p><span class="highlight">Core question:</span> Is this approach worth pursuing?</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Purpose:</span> Answer questions, demonstrate concepts, test assumptions — exploratory, experimental, or evaluative</p>
+                    <p>Quick, disposable experiments—explicitly NOT production code. Exist to answer questions, then be discarded. If failure is cheap, teams explore more options.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Power:</span> Low commitment enables experimentation — prototypes take hours or days, can abandon without loss</p>
+                    <p><span class="highlight">Critical discipline:</span> Never evolve prototypes into production code. Extract lessons learned and rebuild with production standards.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Critical Rule:</span> Must remain clearly separated from production code — extract lessons learned and rebuild with production standards</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">Challenge:</span> Maintain discipline about scope — what specific question does this prototype answer? When is it complete enough?</p>
+                    <p><span class="highlight">Trade-off:</span> Prototypes answering too many questions become complex and time-consuming, losing the advantage of rapid experimentation.</p>
                 </div>
             </section>
 
@@ -146,69 +134,61 @@
                 <h2 class="slide-header">Spike Investigation</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Definition:</span> Time-boxed investigation of a specific technical question or unknown — produces knowledge, not demonstration</p>
+                    <p><span class="highlight">Core question:</span> Is this specific approach feasible?</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Deliverable:</span> Brief document, recommendation, code sample, or feasibility decision — not production-ready code</p>
+                    <p>Time-boxed investigation of a specific technical question. Produces <span class="highlight">knowledge</span>—a recommendation, code sample, or feasibility decision—not a demonstration.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Time-boxing:</span> Fixed duration (hours to few days) prevents excessive resource consumption — stop regardless of whether definitive answer reached</p>
+                    <p><span class="highlight">Time-boxing is essential:</span> Fixed duration, then stop regardless of whether definitive answer reached. If time proves insufficient, the problem is more complex than anticipated.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Process:</span> Focused research and experimentation — read docs, examine examples, build test cases, conduct benchmarks</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p><span class="highlight">Outcome:</span> Informs subsequent work — proceed if viable, reconsider if complex, allocate more time or seek alternatives if unresolved</p>
+                    <p><span class="highlight">Trade-off:</span> Without time-boxing, investigations consume arbitrary time pursuing diminishing returns.</p>
                 </div>
             </section>
 
             <!-- Strategy Selection -->
             <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">Strategy Selection</h2>
+                <h2 class="slide-header">Match Strategy to Uncertainty</h2>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">MVP:</span> Do users value this solution? → Functioning product with minimal features → User adoption and feedback</p>
+                    <p><span class="highlight">MVP</span> → User value uncertain → Weeks to months → User adoption and feedback</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Walking Skeleton:</span> Does our architecture work end-to-end? → Complete but minimal vertical slice → Validated technical foundation</p>
+                    <p><span class="highlight">Walking Skeleton</span> → Architecture uncertain → Days to weeks → Validated technical foundation</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Rapid Prototyping:</span> Is this approach worth pursuing? → Disposable demonstration → Design validation or rejection</p>
+                    <p><span class="highlight">Rapid Prototyping</span> → Design options need evaluation → Hours to days → Design validation or rejection</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Spike:</span> Is this specific approach feasible? → Knowledge and recommendation → Technical decision</p>
-                </div>
-
-                <div class="fragment info-box">
-                    <p>Projects commonly <span class="highlight">combine strategies</span> — spikes evaluate technologies → skeleton proves integration → MVP increments validate user value</p>
+                    <p><span class="highlight">Spike</span> → Specific technical question → Hours to days → Technical decision</p>
                 </div>
             </section>
 
-            <!-- Key Insight -->
+            <!-- Key Takeaways -->
             <section class="bullet-slide" data-background-color="#0A0E27">
-                <h2 class="slide-header">The Fundamental Insight</h2>
+                <h2 class="slide-header">Key Takeaways</h2>
 
                 <div class="fragment info-box">
-                    <p>All strategies function as <span class="highlight">feedback loops</span> — they produce working software or concrete investigation outcomes that provide evidence for decision-making</p>
+                    <p><span class="highlight">Reframe implementation as learning.</span> Ask "what do we need to learn?" rather than "how do we build this?"</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p>This evidence-based approach enables teams to <span class="highlight">fail fast</span> on unsuccessful approaches and invest deeply in validated directions</p>
+                    <p><span class="highlight">Combine strategies across project phases.</span> Spikes → Walking Skeleton → MVP increments addresses different uncertainties at appropriate times.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p><span class="highlight">Implementation itself is a learning activity</span>, and designing how that learning occurs is as important as designing the software being built</p>
+                    <p><span class="highlight">Never evolve prototypes into production code.</span> Extract lessons and rebuild with production standards.</p>
                 </div>
 
                 <div class="fragment info-box">
-                    <p>Strategy selection requires identifying <span class="highlight">which uncertainties carry the most risk</span> at the current project stage</p>
+                    <p><span class="highlight">Wrong strategy wastes effort.</span> Validating architecture for a product users may not want is as wasteful as building features on a foundation that cannot scale.</p>
                 </div>
             </section>
 
