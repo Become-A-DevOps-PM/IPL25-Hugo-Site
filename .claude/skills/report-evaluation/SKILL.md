@@ -1,7 +1,7 @@
 ---
 name: report-evaluation
 description: Evaluate student assignment reports using three independent reviewers for consensus grading. Each reviewer reads the PDF and context files independently, then provides section assessments in Swedish. Results compiled with majority voting into GRADING-RESULTS.md. Use when grading prepared student submissions.
-allowed-tools: Read, Write, Edit, Glob, Task, AskUserQuestion
+allowed-tools: Read, Write, Edit, Glob, Task, AskUserQuestion, WebFetch
 triggers:
   - evaluate reports
   - grade assignments
@@ -166,74 +166,120 @@ Read `[assignment-folder]/STUDENT-LIST.md` and identify:
 - Students with "Report Submitted: Yes"
 - Students without a grade in "Betyg" column
 
-### Step 3: For Each Student
+### Step 3: Parallel Batch Evaluation
 
-#### 3a. Spawn 3 Parallel Reviewer Subagents
+**Batch size:** Maximum 10 students per batch. If more than 10 students need evaluation, process in multiple batches.
 
-For each student, spawn exactly 3 Task subagents. Each subagent receives the same prompt instructing them to:
+#### 3a. Create Batches
 
+```
+students_to_evaluate = [students with submitted reports but no grade]
+batches = split into groups of max 10 students
+```
+
+#### 3b. For Each Batch: Spawn All Reviewers in Parallel
+
+For a batch of N students (max 10), spawn **N × 3 = up to 30 subagents in parallel**.
+
+Each subagent receives the same prompt (see `REVIEWER-PROMPT.md`) instructing them to:
 1. Read all context files from the assignment folder
 2. Read and evaluate the student's PDF
-3. Assess each section defined in ASSIGNMENT.md
-4. Determine overall grade based on COURSE-DESCRIPTION.md criteria
-5. Write feedback in Swedish
+3. **Follow any code repository links** (GitHub, GitLab, etc.) found in the report
+4. Assess each section defined in ASSIGNMENT.md
+5. Determine overall grade based on COURSE-DESCRIPTION.md criteria
+6. Write feedback in Swedish
 
-See `REVIEWER-PROMPT.md` for the exact prompt template.
+**Spawning pattern for batch:**
+```
+# Single message with all Task calls for the batch:
+Task: Student 1 - Reviewer 1
+Task: Student 1 - Reviewer 2
+Task: Student 1 - Reviewer 3
+Task: Student 2 - Reviewer 1
+Task: Student 2 - Reviewer 2
+Task: Student 2 - Reviewer 3
+... (up to 30 parallel tasks)
+```
 
-#### 3b. Collect Results
+#### 3c. Collect All Results
 
-Wait for all 3 subagents to complete. Each returns:
+Wait for **all subagents in the batch** to complete before proceeding. Each returns:
+- Student name (to match results)
 - Grade (G or VG)
 - Section assessments (term + comment for each section)
 - Feedback (3 sentences in Swedish)
 - Reasoning (brief justification)
 
-#### 3c. Determine Final Grade
+#### 3d. Process Results for Each Student
 
-Apply majority voting:
+For each student in the batch, apply consensus:
 
+**Majority voting:**
 ```
 If all 3 agree: Final grade = reviewer grade (unanimous)
 If 2/3 agree: Final grade = majority grade (majority)
 If all different: Flag for manual review (split)
 ```
 
-#### 3d. Select Best Feedback
-
-From the 3 feedback options, select the one that is:
+**Select best feedback** from the 3 options:
 1. Most warm and encouraging
 2. Most specific to student's work
 3. Most natural Swedish (not bureaucratic)
 
-#### 3e. Record Results
+#### 3e. Batch Write Results
 
-Append to `[assignment-folder]/GRADING-RESULTS.md` using format from `OUTPUT-FORMAT.md`.
+After processing all students in the batch:
 
-#### 3f. Update STUDENT-LIST.md
+1. **Append all evaluations** to `GRADING-RESULTS.md` in one write operation
+2. **Update all grades** in `STUDENT-LIST.md` in one edit operation
 
-Update the "Betyg" column with grade and vote count:
-- `VG (3/3)` - Distinction, unanimous
-- `VG (2/3)` - Distinction, majority
-- `G (3/3)` - Pass, unanimous
-- `G (2/3)` - Pass, majority
+This batch write approach:
+- Reduces file I/O operations
+- Prevents partial state if interrupted
+- Enables atomic batch completion
 
-### Step 4: Display Terminal Summary
+#### 3f. Display Batch Summary
 
-After each student, display:
+After each batch completes, display summary for all students in the batch:
 
 ```
-## [Student Name] - Evaluation Complete
+## Batch 1/2 Complete (10 students)
 
-| Reviewer | Grade | Key Observation |
-|----------|-------|-----------------|
-| 1 | VG | [brief note] |
-| 2 | VG | [brief note] |
-| 3 | G | [brief note] |
+| Student | Grade | Consensus |
+|---------|-------|-----------|
+| Andersson, Anna | VG | 3/3 |
+| Eriksson, Erik | G | 2/3 |
+| ... | ... | ... |
 
-**Final Grade: VG (2/3 majority)**
+✓ All 10 evaluations saved to GRADING-RESULTS.md
+✓ STUDENT-LIST.md updated with grades
+```
 
-✓ Saved to GRADING-RESULTS.md
-✓ Updated STUDENT-LIST.md
+#### 3g. Continue with Next Batch
+
+If more batches remain, repeat steps 3b-3f for the next batch.
+
+### Step 4: Display Final Summary
+
+After all batches complete, display overall progress:
+
+```
+## Evaluation Complete
+
+**Total students evaluated:** [N]
+**Batches processed:** [M]
+
+| Grade | Count |
+|-------|-------|
+| VG | [X] |
+| G | [Y] |
+
+**Consensus quality:**
+- Unanimous (3/3): [N]
+- Majority (2/3): [N]
+- Split (flagged): [N]
+
+Proceeding to generate summary tables...
 ```
 
 ### Step 5: Generate Summary Tables
@@ -352,9 +398,14 @@ To evaluate all remaining students:
 
 ```
 Evaluate all ungraded students in [assignment-folder-path]
-Use the three-reviewer method, processing in parallel where possible.
-Update GRADING-RESULTS.md and STUDENT-LIST.md after each.
+Use parallel batch mode (max 10 students per batch, 3 reviewers each).
+Write results to GRADING-RESULTS.md and STUDENT-LIST.md after each batch.
 ```
+
+**Performance characteristics:**
+- Up to 30 parallel subagents per batch (10 students × 3 reviewers)
+- ~10x faster than sequential processing for large classes
+- Batch writes reduce file I/O overhead
 
 ## Handling Split Decisions
 

@@ -45,6 +45,26 @@ Read these files to understand what to evaluate and the grading criteria:
 
 Read the entire PDF and assess each section defined in ASSIGNMENT.md.
 
+**Step 2b: Follow code repository links (if present)**
+
+If the report contains links to GitHub, GitLab, or other code repositories/snippets:
+
+1. **Follow the link** using WebFetch to investigate the repository
+2. **Review relevant code** that relates to the report content
+3. **Use the code as context** for your assessment - does the code support what the report claims?
+4. **Note code quality** if it strengthens or clarifies the student's work
+
+This provides a more complete picture of the student's actual implementation, not just their description of it.
+
+**Examples of links to follow:**
+- GitHub repository links (github.com/...)
+- GitLab repository links (gitlab.com/...)
+- GitHub Gist links (gist.github.com/...)
+- Azure DevOps repository links (dev.azure.com/...)
+- Code snippet links (pastebin, codepen, etc.)
+
+**Do NOT penalize** students who don't include code links - this is supplementary context, not a requirement.
+
 **Step 3: Provide section-by-section evaluation**
 
 For each section in ASSIGNMENT.md, provide:
@@ -101,6 +121,8 @@ If any answer is "no", rewrite until all answers are "yes".
 
 **Return your evaluation in this format:**
 
+**IMPORTANT:** Always include the student's full name exactly as provided - this is required for matching results in parallel batch processing.
+
 ---
 
 ## [Student Name]
@@ -150,30 +172,54 @@ Read these files to understand what to evaluate and the grading criteria:
 
 ## Notes for Main Agent
 
-When spawning 3 reviewer subagents:
+### Single Student Mode
+
+When spawning 3 reviewer subagents for one student:
 
 1. **Use identical prompts** - All 3 reviewers get the same prompt
 2. **Spawn in parallel** - Use Task tool 3 times in same message
 3. **Wait for all 3** - Don't proceed until all return
 4. **Handle failures** - If one fails, note which and continue with 2/3
 
-### Spawning Pattern
-
 ```
-# In main agent, spawn 3 parallel tasks:
-
+# Spawn 3 parallel tasks for single student:
 Task 1: [Full prompt with folder path, student name, and filename]
 Task 2: [Identical prompt]
 Task 3: [Identical prompt]
 ```
 
+### Parallel Batch Mode (Recommended for Multiple Students)
+
+When evaluating multiple students, spawn all reviewers for a batch in one message:
+
+1. **Batch size** - Maximum 10 students per batch (30 subagents)
+2. **Single spawn message** - All Task calls in one message for true parallelism
+3. **Wait for entire batch** - Collect all results before processing
+4. **Match by student name** - Group results by student name for consensus
+
+```
+# Spawn all reviewers for batch of N students (max 10):
+Task: Student 1, Reviewer 1 [prompt with student 1 details]
+Task: Student 1, Reviewer 2 [prompt with student 1 details]
+Task: Student 1, Reviewer 3 [prompt with student 1 details]
+Task: Student 2, Reviewer 1 [prompt with student 2 details]
+Task: Student 2, Reviewer 2 [prompt with student 2 details]
+Task: Student 2, Reviewer 3 [prompt with student 2 details]
+... (up to 30 parallel tasks)
+```
+
+**Performance benefit:** Processing 10 students in parallel takes roughly the same time as processing 1 student sequentially.
+
 ### Collecting Results
 
 Each subagent returns:
+- **Student name** (for matching in parallel batch processing)
 - Section assessments (term + comment for each section in ASSIGNMENT.md)
 - Overall grade (G or VG)
 - Feedback (3 sentences in Swedish)
 - Reasoning (brief justification)
+
+**Batch processing note:** When spawning multiple students in parallel (up to 10 students × 3 reviewers = 30 subagents), use the student name in each result to group the 3 reviews for consensus voting.
 
 ### Determining Consensus
 
