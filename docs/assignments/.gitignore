@@ -1,0 +1,8 @@
+# Student report submissions - do not commit to git
+assignment-1/student-reports/
+assignment-2/student-reports/
+assignment-3/student-reports/
+
+# Student lists contain personal data
+CLASS-LIST.md
+*/STUDENT-LIST.md
