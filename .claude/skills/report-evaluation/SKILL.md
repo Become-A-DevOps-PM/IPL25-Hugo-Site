@@ -20,6 +20,68 @@ Evaluate student reports using three independent reviewers for reliable consensu
 1. Read `FEEDBACK-EXAMPLES.md` - Swedish feedback tone and style
 2. Read `OUTPUT-FORMAT.md` - Expected output structure
 
+## Session Recovery with EVALUATION-STATUS.json
+
+**Critical: This skill uses EVALUATION-STATUS.json to track progress and survive compacting events.**
+
+The status file enables:
+- **Resumption** - Pick up exactly where you left off after compacting
+- **Progress visibility** - Clear tracking of what's done and what remains
+- **Incremental writes** - Results saved after each batch (not lost on compaction)
+- **Batch management** - Pre-planned batches of 3 students each
+
+### Status File Structure
+
+```json
+{
+  "evaluation_session": {
+    "assignment": "Assignment Name",
+    "assignment_folder": "/full/path/to/assignment",
+    "started": "YYYY-MM-DD",
+    "last_updated": "YYYY-MM-DD",
+    "status": "in_progress|completed",
+    "batch_size": 3
+  },
+  "files": {
+    "grading_results": "GRADING-RESULTS.md",
+    "student_list": "STUDENT-LIST.md",
+    "assignment": "ASSIGNMENT.md",
+    "course_description": "/path/to/COURSE-DESCRIPTION.md",
+    "background": "BACKGROUND.md",
+    "special_considerations": "SPECIAL-CONSIDERATIONS.md",
+    "student_reports_folder": "student-reports/"
+  },
+  "progress": {
+    "total_students": 0,
+    "submitted_reports": 0,
+    "missing_reports": 0,
+    "evaluated": 0,
+    "remaining": 0
+  },
+  "batches": {
+    "batch_1": {
+      "status": "completed|in_progress|pending",
+      "students": [
+        {"name": "Student Name", "file": "lastname_firstname_rapport.pdf"}
+      ],
+      "results": {"VG": 0, "G": 0}
+    }
+  },
+  "completed_evaluations": [
+    {"name": "Student Name", "grade": "G", "consensus": "3/3"}
+  ],
+  "missing_submissions": ["Student Name"],
+  "next_batch": "batch_N"
+}
+```
+
+### Recovery Behavior
+
+**On skill invocation:**
+1. Check for existing `EVALUATION-STATUS.json` in assignment folder
+2. If found: Read status and continue from `next_batch`
+3. If not found: Initialize new session (Step 1)
+
 ## Assignment Folder Structure
 
 Each assignment folder contains the context needed for evaluation. Most files must be in the assignment folder, but some (like COURSE-DESCRIPTION.md) can be shared in parent folders.
@@ -33,6 +95,7 @@ Each assignment folder contains the context needed for evaluation. Most files mu
 | `COURSE-DESCRIPTION.md` | Formal course criteria and learning objectives | **Parent folders up to project root** |
 | `BACKGROUND.md` | Project scenario and learning context | Assignment folder only |
 | `SPECIAL-CONSIDERATIONS.md` | Exceptions and adjustments for this assignment | Assignment folder only |
+| `EVALUATION-STATUS.json` | Progress tracking (created/updated by skill) | Assignment folder only |
 | `student-reports/` | Folder containing renamed PDFs | Assignment folder only |
 
 ### File Relationships
@@ -88,7 +151,37 @@ Each student report is evaluated by **three independent subagents in parallel**:
 
 ## Evaluation Workflow
 
-### Step 0: Validate Input Files
+### Step 0: Check for Existing Session
+
+**Before anything else, check if a session already exists.**
+
+1. Look for `EVALUATION-STATUS.json` in the assignment folder
+2. **If found with status "in_progress":**
+   - Display: `Resuming evaluation session from [last_updated]`
+   - Display current progress from status file
+   - Skip to Step 3 and continue from `next_batch`
+3. **If found with status "completed":**
+   - Display: `Previous session completed. Starting fresh evaluation.`
+   - Proceed to Step 0.5 (validate inputs)
+4. **If not found:**
+   - Display: `No existing session. Starting new evaluation.`
+   - Proceed to Step 0.5 (validate inputs)
+
+**Resume display format:**
+```
+## Resuming Evaluation Session
+
+Assignment: [assignment name]
+Last updated: [date]
+Progress: [evaluated]/[total] students evaluated
+
+Completed batches: [N]
+Next batch: [batch_N] with [3] students
+
+Continuing evaluation...
+```
+
+### Step 0.5: Validate Input Files
 
 **Before starting evaluation, check that all required input files exist.**
 
@@ -142,7 +235,7 @@ Proceeding with evaluation...
 
 ### Step 1: Load Context Files
 
-Read all context files, using the paths determined in Step 0:
+Read all context files, using the paths determined in Step 0.5:
 
 ```
 [assignment-folder]/ASSIGNMENT.md             # Report structure and sections
@@ -151,7 +244,7 @@ Read all context files, using the paths determined in Step 0:
 [assignment-folder]/SPECIAL-CONSIDERATIONS.md # Exceptions
 ```
 
-**Note:** COURSE-DESCRIPTION.md path comes from the parent folder search in Step 0. Pass this resolved path to reviewer subagents.
+**Note:** COURSE-DESCRIPTION.md path comes from the parent folder search in Step 0.5. Pass this resolved path to reviewer subagents.
 
 From these files, extract:
 - **Sections to evaluate** (from ASSIGNMENT.md)
@@ -166,20 +259,58 @@ Read `[assignment-folder]/STUDENT-LIST.md` and identify:
 - Students with "Report Submitted: Yes"
 - Students without a grade in "Betyg" column
 
+### Step 2.5: Initialize or Update EVALUATION-STATUS.json
+
+**For new sessions only** (skip if resuming from existing session):
+
+Create `EVALUATION-STATUS.json` with:
+- Session metadata (assignment name, folder, date, batch_size: 3)
+- File paths for all context files
+- Progress counters (all starting at 0)
+- Pre-planned batches (groups of 3 students each)
+- Empty completed_evaluations array
+- Missing submissions list
+- next_batch set to "batch_1"
+
+```json
+{
+  "evaluation_session": {
+    "assignment": "[from ASSIGNMENT.md title]",
+    "assignment_folder": "[full path]",
+    "started": "[today's date]",
+    "last_updated": "[today's date]",
+    "status": "in_progress",
+    "batch_size": 3
+  },
+  ...
+}
+```
+
+**Write the initial status file before starting any evaluations.**
+
 ### Step 3: Parallel Batch Evaluation
 
-**Batch size:** Maximum 10 students per batch. If more than 10 students need evaluation, process in multiple batches.
+**Batch size:** Maximum 3 students per batch. This smaller batch size enables:
+- Faster recovery after compacting events
+- More frequent progress saves
+- Lower risk of losing work
 
 #### 3a. Create Batches
 
 ```
 students_to_evaluate = [students with submitted reports but no grade]
-batches = split into groups of max 10 students
+batches = split into groups of max 3 students
 ```
+
+**Example for 28 students:**
+- batch_1: students 1-3
+- batch_2: students 4-6
+- ...
+- batch_10: students 28 (1 student in final batch)
 
 #### 3b. For Each Batch: Spawn All Reviewers in Parallel
 
-For a batch of N students (max 10), spawn **N × 3 = up to 30 subagents in parallel**.
+For a batch of N students (max 3), spawn **N × 3 = up to 9 subagents in parallel**.
 
 Each subagent receives the same prompt (see `REVIEWER-PROMPT.md`) instructing them to:
 1. Read all context files from the assignment folder
@@ -191,14 +322,16 @@ Each subagent receives the same prompt (see `REVIEWER-PROMPT.md`) instructing th
 
 **Spawning pattern for batch:**
 ```
-# Single message with all Task calls for the batch:
+# Single message with all Task calls for the batch (max 9 parallel tasks):
 Task: Student 1 - Reviewer 1
 Task: Student 1 - Reviewer 2
 Task: Student 1 - Reviewer 3
 Task: Student 2 - Reviewer 1
 Task: Student 2 - Reviewer 2
 Task: Student 2 - Reviewer 3
-... (up to 30 parallel tasks)
+Task: Student 3 - Reviewer 1
+Task: Student 3 - Reviewer 2
+Task: Student 3 - Reviewer 3
 ```
 
 #### 3c. Collect All Results
@@ -232,42 +365,90 @@ After processing all students in the batch:
 
 1. **Append all evaluations** to `GRADING-RESULTS.md` in one write operation
 2. **Update all grades** in `STUDENT-LIST.md` in one edit operation
+3. **Update EVALUATION-STATUS.json** with batch completion
+
+**Status file updates after each batch:**
+```json
+{
+  "evaluation_session": {
+    "last_updated": "[current date]"
+  },
+  "progress": {
+    "evaluated": [previous + batch count],
+    "remaining": [previous - batch count]
+  },
+  "batches": {
+    "[current_batch]": {
+      "status": "completed",
+      "results": {"VG": N, "G": M}
+    }
+  },
+  "completed_evaluations": [
+    // Append new evaluations
+    {"name": "...", "grade": "...", "consensus": "..."}
+  ],
+  "next_batch": "[next_batch_key or null if done]"
+}
+```
 
 This batch write approach:
+- **Saves progress immediately** - Results survive compacting events
 - Reduces file I/O operations
 - Prevents partial state if interrupted
-- Enables atomic batch completion
+- Enables exact resumption from status file
 
 #### 3f. Display Batch Summary
 
 After each batch completes, display summary for all students in the batch:
 
 ```
-## Batch 1/2 Complete (10 students)
+## Batch 1/10 Complete (3 students)
 
 | Student | Grade | Consensus |
 |---------|-------|-----------|
 | Andersson, Anna | VG | 3/3 |
 | Eriksson, Erik | G | 2/3 |
-| ... | ... | ... |
+| Johansson, Johan | VG | 3/3 |
 
-✓ All 10 evaluations saved to GRADING-RESULTS.md
+✓ 3 evaluations saved to GRADING-RESULTS.md
 ✓ STUDENT-LIST.md updated with grades
+✓ EVALUATION-STATUS.json updated (next: batch_2)
+
+Progress: 3/28 students evaluated (10.7%)
 ```
 
 #### 3g. Continue with Next Batch
 
 If more batches remain, repeat steps 3b-3f for the next batch.
 
-### Step 4: Display Final Summary
+**Important:** Each batch is self-contained. If a compacting event occurs:
+1. The skill will restart from Step 0
+2. Status file will show which batch to resume
+3. Only the current incomplete batch needs re-evaluation
+4. All previously completed batches are preserved
 
-After all batches complete, display overall progress:
+### Step 4: Mark Session Complete and Display Final Summary
+
+After all batches complete:
+
+1. **Update EVALUATION-STATUS.json** to mark session completed:
+```json
+{
+  "evaluation_session": {
+    "status": "completed",
+    "last_updated": "[current date]"
+  },
+  "next_batch": null
+}
+```
+
+2. **Display overall progress:**
 
 ```
 ## Evaluation Complete
 
 **Total students evaluated:** [N]
-**Batches processed:** [M]
+**Batches processed:** [M] (batch size: 3)
 
 | Grade | Count |
 |-------|-------|
@@ -278,6 +459,8 @@ After all batches complete, display overall progress:
 - Unanimous (3/3): [N]
 - Majority (2/3): [N]
 - Split (flagged): [N]
+
+✓ EVALUATION-STATUS.json marked as completed
 
 Proceeding to generate summary tables...
 ```
@@ -398,14 +581,21 @@ To evaluate all remaining students:
 
 ```
 Evaluate all ungraded students in [assignment-folder-path]
-Use parallel batch mode (max 10 students per batch, 3 reviewers each).
-Write results to GRADING-RESULTS.md and STUDENT-LIST.md after each batch.
+Use parallel batch mode (3 students per batch, 3 reviewers each).
+Write results to GRADING-RESULTS.md, STUDENT-LIST.md, and EVALUATION-STATUS.json after each batch.
 ```
 
 **Performance characteristics:**
-- Up to 30 parallel subagents per batch (10 students × 3 reviewers)
-- ~10x faster than sequential processing for large classes
-- Batch writes reduce file I/O overhead
+- Up to 9 parallel subagents per batch (3 students × 3 reviewers)
+- Results saved after each batch (survives compacting events)
+- Automatic resumption from EVALUATION-STATUS.json
+- Progress visible at each batch completion
+
+**Resuming after compaction:**
+```
+Resume evaluation in [assignment-folder-path]
+The EVALUATION-STATUS.json will be read automatically.
+```
 
 ## Handling Split Decisions
 
@@ -422,13 +612,15 @@ Before completing:
 
 - [ ] All students in STUDENT-LIST.md have grades
 - [ ] GRADING-RESULTS.md has entry for each evaluated student
+- [ ] EVALUATION-STATUS.json shows status: "completed"
+- [ ] EVALUATION-STATUS.json progress matches actual evaluated count
 - [ ] Summary table reflects all evaluations
 - [ ] Split decisions flagged for review
 - [ ] Feedback is in Swedish and uses "du/din"
 
 ## Privacy Note
 
-GRADING-RESULTS.md contains student names and grades. It must be:
+GRADING-RESULTS.md and EVALUATION-STATUS.json contain student names and grades. They must be:
 
 1. Added to `.gitignore`
 2. Never committed to public repositories
