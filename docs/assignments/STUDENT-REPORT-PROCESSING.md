@@ -98,6 +98,30 @@ in order to parallelize."
 - **Compound surnames:** Combine without spaces (e.g., `martinezlofgren_anna-isabel_`)
 - **Swedish characters:** Simplified in prefix (ö→o, ä→a, å→a, é→e)
 
+### Why Subagents? Context Isolation Pattern
+
+Using one subagent per PDF file provides critical benefits:
+
+| Benefit | Explanation |
+|---------|-------------|
+| **Context isolation** | Each agent only loads one PDF into its context, avoiding overflow when processing many files |
+| **Parallel execution** | All 35 PDFs processed simultaneously instead of sequentially |
+| **Failure isolation** | If one PDF fails (too large, corrupted), others still complete |
+| **Memory efficiency** | Each agent's context is released after completing its task |
+
+**Problem solved:** Reading 35 PDFs (some 15+ MB) sequentially would overflow the context window. The main agent would lose early file contents before finishing.
+
+**How it works:**
+1. Main agent spawns 35 parallel subagents
+2. Each subagent reads only its assigned PDF
+3. Subagent extracts name, renames file, reports result
+4. Main agent collects all results (just text summaries, not PDF contents)
+
+**Handling failures:**
+- If a PDF is too large (>15MB), the subagent may fail with API size error
+- Failed files are reported back and handled manually or with alternative methods
+- Example: One 17.9MB file failed subagent analysis, resolved via MD5 comparison
+
 ## Step 3: Cross-Reference with Class Roster
 
 **Performed by:** Claude Code using `CLASS-LIST.md`
@@ -108,15 +132,15 @@ When PDFs cannot be identified from content alone:
 2. Claude Code matches unidentified files by:
    - Partial name matches in filename
    - First name only (matched to roster for surname)
-   - Abbreviations (e.g., "Jonas A" → Jonas Andersson)
+   - Abbreviations (e.g., "Firstname L" → Firstname Lastname)
 3. Remaining unidentified files flagged for manual review
 
 ### Class Roster Format
 
 ```
 Firstname Lastname Campus/Class
-Pouya Aminzadeh IPL25 Campus Mölndal
-Fredrick Amnehagen IPL25 Campus Mölndal
+Example Student IPL25 Campus Mölndal
+Another Student IPL25 Campus Mölndal
 ...
 ```
 
@@ -202,8 +226,8 @@ Create a markdown file tracking all students and submission status:
 ```markdown
 | Full Name | File Prefix | Report Submitted |
 |-----------|-------------|------------------|
-| Pouya Aminzadeh | `aminzadeh_pouya` | Yes |
-| Johanna Carlsson | `carlsson_johanna` | No |
+| Firstname Lastname | `lastname_firstname` | Yes |
+| Another Student | `student_another` | No |
 ...
 ```
 
@@ -362,10 +386,10 @@ ls *.pdf | wc -l
 |------|--------|--------|
 | 1 | Manual download from Google Classroom | 35 files in ZIP |
 | 2 | Parallel rename with 35 subagents | 32 renamed, 3 needed manual ID |
-| 3 | Cross-reference with class roster | 2 more identified (Julia Elmhammar, Jonas Andersson) |
-| 4 | Manual identification | 1 file (Filippa Skauby Killick) |
-| 5 | Fix incorrect extractions | Sofia Carlson, Simon Jack |
-| 6 | Convert DOCX | 1 file (Johanna Carlsson) |
+| 3 | Cross-reference with class roster | 2 more identified |
+| 4 | Manual identification | 1 file identified |
+| 5 | Fix incorrect extractions | 2 names corrected |
+| 6 | Convert DOCX | 1 file converted |
 | 7 | Remove duplicates (6 students) | 8 files deleted |
 | 8 | Generate student list | 28 submitted, 3 missing |
 | 9 | Add .gitignore | Protected from git |
