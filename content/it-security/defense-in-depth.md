@@ -25,6 +25,9 @@ The philosophy behind Defense in Depth is simple: **"No single point of failure"
 ## The Layers of Defense in Depth
 
 Defense in Depth is often illustrated as concentric circles, each representing a layer of security. Here's a breakdown of the key layers:
+
+![Defense in Depth - Concentric security layers from Data at the center to Policies at the outer ring](/images/DefenseInDepth.png)
+
 ### 1. Data Layer
 The core of the model, where the most critical assets (data) are located.
 
