@@ -1,0 +1,34 @@
+# Secrets (NEVER commit)
+infrastructure/parameters.json
+
+# Local development database
+application/local.db
+*.db
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Test coverage
+.coverage
+.pytest_cache/
+htmlcov/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Structurizr Lite cache (regenerated on startup)
+.structurizr/
+
+# Execution artifacts (may contain sensitive info)
+execution-state.json
+execution-log.md
+test-report.md
+errors/
+diagnostics/
