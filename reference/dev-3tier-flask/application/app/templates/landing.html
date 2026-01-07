@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Flask Three-Tier Application{% endblock %}
+
+{% block content %}
+<h1>Flask Three-Tier Application</h1>
+
+<p>Welcome to the Flask three-tier application reference implementation.</p>
+
+<p>This landing page serves as the starting point for Phase 2 development.</p>
+
+<nav>
+    <ul>
+        <li><a href="{{ url_for('demo.index') }}">Demo Application</a> - Phase 1 demo with database entries</li>
+        <li><a href="{{ url_for('api.health') }}">Health Check</a> - API health endpoint</li>
+    </ul>
+</nav>
+{% endblock %}

@@ -6,7 +6,7 @@
 <h1>Flask Demo Application</h1>
 <p>Running on: {{ db_type }}</p>
 
-<form method="POST" action="{{ url_for('main.index') }}">
+<form method="POST" action="{{ url_for('demo.index') }}">
     <input type="text" name="value" placeholder="Enter a value..." required>
     <button type="submit">Add Entry</button>
 </form>

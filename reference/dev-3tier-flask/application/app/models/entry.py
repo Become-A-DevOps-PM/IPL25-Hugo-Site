@@ -1,6 +1,6 @@
 """Entry model for storing user-submitted values."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from app.extensions import db
 
 
@@ -11,7 +11,7 @@ class Entry(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     value = db.Column(db.Text, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     def to_dict(self):
         """Convert entry to dictionary for JSON serialization."""
