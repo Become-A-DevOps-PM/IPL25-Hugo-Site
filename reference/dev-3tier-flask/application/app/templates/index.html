@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}Flask Demo Application{% endblock %}
+
+{% block content %}
+<h1>Flask Demo Application</h1>
+<p>Running on: {{ db_type }}</p>
+
+<form method="POST" action="{{ url_for('main.index') }}">
+    <input type="text" name="value" placeholder="Enter a value..." required>
+    <button type="submit">Add Entry</button>
+</form>
+
+<div class="entries">
+    <h2>Recent Entries ({{ count }} total)</h2>
+    {% for entry in entries %}
+    <div class="entry">
+        <strong>{{ entry.value }}</strong>
+        <div class="meta">ID: {{ entry.id }} | Created: {{ entry.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</div>
+    </div>
+    {% else %}
+    <p>No entries yet. Add one above!</p>
+    {% endfor %}
+</div>
+
+<p>
+    <a href="{{ url_for('api.get_entries') }}">View all entries as JSON</a> |
+    <a href="{{ url_for('api.health') }}">Health check</a>
+</p>
+{% endblock %}

@@ -1,0 +1,17 @@
+# Web framework
+flask>=3.0.0
+
+# Database ORM
+flask-sqlalchemy>=3.1.0
+
+# Database migrations
+flask-migrate>=4.0.0
+
+# WSGI server for production
+gunicorn>=21.0.0
+
+# PostgreSQL adapter
+psycopg2-binary>=2.9.9
+
+# Testing
+pytest>=8.0.0
