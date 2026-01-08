@@ -117,3 +117,35 @@ class TestEntriesAPI:
         assert response.json[0]['value'] == 'api test'
         assert 'id' in response.json[0]
         assert 'created_at' in response.json[0]
+
+
+class TestRegistrationModel:
+    """Tests for the Registration model."""
+
+    def test_registration_repr(self, app):
+        """Test Registration string representation."""
+        with app.app_context():
+            from app.models.registration import Registration
+            reg = Registration(
+                name='Test User',
+                email='test@example.com',
+                company='Test Corp',
+                job_title='Developer'
+            )
+            assert '<Registration test@example.com>' in repr(reg)
+
+    def test_registration_to_dict(self, app):
+        """Test Registration to_dict method."""
+        with app.app_context():
+            from app.models.registration import Registration
+            reg = Registration(
+                name='Test User',
+                email='test@example.com',
+                company='Test Corp',
+                job_title='Developer'
+            )
+            d = reg.to_dict()
+            assert d['name'] == 'Test User'
+            assert d['email'] == 'test@example.com'
+            assert d['company'] == 'Test Corp'
+            assert d['job_title'] == 'Developer'

@@ -1,9 +1,9 @@
 {
   "phase": "2",
-  "current_step": "2.1",
+  "current_step": "2.2",
   "steps": {
-    "2.0": { "status": "completed", "exercise": "docs/exercises/phase-2.0-infrastructure-fixes.md", "commit": "pending" },
-    "2.1": { "status": "pending", "exercise": null, "commit": null },
+    "2.0": { "status": "completed", "exercise": "docs/exercises/phase-2.0-infrastructure-fixes.md", "commit": "d97b5f4" },
+    "2.1": { "status": "completed", "exercise": "docs/exercises/phase-2.1-registration-model.md", "commit": "pending", "tests_passed": 17 },
     "2.2": { "status": "pending", "exercise": null, "commit": null },
     "2.3": { "status": "pending", "exercise": null, "commit": null },
     "2.4": { "status": "pending", "exercise": null, "commit": null },
