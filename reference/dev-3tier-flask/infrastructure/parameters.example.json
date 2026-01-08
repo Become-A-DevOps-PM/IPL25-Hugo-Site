@@ -1,0 +1,15 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sshPublicKey": {
+      "value": "PLACEHOLDER_SSH_KEY"
+    },
+    "dbAdminUsername": {
+      "value": "adminuser"
+    },
+    "dbAdminPassword": {
+      "value": "PLACEHOLDER_GENERATE_SECURE_PASSWORD"
+    }
+  }
+}

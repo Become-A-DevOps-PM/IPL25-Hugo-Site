@@ -29,10 +29,10 @@ class TestHealthEndpoint:
         response = client.get('/api/health')
         assert response.status_code == 200
 
-    def test_health_returns_healthy_status(self, client):
-        """Health check should return healthy status."""
+    def test_health_returns_ok_status(self, client):
+        """Health check should return ok status."""
         response = client.get('/api/health')
-        assert response.json['status'] == 'healthy'
+        assert response.json['status'] == 'ok'
 
 
 class TestLandingPage:

@@ -24,4 +24,4 @@ def health():
     Returns:
         JSON object with status field.
     """
-    return jsonify({'status': 'healthy'})
+    return jsonify({'status': 'ok'})
