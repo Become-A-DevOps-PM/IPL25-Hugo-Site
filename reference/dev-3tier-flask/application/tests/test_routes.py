@@ -149,3 +149,50 @@ class TestRegistrationModel:
             assert d['email'] == 'test@example.com'
             assert d['company'] == 'Test Corp'
             assert d['job_title'] == 'Developer'
+
+
+class TestRegistrationService:
+    """Tests for the RegistrationService."""
+
+    def test_create_registration(self, app):
+        """Test creating a registration via service."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            reg = RegistrationService.create_registration(
+                name='Test User',
+                email='test@example.com',
+                company='Test Corp',
+                job_title='Developer'
+            )
+            assert reg.id is not None
+            assert reg.email == 'test@example.com'
+
+    def test_get_all_registrations_empty(self, app):
+        """Test getting registrations when none exist."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            regs = RegistrationService.get_all_registrations()
+            assert regs == []
+
+    def test_get_all_registrations_with_data(self, app):
+        """Test getting registrations when data exists."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            RegistrationService.create_registration(
+                name='User 1', email='u1@test.com', company='C1', job_title='Dev'
+            )
+            RegistrationService.create_registration(
+                name='User 2', email='u2@test.com', company='C2', job_title='PM'
+            )
+            regs = RegistrationService.get_all_registrations()
+            assert len(regs) == 2
+
+    def test_get_registration_count(self, app):
+        """Test counting registrations."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            assert RegistrationService.get_registration_count() == 0
+            RegistrationService.create_registration(
+                name='User', email='u@test.com', company='C', job_title='Dev'
+            )
+            assert RegistrationService.get_registration_count() == 1
