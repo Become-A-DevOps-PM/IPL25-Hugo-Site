@@ -50,8 +50,12 @@ Single VM running nginx (reverse proxy) and Flask/Gunicorn on the same host.
 
 | Route | Response |
 |-------|----------|
-| `GET /` | Landing page |
-| `GET /demo` | Demo form with entries |
+| `GET /` | Landing page with CTA |
+| `GET /register` | Registration form |
+| `POST /register` | Create registration (redirects to /thank-you) |
+| `GET /thank-you` | Confirmation page |
+| `GET /admin/attendees` | Attendee list |
+| `GET /demo` | Demo form with entries (Phase 1) |
 | `POST /demo` | Create entry (redirects) |
 | `GET /api/health` | `{"status": "ok"}` |
 | `GET /api/entries` | JSON array of entries |

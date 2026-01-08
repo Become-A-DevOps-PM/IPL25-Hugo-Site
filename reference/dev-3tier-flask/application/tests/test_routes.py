@@ -341,3 +341,77 @@ class TestAdminAttendees:
         response = client.get('/admin/attendees')
         assert b'Admin Test' in response.data
         assert b'admin@test.com' in response.data
+
+
+class TestRegistrationFlow:
+    """End-to-end tests for the complete registration journey."""
+
+    def test_landing_to_register_flow(self, client):
+        """Test navigation from landing page to registration."""
+        # 1. Get landing page
+        landing = client.get('/')
+        assert landing.status_code == 200
+        assert b'/register' in landing.data
+
+        # 2. Navigate to register page
+        register = client.get('/register')
+        assert register.status_code == 200
+        assert b'<form' in register.data
+
+    def test_complete_registration_journey(self, app, client):
+        """Test the full registration journey from landing to admin."""
+        # 1. Start at landing page
+        landing = client.get('/')
+        assert b'Register Now' in landing.data
+
+        # 2. Go to registration form
+        register_page = client.get('/register')
+        assert register_page.status_code == 200
+
+        # 3. Submit registration
+        submit = client.post('/register', data={
+            'name': 'E2E Test User',
+            'email': 'e2e@test.com',
+            'company': 'E2E Corp',
+            'job_title': 'Tester'
+        }, follow_redirects=True)
+        assert submit.status_code == 200
+        assert b'Thank You' in submit.data
+
+        # 4. Verify in admin
+        admin = client.get('/admin/attendees')
+        assert admin.status_code == 200
+        assert b'E2E Test User' in admin.data
+        assert b'e2e@test.com' in admin.data
+
+    def test_multiple_registrations_in_admin(self, app, client):
+        """Test that multiple registrations appear in admin."""
+        # Create multiple registrations
+        for i in range(3):
+            client.post('/register', data={
+                'name': f'User {i}',
+                'email': f'user{i}@test.com',
+                'company': f'Company {i}',
+                'job_title': 'Developer'
+            })
+
+        # Verify all appear in admin
+        admin = client.get('/admin/attendees')
+        assert b'User 0' in admin.data
+        assert b'User 1' in admin.data
+        assert b'User 2' in admin.data
+
+    def test_demo_still_works(self, client):
+        """Test that Phase 1 demo functionality still works."""
+        # Demo page loads
+        demo = client.get('/demo/')
+        assert demo.status_code == 200
+        assert b'demo' in demo.data.lower()
+
+        # Demo form submission works
+        post_demo = client.post('/demo/', data={'value': 'E2E Demo Test'})
+        assert post_demo.status_code == 302  # Redirect after POST
+
+        # API still works
+        api = client.get('/api/health')
+        assert api.status_code == 200
