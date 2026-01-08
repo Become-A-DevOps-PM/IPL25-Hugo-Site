@@ -4,7 +4,7 @@ Date: 2025-12-15
 
 ## Status
 
-Accepted
+Superseded by [ADR-0004](0004-use-direct-ssh.md)
 
 ## Context
 
@@ -32,3 +32,7 @@ We will use a self-managed bastion host (Ubuntu VM) as an SSH jump server.
 - Additional VM to maintain
 - Single point of failure for admin access
 - Requires SSH key management
+
+## Superseded
+
+This decision was superseded by ADR-0004 which adopts direct SSH access for the simplified learning environment. The bastion host pattern remains valid for production deployments.

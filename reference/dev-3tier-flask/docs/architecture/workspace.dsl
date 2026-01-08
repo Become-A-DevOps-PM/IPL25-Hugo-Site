@@ -1,14 +1,14 @@
-workspace "Webinar Registration Website" "C4 architecture model for the webinar registration system deployed on Azure IaaS" {
+workspace "Flask Three-Tier Application" "C4 architecture model for a simplified Flask application deployed on Azure for learning application development" {
 
     !identifiers hierarchical
-    
+
     configuration {
         scope softwaresystem
     }
 
     model {
         # Actors
-        attendee = person "Event Attendee" "Primary actor - registers for and attends webinars" {
+        user = person "Application User" "Interacts with the demo application" {
             tags "Primary Actor"
             properties {
                 "Actor Type" "Primary"
@@ -16,11 +16,11 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                 "Trust Level" "External, untrusted"
             }
             perspectives {
-                "Business" "Main customer touchpoint, drives webinar attendance"
+                "Business" "Main user, interacts with demo form"
                 "Security" "External user, requires input validation"
             }
         }
-        admin = person "Marketing Admin" "Supporting actor - manages webinars and views registrations" {
+        developer = person "Developer" "Deploys and maintains the application" {
             tags "Primary Actor"
             properties {
                 "Actor Type" "Secondary"
@@ -28,157 +28,137 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                 "Trust Level" "Internal, trusted"
             }
             perspectives {
-                "Business" "Monitors registration success, plans capacity"
-                "Security" "Internal user, future: requires authentication"
-            }
-        }
-        sysadmin = person "SysAdmin" "Supporting actor - deploys and maintains infrastructure" {
-            tags "Secondary Actor"
-            properties {
-                "Actor Type" "Secondary"
-                "Frequency" "Low"
-                "Trust Level" "Internal, privileged"
-            }
-            perspectives {
-                "Business" "Ensures system availability and performance"
-                "Security" "Privileged access via SSH through bastion host"
+                "Business" "Deploys application, monitors health"
+                "Security" "SSH access directly to VM"
             }
         }
 
         # The System
-        webinarSystem = softwareSystem "Webinar Registration Website" "Allows attendees to register for webinars and administrators to manage events" {
-            
+        flaskApp = softwareSystem "Flask Three-Tier Application" "Demo application showing Flask with PostgreSQL on Azure" {
+
             !docs docs
             !adrs adrs
-            
+
             # Client-side Containers
-            group "Front-end" {
-                browser = container "Web Browser" "Renders HTML, JavaScript and CSS" "Chrome, Firefox, Safari" {
+            group "Client" {
+                browser = container "Web Browser" "Renders HTML pages and forms" "Chrome, Firefox, Safari" {
                     tags "Client" "Primary Client"
                 }
-                
-                terminal = container "Terminal" "Command-line interface for administrative access" "Azure CLI, SSH" {
+
+                terminal = container "Terminal" "Command-line interface for deployment and administration" "SSH, Azure CLI" {
                     tags "Client" "Secondary Client"
                 }
             }
-            
+
             # Server-side Containers
-            group "Back-end" {
-                bastion = container "Bastion Host" "Secure SSH entry point for administrative access" "Ubuntu 24.04, Fail2ban" {
-                    tags "Bastion"
-                }
-                
-                proxy = container "Reverse Proxy" "SSL offloading and request forwarding" "nginx, OpenSSL" {
-                    # Components
-                    httpRedirect = component "HTTP Redirect Block" "Redirects HTTP to HTTPS" "nginx server block port 80"
-                    httpsServerBlock = component "HTTPS Server Block" "SSL termination and request handling" "nginx server block port 443"
-                    sslCertificate = component "SSL Certificate" "TLS/SSL certificate for encryption" "Self-signed (OpenSSL)"
-                }
-                
-                flask = container "Flask Application" "Handles registration logic, serves HTML" "Python/Gunicorn" {
+            group "Server" {
+                appServer = container "Application Server" "Combined nginx reverse proxy and Flask application" "Ubuntu 24.04, nginx, Gunicorn" {
                     tags "Application"
-                    
-                    # Components
-                    routes = component "Route Handlers" "HTTP request handling, form processing" "Flask @app.route"
-                    templates = component "Template Engine" "HTML rendering with data binding" "Jinja2"
-                    models = component "Data Models" "Database abstraction, ORM" "SQLAlchemy"
-                    wsgi = component "WSGI Server" "Production HTTP server, process management" "Gunicorn"
+
+                    # nginx Components
+                    nginxProxy = component "nginx Reverse Proxy" "SSL termination and request forwarding" "nginx"
+                    sslCert = component "SSL Certificate" "Self-signed TLS certificate" "OpenSSL"
+
+                    # Flask Components
+                    wsgi = component "WSGI Server" "Production HTTP server" "Gunicorn"
+                    mainRoutes = component "Main Blueprint" "Landing page route" "Flask @main_bp"
+                    demoRoutes = component "Demo Blueprint" "Demo form and entry management" "Flask @demo_bp"
+                    apiRoutes = component "API Blueprint" "Health and entries endpoints" "Flask @api_bp"
+                    templates = component "Template Engine" "HTML rendering" "Jinja2"
+                    models = component "Data Models" "SQLAlchemy ORM" "Entry model"
+                    services = component "Service Layer" "Business logic" "EntryService"
                 }
-                
-                database = container "PostgreSQL Database" "Stores registration data persistently" "Managed PostgreSQL" {
+
+                database = container "PostgreSQL Database" "Stores application data" "Azure PostgreSQL Flexible Server" {
                     tags "Database"
                 }
             }
         }
 
         # Relationships - Context Level
-        attendee -> webinarSystem "Registers for webinars" "HTTPS"
-        admin -> webinarSystem "Views registrations" "HTTPS"
-        sysadmin -> webinarSystem "Deploys and maintains" "SSH"
+        user -> flaskApp "Uses demo application" "HTTPS"
+        developer -> flaskApp "Deploys and monitors" "SSH, HTTPS"
 
         # Relationships - Container Level
-        attendee -> webinarSystem.browser "Uses" "Mouse, keyboard"
-        admin -> webinarSystem.browser "Uses" "Mouse, keyboard"
-        sysadmin -> webinarSystem.terminal "Uses" "Keyboard"
-        
-        webinarSystem.browser -> webinarSystem.proxy "HTTPS requests" "HTTPS/443"
-        webinarSystem.terminal -> webinarSystem.bastion "Connects to" "Azure CLI, SSH"
+        user -> flaskApp.browser "Uses" "Mouse, keyboard"
+        developer -> flaskApp.browser "Views application" "Mouse, keyboard"
+        developer -> flaskApp.terminal "Uses" "Keyboard"
 
-        webinarSystem.bastion -> webinarSystem.proxy "SSH" "SSH/22"
-        webinarSystem.bastion -> webinarSystem.flask "SSH" "SSH/22"
-        webinarSystem.proxy -> webinarSystem.flask "Forwards requests" "HTTP/5001"
-        webinarSystem.flask -> webinarSystem.database "Reads/writes data" "PostgreSQL/5432"
+        flaskApp.browser -> flaskApp.appServer "HTTPS requests" "HTTPS/443"
+        flaskApp.terminal -> flaskApp.appServer "SSH access" "SSH/22"
 
-        # Relationships - Component Level (Flask)
-        webinarSystem.proxy -> webinarSystem.flask.wsgi "HTTP requests" "HTTP/5001"
-        webinarSystem.flask.wsgi -> webinarSystem.flask.routes "Forwards requests" "WSGI"
-        webinarSystem.flask.routes -> webinarSystem.flask.templates "Renders HTML" "Jinja2 API"
-        webinarSystem.flask.routes -> webinarSystem.flask.models "CRUD operations" "Python method calls"
-        webinarSystem.flask.models -> webinarSystem.database "SQL queries" "psycopg2"
-        webinarSystem.flask.templates -> webinarSystem.browser "Returns HTML" "HTTP Response" {
-            tags "FlaskComponent"
-        }
+        flaskApp.appServer -> flaskApp.database "Reads/writes data" "PostgreSQL/5432"
 
-        # Relationships - Component Level (Proxy)
-        webinarSystem.browser -> webinarSystem.proxy.httpRedirect "HTTP request" "HTTP/80" {
+        # Relationships - Component Level
+        flaskApp.browser -> flaskApp.appServer.nginxProxy "HTTPS requests" "HTTPS/443" {
             tags "ComponentLevel"
         }
-        webinarSystem.proxy.httpRedirect -> webinarSystem.browser "301 Redirect to HTTPS" "HTTP Response" {
+        flaskApp.appServer.nginxProxy -> flaskApp.appServer.sslCert "Uses" "TLS" {
             tags "ComponentLevel"
         }
-        webinarSystem.browser -> webinarSystem.proxy.httpsServerBlock "HTTPS request" "HTTPS/443" {
+        flaskApp.appServer.nginxProxy -> flaskApp.appServer.wsgi "Forwards requests" "HTTP/5001" {
             tags "ComponentLevel"
         }
-        webinarSystem.proxy.httpsServerBlock -> webinarSystem.proxy.sslCertificate "Uses" "TLS"
-        webinarSystem.proxy.httpsServerBlock -> webinarSystem.flask "Forwards to backend" "HTTP/5001"
 
-        # Deployment - Azure IaaS
+        flaskApp.appServer.wsgi -> flaskApp.appServer.mainRoutes "Routes /" "WSGI" {
+            tags "ComponentLevel"
+        }
+        flaskApp.appServer.wsgi -> flaskApp.appServer.demoRoutes "Routes /demo" "WSGI" {
+            tags "ComponentLevel"
+        }
+        flaskApp.appServer.wsgi -> flaskApp.appServer.apiRoutes "Routes /api" "WSGI" {
+            tags "ComponentLevel"
+        }
+
+        flaskApp.appServer.mainRoutes -> flaskApp.appServer.templates "Renders HTML" "Jinja2" {
+            tags "ComponentLevel"
+        }
+        flaskApp.appServer.demoRoutes -> flaskApp.appServer.templates "Renders HTML" "Jinja2" {
+            tags "ComponentLevel"
+        }
+        flaskApp.appServer.demoRoutes -> flaskApp.appServer.services "CRUD operations" "Python" {
+            tags "ComponentLevel"
+        }
+        flaskApp.appServer.apiRoutes -> flaskApp.appServer.services "Query entries" "Python" {
+            tags "ComponentLevel"
+        }
+
+        flaskApp.appServer.services -> flaskApp.appServer.models "Uses" "SQLAlchemy" {
+            tags "ComponentLevel"
+        }
+        flaskApp.appServer.models -> flaskApp.database "SQL queries" "psycopg2" {
+            tags "ComponentLevel"
+        }
+
+        # Deployment - Azure IaaS (Simplified)
         production = deploymentEnvironment "Production" {
             deploymentNode "User Environment" "User's local machine" "Desktop/Laptop" {
-                deploymentNode "Web Browser" "User's web browser for accessing the application" "Chrome, Firefox, Safari" {
-                    browserInstance = containerInstance webinarSystem.browser
+                deploymentNode "Web Browser" "User's web browser" "Chrome, Firefox, Safari" {
+                    browserInstance = containerInstance flaskApp.browser
                 }
-                deploymentNode "Terminal" "Command-line interface for administrative tasks" "Azure CLI, SSH" {
-                    terminalInstance = containerInstance webinarSystem.terminal
+                deploymentNode "Terminal" "Command-line interface" "SSH, Azure CLI" {
+                    terminalInstance = containerInstance flaskApp.terminal
                 }
             }
-            
-            deploymentNode "Azure Cloud" "Microsoft Azure public cloud infrastructure" "Azure IaaS" {
-                deploymentNode "Virtual Network" "vnet-flask-bicep-dev" "10.0.0.0/16" {
-                    
-                    deploymentNode "Bastion Subnet" "snet-bastion" "10.0.1.0/24" {
-                        nsgBastion = infrastructureNode "NSG Bastion" "Allow SSH from Internet" "Azure NSG" {
+
+            deploymentNode "Azure Cloud" "Microsoft Azure" "Azure IaaS" {
+                deploymentNode "Virtual Network" "vnet-flask-dev (10.0.0.0/16)" "Azure VNet" {
+
+                    deploymentNode "Default Subnet" "snet-default (10.0.0.0/24)" "Azure Subnet" {
+                        nsgDefault = infrastructureNode "NSG Default" "Allow SSH, HTTP, HTTPS from Internet" "Azure NSG" {
                             tags "NSG"
                         }
-                        deploymentNode "Bastion Host" "SSH jump server for secure admin access" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
-                            bastionInstance = containerInstance webinarSystem.bastion
+                        deploymentNode "Application Server VM" "vm-app (Standard_B1s)" "Azure VM, Ubuntu 24.04 LTS" {
+                            appServerInstance = containerInstance flaskApp.appServer
                         }
                     }
+                }
 
-                    deploymentNode "Web Subnet" "snet-web" "10.0.2.0/24" {
-                        nsgWeb = infrastructureNode "NSG Web" "Allow HTTP/HTTPS from Internet" "Azure NSG" {
-                            tags "NSG"
-                        }
-                        deploymentNode "Reverse Proxy" "nginx server for SSL termination" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
-                            proxyInstance = containerInstance webinarSystem.proxy
-                        }
-                    }
-
-                    deploymentNode "App Subnet" "snet-app" "10.0.3.0/24" {
-                        nsgApp = infrastructureNode "NSG App" "Allow HTTP from Web Subnet" "Azure NSG" {
-                            tags "NSG"
-                        }
-                        deploymentNode "Application Server" "Flask application with Gunicorn" "Azure VM, Ubuntu 24.04 LTS, Standard_B1s" {
-                            flaskInstance = containerInstance webinarSystem.flask
-                        }
-                    }
-
-                    deploymentNode "Data Subnet" "snet-data" "10.0.4.0/24" {
-                        nsgData = infrastructureNode "NSG Data" "Allow PostgreSQL from App Subnet" "Azure NSG" {
-                            tags "NSG"
-                        }
-                        deploymentNode "Azure PostgreSQL Flexible Server" "psql-flask-bicep-dev" "Burstable B1ms" {
-                            databaseInstance = containerInstance webinarSystem.database
+                deploymentNode "PostgreSQL Service" "Azure PostgreSQL Flexible Server" "Burstable B1ms" {
+                    databaseInstance = containerInstance flaskApp.database {
+                        properties {
+                            "Public Access" "Enabled (0.0.0.0 - 255.255.255.255)"
+                            "SSL Mode" "Require"
                         }
                     }
                 }
@@ -188,40 +168,28 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
 
     views {
         # C1 - System Context
-        systemContext webinarSystem "C1-Context" "System Context diagram showing actors and the system" {
+        systemContext flaskApp "C1-Context" "System Context showing actors and the system" {
             include *
             autolayout lr
         }
 
-        # C2 - Container (full view with all actors)
-        container webinarSystem "C2-Containers-Full" "Container diagram showing the complete system" {
+        # C2 - Container (full view)
+        container flaskApp "C2-Containers" "Container diagram showing technical building blocks" {
             include *
             exclude relationship.tag==ComponentLevel
-            exclude relationship.tag==FlaskComponent
         }
 
-        # C3 - Component (Flask Application)
-        component webinarSystem.flask "C3-Components" "Component diagram showing Flask application internals" {
+        # C3 - Component (Application Server)
+        component flaskApp.appServer "C3-Components" "Component diagram showing Flask application internals" {
             include *
-            include attendee
-            include webinarSystem.browser
-            include webinarSystem.proxy
-        }
-
-        # C3 - Component (Reverse Proxy zoom)
-        component webinarSystem.proxy "C3-Components-Proxy" "Component diagram showing nginx internals" {
-            include *
-            include attendee
-            include webinarSystem.browser
-            include webinarSystem.flask
-            include webinarSystem.database
-            exclude relationship.tag==FlaskComponent
+            include user
+            include flaskApp.browser
+            include flaskApp.database
         }
 
         # Deployment
-        deployment webinarSystem production "Deployment" "Azure IaaS deployment architecture" {
+        deployment flaskApp production "Deployment" "Simplified Azure deployment architecture" {
             include *
-            exclude relationship.tag==FlaskComponent
             exclude relationship.tag==ComponentLevel
         }
 
@@ -238,10 +206,6 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
             element "Secondary Actor" {
                 background #5c5c5c
                 color #ffffff
-            }
-            element "Tertiary Actor" {
-                background #85BBF0
-                color #000000
             }
             element "Software System" {
                 background #438DD5
@@ -260,8 +224,8 @@ workspace "Webinar Registration Website" "C4 architecture model for the webinar 
                 background #438DD5
                 color #ffffff
             }
-            element "Bastion" {
-                background #999999
+            element "Application" {
+                background #438DD5
                 color #ffffff
             }
             element "Client" {
