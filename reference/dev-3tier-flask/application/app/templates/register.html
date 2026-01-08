@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Register for Webinar{% endblock %}
+
+{% block content %}
+<div class="register-page">
+    <h1>Register for Our Webinar</h1>
+    <p>Fill out the form below to reserve your spot.</p>
+
+    <form method="POST" action="{{ url_for('main.register') }}" class="registration-form">
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required
+                   placeholder="John Doe">
+        </div>
+
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" required
+                   placeholder="john@example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="company">Company</label>
+            <input type="text" id="company" name="company" required
+                   placeholder="Acme Corp">
+        </div>
+
+        <div class="form-group">
+            <label for="job_title">Job Title</label>
+            <input type="text" id="job_title" name="job_title" required
+                   placeholder="Software Developer">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Complete Registration</button>
+        </div>
+    </form>
+
+    <p class="back-link"><a href="{{ url_for('main.index') }}">← Back to home</a></p>
+</div>
+{% endblock %}

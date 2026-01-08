@@ -217,3 +217,31 @@ class TestLandingPageEnhanced:
         """Test that landing page still links to demo."""
         response = client.get('/')
         assert b'/demo' in response.data
+
+
+class TestRegisterPage:
+    """Tests for the registration form page."""
+
+    def test_register_page_loads(self, client):
+        """Test that register page loads successfully."""
+        response = client.get('/register')
+        assert response.status_code == 200
+
+    def test_register_page_has_form(self, client):
+        """Test that register page contains a form."""
+        response = client.get('/register')
+        assert b'<form' in response.data
+        assert b'method="POST"' in response.data
+
+    def test_register_page_has_required_fields(self, client):
+        """Test that register page has all required form fields."""
+        response = client.get('/register')
+        assert b'name="name"' in response.data
+        assert b'name="email"' in response.data
+        assert b'name="company"' in response.data
+        assert b'name="job_title"' in response.data
+
+    def test_register_page_has_submit_button(self, client):
+        """Test that register page has submit button."""
+        response = client.get('/register')
+        assert b'type="submit"' in response.data
