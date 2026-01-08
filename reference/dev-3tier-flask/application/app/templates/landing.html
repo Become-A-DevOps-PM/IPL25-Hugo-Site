@@ -1,18 +1,26 @@
 {% extends "base.html" %}
 
-{% block title %}Flask Three-Tier Application{% endblock %}
+{% block title %}Webinar Registration - Welcome{% endblock %}
 
 {% block content %}
-<h1>Flask Three-Tier Application</h1>
+<div class="hero">
+    <h1>Join Our Upcoming Webinar</h1>
+    <p class="lead">Learn about cloud infrastructure and modern deployment practices from industry experts.</p>
+    <div class="cta-section">
+        <a href="/register" class="btn btn-primary btn-lg">Register Now</a>
+    </div>
+</div>
 
-<p>Welcome to the Flask three-tier application reference implementation.</p>
-
-<p>This landing page serves as the starting point for Phase 2 development.</p>
-
-<nav>
+<div class="features">
+    <h2>What You'll Learn</h2>
     <ul>
-        <li><a href="{{ url_for('demo.index') }}">Demo Application</a> - Phase 1 demo with database entries</li>
-        <li><a href="{{ url_for('api.health') }}">Health Check</a> - API health endpoint</li>
+        <li>Modern infrastructure as code practices</li>
+        <li>Azure deployment strategies</li>
+        <li>Best practices for Flask applications</li>
     </ul>
-</nav>
+</div>
+
+<div class="demo-link">
+    <p><small>Looking for the Phase 1 demo? <a href="{{ url_for('demo.index') }}">Visit the demo page</a></small></p>
+</div>
 {% endblock %}

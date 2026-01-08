@@ -46,7 +46,7 @@ class TestLandingPage:
     def test_landing_contains_welcome_message(self, client):
         """Landing page should contain welcome message."""
         response = client.get('/')
-        assert b'Flask Three-Tier Application' in response.data
+        assert b'Join Our Upcoming Webinar' in response.data
 
     def test_landing_links_to_demo(self, client):
         """Landing page should link to demo application."""
@@ -196,3 +196,24 @@ class TestRegistrationService:
                 name='User', email='u@test.com', company='C', job_title='Dev'
             )
             assert RegistrationService.get_registration_count() == 1
+
+
+class TestLandingPageEnhanced:
+    """Tests for enhanced landing page with CTA."""
+
+    def test_landing_page_has_register_link(self, client):
+        """Test that landing page contains register link."""
+        response = client.get('/')
+        assert response.status_code == 200
+        assert b'/register' in response.data
+        assert b'Register Now' in response.data
+
+    def test_landing_page_has_hero_section(self, client):
+        """Test that landing page has hero content."""
+        response = client.get('/')
+        assert b'Join Our Upcoming Webinar' in response.data
+
+    def test_landing_page_links_to_demo(self, client):
+        """Test that landing page still links to demo."""
+        response = client.get('/')
+        assert b'/demo' in response.data
