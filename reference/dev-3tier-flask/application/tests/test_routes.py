@@ -286,4 +286,24 @@ class TestRegisterSubmission:
             'job_title': 'Developer'
         }, follow_redirects=True)
         assert response.status_code == 200
-        assert b'Thank you' in response.data
+        assert b'Thank You' in response.data
+
+
+class TestThankYouPage:
+    """Tests for the thank-you confirmation page."""
+
+    def test_thank_you_page_loads(self, client):
+        """Test that thank-you page loads successfully."""
+        response = client.get('/thank-you')
+        assert response.status_code == 200
+
+    def test_thank_you_page_has_success_message(self, client):
+        """Test that thank-you page shows success message."""
+        response = client.get('/thank-you')
+        assert b'Thank You' in response.data
+        assert b'registration' in response.data.lower()
+
+    def test_thank_you_page_has_home_link(self, client):
+        """Test that thank-you page links back to home."""
+        response = client.get('/thank-you')
+        assert b'href="/"' in response.data

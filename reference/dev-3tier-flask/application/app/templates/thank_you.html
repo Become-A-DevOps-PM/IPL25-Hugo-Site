@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block title %}Registration Complete{% endblock %}
+
+{% block content %}
+<div class="thank-you-page">
+    <div class="success-icon">✓</div>
+    <h1>Thank You for Registering!</h1>
+    <p class="lead">Your registration has been received successfully.</p>
+
+    <div class="next-steps">
+        <h2>What's Next?</h2>
+        <ul>
+            <li>You will receive a confirmation email shortly</li>
+            <li>The webinar link will be sent before the event</li>
+            <li>Mark your calendar for the upcoming session</li>
+        </ul>
+    </div>
+
+    <div class="actions">
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Return to Home</a>
+    </div>
+</div>
+{% endblock %}

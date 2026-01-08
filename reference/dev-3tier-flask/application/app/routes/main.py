@@ -36,8 +36,5 @@ def register():
 
 @main_bp.route('/thank-you')
 def thank_you():
-    """Display registration confirmation.
-
-    Note: This is a placeholder that will be fully implemented in Phase 2.6.
-    """
-    return '<h1>Thank you!</h1><p>Registration received.</p>'
+    """Display registration confirmation."""
+    return render_template('thank_you.html')
