@@ -168,13 +168,17 @@ workspace "Flask Three-Tier Application" "C4 architecture model for a three-tier
                 deploymentNode "Virtual Network" "vnet-flask-dev (10.0.0.0/16)" "Azure VNet" {
 
                     deploymentNode "Default Subnet" "snet-default (10.0.0.0/24)" "Azure Subnet" {
-                        nsgDefault = infrastructureNode "NSG" "Allow SSH, HTTP, HTTPS" "Azure NSG" {
-                            tags "NSG"
-                        }
-                        deploymentNode "Application Server VM" "vm-app (Standard_B1s, Ubuntu 24.04)" "Azure VM" {
+                        appServerVM = deploymentNode "Application Server VM" "vm-app (Standard_B1s, Ubuntu 24.04)" "Azure VM" {
                             tags "Application Tier"
                             appServerInstance = containerInstance flaskApp.appServer
                         }
+
+                        nsgDefault = infrastructureNode "NSG" "Allow SSH, HTTP, HTTPS" "Azure NSG" {
+                            tags "NSG"
+                        }
+
+                        # NSG filters traffic to VM
+                        nsgDefault -> appServerVM "Filters traffic"
                     }
                 }
 
@@ -188,7 +192,7 @@ workspace "Flask Three-Tier Application" "C4 architecture model for a three-tier
 
     views {
         # C1 - System Context
-        systemContext flaskApp "C1-SystemContext" "System Context showing actors and the three-tier system" {
+        systemContext flaskApp "C1-Context" "System Context showing actors and the three-tier system" {
             include *
             autolayout lr
         }
