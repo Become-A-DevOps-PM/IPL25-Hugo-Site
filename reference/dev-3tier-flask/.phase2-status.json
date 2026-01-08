@@ -1,0 +1,18 @@
+{
+  "phase": "2",
+  "current_step": "2.1",
+  "steps": {
+    "2.0": { "status": "completed", "exercise": "docs/exercises/phase-2.0-infrastructure-fixes.md", "commit": "pending" },
+    "2.1": { "status": "pending", "exercise": null, "commit": null },
+    "2.2": { "status": "pending", "exercise": null, "commit": null },
+    "2.3": { "status": "pending", "exercise": null, "commit": null },
+    "2.4": { "status": "pending", "exercise": null, "commit": null },
+    "2.5": { "status": "pending", "exercise": null, "commit": null },
+    "2.6": { "status": "pending", "exercise": null, "commit": null },
+    "2.7": { "status": "pending", "exercise": null, "commit": null },
+    "2.8": { "status": "pending", "exercise": null, "commit": null }
+  },
+  "started_at": "2026-01-08T00:00:00Z",
+  "completed_at": null,
+  "last_updated": "2026-01-08T10:30:00Z"
+}
