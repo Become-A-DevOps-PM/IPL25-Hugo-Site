@@ -307,3 +307,37 @@ class TestThankYouPage:
         """Test that thank-you page links back to home."""
         response = client.get('/thank-you')
         assert b'href="/"' in response.data
+
+
+class TestAdminAttendees:
+    """Tests for the admin attendees page."""
+
+    def test_admin_attendees_loads(self, client):
+        """Test that admin attendees page loads."""
+        response = client.get('/admin/attendees')
+        assert response.status_code == 200
+
+    def test_admin_attendees_shows_count(self, client):
+        """Test that admin page shows registration count."""
+        response = client.get('/admin/attendees')
+        assert b'Total registrations' in response.data
+
+    def test_admin_attendees_empty_state(self, client):
+        """Test that admin page shows empty state when no registrations."""
+        response = client.get('/admin/attendees')
+        assert b'No registrations yet' in response.data
+
+    def test_admin_attendees_shows_registrations(self, app, client):
+        """Test that admin page displays registrations."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            RegistrationService.create_registration(
+                name='Admin Test',
+                email='admin@test.com',
+                company='Admin Corp',
+                job_title='Admin'
+            )
+
+        response = client.get('/admin/attendees')
+        assert b'Admin Test' in response.data
+        assert b'admin@test.com' in response.data

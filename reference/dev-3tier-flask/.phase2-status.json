@@ -1,6 +1,6 @@
 {
   "phase": "2",
-  "current_step": "2.7",
+  "current_step": "2.8",
   "steps": {
     "2.0": { "status": "completed", "exercise": "docs/exercises/phase-2.0-infrastructure-fixes.md", "commit": "d97b5f4" },
     "2.1": { "status": "completed", "exercise": "docs/exercises/phase-2.1-registration-model.md", "commit": "ad8bf8f", "tests_passed": 17 },
@@ -8,8 +8,8 @@
     "2.3": { "status": "completed", "exercise": "docs/exercises/phase-2.3-landing-page-enhancement.md", "commit": "e4ef519", "tests_passed": 24 },
     "2.4": { "status": "completed", "exercise": "docs/exercises/phase-2.4-registration-form-get.md", "commit": "bb3c629", "tests_passed": 28 },
     "2.5": { "status": "completed", "exercise": "docs/exercises/phase-2.5-form-submission.md", "commit": "113ca0b", "tests_passed": 31 },
-    "2.6": { "status": "completed", "exercise": "docs/exercises/phase-2.6-thank-you-page.md", "commit": "pending", "tests_passed": 34 },
-    "2.7": { "status": "pending", "exercise": null, "commit": null },
+    "2.6": { "status": "completed", "exercise": "docs/exercises/phase-2.6-thank-you-page.md", "commit": "de6e1e3", "tests_passed": 34 },
+    "2.7": { "status": "completed", "exercise": "docs/exercises/phase-2.7-admin-blueprint.md", "commit": "pending", "tests_passed": 38 },
     "2.8": { "status": "pending", "exercise": null, "commit": null }
   },
   "started_at": "2026-01-08T00:00:00Z",
