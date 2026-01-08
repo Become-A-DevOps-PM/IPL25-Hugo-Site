@@ -1,163 +1,155 @@
 # Containers (C2)
 
-## Containers (C4 Model Level 2)
+## Three-Tier Container Architecture
 
-This document zooms into the Flask Three-Tier Application to show the high-level technical building blocks (containers) and how they interact.
+This document shows the three tiers of the application as C4 containers - the high-level building blocks that make up the system.
 
-> **C4 "Container"** = A separately deployable/runnable unit (VM, application, database), NOT a Docker container.
+> **C4 "Container"** = A separately deployable/runnable unit, NOT a Docker container.
 
 ### Container Diagram
 
 ![](embed:C2-Containers)
 
-### Container Inventory
+### The Three Tiers
 
-#### Compute Container
+| Tier | Container | Technology | Deployment |
+|------|-----------|------------|------------|
+| **Presentation** | Web Browser | HTML5, CSS3 | User's device |
+| **Application** | Application Server | Flask, nginx, Gunicorn | Azure VM |
+| **Data** | PostgreSQL Database | PostgreSQL 16 | Azure PaaS |
 
-| Container | Technology | Purpose | Network Location |
-|-----------|------------|---------|------------------|
-| **Application Server** | Ubuntu 24.04 LTS, nginx, Gunicorn | Combined reverse proxy and Flask application | `snet-default` (10.0.0.0/24), Public IP |
+### Tier 1: Presentation (Web Browser)
 
-#### Data Container
+The presentation tier runs entirely in the user's web browser.
 
-| Container | Technology | Purpose | Network Location |
-|-----------|------------|---------|------------------|
-| **PostgreSQL Database** | Azure PostgreSQL Flexible Server | Persistent data storage | Azure PaaS, Public access |
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| HTML Pages | HTML5 | Rendered documents from Jinja2 templates |
+| CSS Styles | CSS3 | Visual styling (style.css) |
+| HTML Forms | HTML Form Elements | User input for data entry |
+| Navigation | HTML Anchors | Page navigation and links |
 
-### Network Flow
+**Key Characteristics:**
+- Server-side rendering (no JavaScript framework)
+- Forms use standard HTML POST submissions
+- CSS provides responsive layout
+- Browser handles all presentation logic
 
-#### User Traffic
+### Tier 2: Application (Flask Server)
 
-```
-Internet -> Public IP (pip-app) -> nginx:443 -> Flask:5001 -> PostgreSQL:5432
-```
+The application tier handles all business logic and page rendering.
 
-#### Administrative Access
+| Layer | Components | Purpose |
+|-------|------------|---------|
+| **Infrastructure** | nginx, Gunicorn | HTTP handling, SSL, process management |
+| **Routing** | Flask Blueprints | URL routing to handlers |
+| **Business Logic** | EntryService | CRUD operations |
+| **Data Access** | Entry Model | ORM mapping |
+| **Templates** | Jinja2 | HTML generation |
 
-```
-Internet -> Public IP (pip-app) -> SSH:22 -> VM shell
-```
+**Key Characteristics:**
+- Single VM running nginx + Gunicorn + Flask
+- Blueprint-based route organization
+- Service layer for business logic
+- SQLAlchemy ORM for data access
 
-#### Architecture Overview
+### Tier 3: Data (PostgreSQL)
 
-```
-+-----------------------------------------------------------------------+
-|  INTERNET                                                              |
-+------+------------------------------------+---------------------------+
-       | SSH:22                              | HTTPS:443
-       v                                     v
-+-----------------------------------------------------------------------+
-|  APPLICATION SERVER (vm-app)                                           |
-|  Ubuntu 24.04 LTS                                                      |
-|  +-------------------+     +-------------------+                       |
-|  | nginx             |---->| Flask/Gunicorn    |                       |
-|  | (port 443)        |     | (port 5001)       |                       |
-|  +-------------------+     +-------------------+                       |
-+-----------------------------------------------------------------------+
-       |
-       | PostgreSQL:5432
-       v
-+-----------------------------------------------------------------------+
-|  POSTGRESQL FLEXIBLE SERVER (psql-flask-dev)                           |
-|  Azure PaaS, Public Access                                             |
-+-----------------------------------------------------------------------+
-```
+The data tier provides persistent storage.
 
-### Container Details
+| Table | Columns | Purpose |
+|-------|---------|---------|
+| `entries` | id, value, created_at | Stores demo entries |
 
-#### 1. Application Server (`vm-app`)
+**Key Characteristics:**
+- Azure PostgreSQL Flexible Server (PaaS)
+- Public access enabled for learning environment
+- SSL required for connections
+- Schema managed by SQLAlchemy
 
-**Purpose**: Combined nginx reverse proxy and Flask application on a single VM
+### Data Flow Between Tiers
 
-| Aspect | Detail |
-|--------|--------|
-| Image | Ubuntu 24.04 LTS |
-| Size | Standard_B1s (1 vCPU, 1GB RAM) |
-| Public IP | Yes (`pip-app`) |
-| Inbound Rules | SSH (22), HTTP (80), HTTPS (443) |
-| Security | Fail2ban (SSH protection) |
-
-**Software Stack**:
-
-| Component | Version | Purpose |
-|-----------|---------|---------|
-| nginx | Latest | Reverse proxy, SSL termination |
-| Python | 3.x | Runtime environment |
-| Gunicorn | Latest | WSGI server |
-| Flask | 3.0+ | Web framework |
-
-**nginx Configuration**:
-
-- HTTP -> HTTPS redirect (301)
-- SSL with self-signed certificate
-- Proxy headers (X-Real-IP, X-Forwarded-For, X-Forwarded-Proto)
-- Upstream: `http://127.0.0.1:5001`
-
-**Key Files on VM**:
+#### User Submits Form (Tier 1 → Tier 2 → Tier 3)
 
 ```
-/opt/flask-app/                 # Application code
-/opt/flask-app/venv/            # Python virtual environment
-/etc/flask-app/app.env          # DATABASE_URL (chmod 640, root:flask-app)
-/etc/systemd/system/flask-app.service
-/etc/nginx/sites-available/flask-app
-/etc/nginx/ssl/                 # SSL certificate and key
+Browser                    Application Server                  Database
+   │                              │                               │
+   │  POST /demo (form data)      │                               │
+   │─────────────────────────────>│                               │
+   │                              │  INSERT INTO entries          │
+   │                              │──────────────────────────────>│
+   │                              │              OK               │
+   │                              │<──────────────────────────────│
+   │  302 Redirect                │                               │
+   │<─────────────────────────────│                               │
+   │                              │                               │
 ```
 
-#### 2. PostgreSQL Database
-
-**Purpose**: Persistent storage for application data
-
-| Aspect | Detail |
-|--------|--------|
-| Service | Azure Database for PostgreSQL Flexible Server |
-| SKU | Burstable B1ms (1 vCPU, 2GB) |
-| Version | PostgreSQL 16 |
-| Access | Public (0.0.0.0 - 255.255.255.255) |
-| Database | `flask` |
-| SSL | Required (`sslmode=require`) |
-
-> **Note**: Public access is enabled for learning simplicity. Production environments should use private endpoints.
-
-### Technology Choices
-
-| Decision | Choice | Rationale |
-|----------|--------|-----------|
-| Web Server | nginx | Industry standard, excellent reverse proxy |
-| WSGI Server | Gunicorn | Production-grade, simple configuration |
-| Database | PostgreSQL | Robust, open source, excellent Python support |
-| Process Manager | systemd | Standard on modern Ubuntu, automatic restarts |
-| Infrastructure | Azure Bicep | Declarative IaC, native Azure support |
-
-### Deployment Pipeline
+#### User Views Page (Tier 1 ← Tier 2 ← Tier 3)
 
 ```
-+-------------+    +-------------+    +-------------+
-| provision.sh|--->|cloud-init   |--->| deploy.sh   |
-| (Bicep)     |    |(VM boot)    |    |(App code)   |
-+-------------+    +-------------+    +-------------+
-     |                   |                   |
-     v                   v                   v
- - VNet, Subnet      - Install nginx     - Copy app files
- - NSG               - Install Python    - Install deps
- - VM                - Create users      - Configure DB URL
- - PostgreSQL        - Systemd units     - Initialize database
-                     - SSL certificate   - Start service
+Browser                    Application Server                  Database
+   │                              │                               │
+   │  GET /demo                   │                               │
+   │─────────────────────────────>│                               │
+   │                              │  SELECT * FROM entries        │
+   │                              │──────────────────────────────>│
+   │                              │       [entry rows]            │
+   │                              │<──────────────────────────────│
+   │  HTML (rendered page)        │                               │
+   │<─────────────────────────────│                               │
+   │                              │                               │
 ```
 
-### Comparison with Production Architecture
+### Network Architecture
 
-This simplified architecture differs from production patterns:
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  USER DEVICE (Presentation Tier)                                 │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  Web Browser                                             │    │
+│  │  - Renders HTML/CSS                                      │    │
+│  │  - Handles forms                                         │    │
+│  │  - Manages navigation                                    │    │
+│  └─────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              │ HTTPS/443
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  AZURE VM (Application Tier) - 10.0.0.x                          │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  nginx (:443) → Gunicorn (:5001) → Flask                │    │
+│  │  - SSL termination                                       │    │
+│  │  - Reverse proxy                                         │    │
+│  │  - Static file serving                                   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              │ PostgreSQL/5432 (SSL)
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│  AZURE POSTGRESQL (Data Tier) - psql-flask-dev                   │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  PostgreSQL Flexible Server                              │    │
+│  │  - Database: flask                                       │    │
+│  │  - Table: entries                                        │    │
+│  └─────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-| Aspect | dev-3tier-flask | Production Pattern |
-|--------|-----------------|-------------------|
-| VMs | 1 (combined) | 3+ (bastion, proxy, app) |
-| Subnets | 1 | 4+ (segmented by tier) |
-| SSH Access | Direct | Via bastion jump host |
-| PostgreSQL | Public access | Private DNS/endpoints |
-| Cost | ~$20/month | ~$44+/month |
-| Complexity | Low | Moderate-High |
+### Technology Choices by Tier
+
+| Tier | Choice | Rationale |
+|------|--------|-----------|
+| **Presentation** | Server-side HTML | Simple, no JS framework needed |
+| **Presentation** | CSS3 | Standard styling, responsive |
+| **Application** | Flask | Lightweight, blueprint support |
+| **Application** | nginx | Industry standard reverse proxy |
+| **Application** | Gunicorn | Production-grade WSGI server |
+| **Application** | SQLAlchemy | Powerful ORM, migration support |
+| **Data** | PostgreSQL | Robust, Azure PaaS available |
 
 ### Next Level
 
-See [Components (C3)](04-components.md) for the internal structure of the Flask application.
+See [Components (C3)](04-components.md) for the internal structure of each tier.
