@@ -1,13 +1,13 @@
 {
   "phase": "2",
-  "current_step": "2.5",
+  "current_step": "2.6",
   "steps": {
     "2.0": { "status": "completed", "exercise": "docs/exercises/phase-2.0-infrastructure-fixes.md", "commit": "d97b5f4" },
     "2.1": { "status": "completed", "exercise": "docs/exercises/phase-2.1-registration-model.md", "commit": "ad8bf8f", "tests_passed": 17 },
     "2.2": { "status": "completed", "exercise": "docs/exercises/phase-2.2-registration-service.md", "commit": "9a2d10c", "tests_passed": 21 },
     "2.3": { "status": "completed", "exercise": "docs/exercises/phase-2.3-landing-page-enhancement.md", "commit": "e4ef519", "tests_passed": 24 },
-    "2.4": { "status": "completed", "exercise": "docs/exercises/phase-2.4-registration-form-get.md", "commit": "pending", "tests_passed": 28 },
-    "2.5": { "status": "pending", "exercise": null, "commit": null },
+    "2.4": { "status": "completed", "exercise": "docs/exercises/phase-2.4-registration-form-get.md", "commit": "bb3c629", "tests_passed": 28 },
+    "2.5": { "status": "completed", "exercise": "docs/exercises/phase-2.5-form-submission.md", "commit": "pending", "tests_passed": 31 },
     "2.6": { "status": "pending", "exercise": null, "commit": null },
     "2.7": { "status": "pending", "exercise": null, "commit": null },
     "2.8": { "status": "pending", "exercise": null, "commit": null }

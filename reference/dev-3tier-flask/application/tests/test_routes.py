@@ -245,3 +245,45 @@ class TestRegisterPage:
         """Test that register page has submit button."""
         response = client.get('/register')
         assert b'type="submit"' in response.data
+
+
+class TestRegisterSubmission:
+    """Tests for registration form submission."""
+
+    def test_register_post_redirects(self, client):
+        """Test that POST to /register redirects to thank-you."""
+        response = client.post('/register', data={
+            'name': 'Test User',
+            'email': 'test@example.com',
+            'company': 'Test Corp',
+            'job_title': 'Developer'
+        }, follow_redirects=False)
+        assert response.status_code == 302
+        assert '/thank-you' in response.location
+
+    def test_register_post_creates_registration(self, app, client):
+        """Test that POST creates a registration in database."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            initial_count = RegistrationService.get_registration_count()
+
+            client.post('/register', data={
+                'name': 'Test User',
+                'email': 'test@example.com',
+                'company': 'Test Corp',
+                'job_title': 'Developer'
+            })
+
+            final_count = RegistrationService.get_registration_count()
+            assert final_count == initial_count + 1
+
+    def test_register_post_with_follow_redirect(self, client):
+        """Test complete POST flow with redirect following."""
+        response = client.post('/register', data={
+            'name': 'Test User',
+            'email': 'test@example.com',
+            'company': 'Test Corp',
+            'job_title': 'Developer'
+        }, follow_redirects=True)
+        assert response.status_code == 200
+        assert b'Thank you' in response.data
