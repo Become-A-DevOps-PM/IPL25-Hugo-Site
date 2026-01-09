@@ -6,8 +6,9 @@
 <div class="hero">
     <h1>Join Our Upcoming Webinar</h1>
     <p class="lead">Learn about cloud infrastructure and modern deployment practices from industry experts.</p>
-    <div class="cta-section">
-        <a href="/register" class="btn btn-primary btn-lg">Register Now</a>
+    <div class="hero-cta">
+        <a href="{{ url_for('main.register') }}" class="btn btn-primary btn-lg">Register Now</a>
+        <a href="{{ url_for('main.webinar_info') }}" class="btn btn-secondary btn-lg">Learn More</a>
     </div>
 </div>
 

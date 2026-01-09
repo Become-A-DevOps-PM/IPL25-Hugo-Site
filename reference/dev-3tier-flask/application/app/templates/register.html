@@ -7,36 +7,62 @@
     <h1>Register for Our Webinar</h1>
     <p>Fill out the form below to reserve your spot.</p>
 
-    <form method="POST" action="{{ url_for('main.register') }}" class="registration-form">
-        <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" required
-                   placeholder="John Doe">
+    <form method="POST" action="{{ url_for('main.register') }}" class="registration-form" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group {% if form.name.errors %}has-error{% endif %}">
+            {{ form.name.label }}
+            {{ form.name(placeholder='John Doe', class='form-control') }}
+            {% if form.name.errors %}
+                <ul class="errors">
+                {% for error in form.name.errors %}
+                    <li class="error-message">{{ error }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
         </div>
 
-        <div class="form-group">
-            <label for="email">Email Address</label>
-            <input type="email" id="email" name="email" required
-                   placeholder="john@example.com">
+        <div class="form-group {% if form.email.errors %}has-error{% endif %}">
+            {{ form.email.label }}
+            {{ form.email(placeholder='john@example.com', class='form-control') }}
+            {% if form.email.errors %}
+                <ul class="errors">
+                {% for error in form.email.errors %}
+                    <li class="error-message">{{ error }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
         </div>
 
-        <div class="form-group">
-            <label for="company">Company</label>
-            <input type="text" id="company" name="company" required
-                   placeholder="Acme Corp">
+        <div class="form-group {% if form.company.errors %}has-error{% endif %}">
+            {{ form.company.label }}
+            {{ form.company(placeholder='Acme Corp', class='form-control') }}
+            {% if form.company.errors %}
+                <ul class="errors">
+                {% for error in form.company.errors %}
+                    <li class="error-message">{{ error }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
         </div>
 
-        <div class="form-group">
-            <label for="job_title">Job Title</label>
-            <input type="text" id="job_title" name="job_title" required
-                   placeholder="Software Developer">
+        <div class="form-group {% if form.job_title.errors %}has-error{% endif %}">
+            {{ form.job_title.label }}
+            {{ form.job_title(placeholder='Software Developer', class='form-control') }}
+            {% if form.job_title.errors %}
+                <ul class="errors">
+                {% for error in form.job_title.errors %}
+                    <li class="error-message">{{ error }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
         </div>
 
         <div class="form-actions">
-            <button type="submit" class="btn btn-primary">Complete Registration</button>
+            {{ form.submit(class='btn btn-primary') }}
         </div>
     </form>
 
-    <p class="back-link"><a href="{{ url_for('main.index') }}">← Back to home</a></p>
+    <p class="back-link"><a href="{{ url_for('main.index') }}">&larr; Back to home</a></p>
 </div>
 {% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %}Bad Request{% endblock %}
+
+{% block content %}
+<div class="error-page">
+    <div class="error-code">400</div>
+    <h1>Bad Request</h1>
+    <p class="error-message">The server could not understand your request. Please check your input and try again.</p>
+    <div class="error-actions">
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">Go to Home</a>
+        <a href="javascript:history.back()" class="btn btn-secondary">Go Back</a>
+    </div>
+</div>
+{% endblock %}

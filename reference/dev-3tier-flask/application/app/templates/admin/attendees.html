@@ -5,17 +5,64 @@
 {% block content %}
 <div class="admin-page">
     <h1>Webinar Attendees</h1>
-    <p class="lead">Total registrations: <strong>{{ count }}</strong></p>
+
+    <div class="stats-panel">
+        <div class="stat-card stat-primary">
+            <span class="stat-value">{{ stats.total }}</span>
+            <span class="stat-label">Total Registrations</span>
+        </div>
+        {% if stats.by_date %}
+        <div class="stat-card">
+            <span class="stat-value">{{ stats.by_date[0].count if stats.by_date else 0 }}</span>
+            <span class="stat-label">Today</span>
+        </div>
+        {% endif %}
+    </div>
 
     {% if registrations %}
-    <table class="attendees-table">
+    <div class="table-controls">
+        <p class="result-count">Showing {{ registrations|length }} registrations</p>
+        <a href="{{ url_for('admin.export_csv') }}" class="btn btn-secondary btn-sm">Export CSV</a>
+    </div>
+
+    <table class="attendees-table sortable">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Company</th>
-                <th>Job Title</th>
-                <th>Registered</th>
+                <th>
+                    <a href="?sort=name&order={{ next_order if current_sort == 'name' else 'asc' }}"
+                       class="sort-link {% if current_sort == 'name' %}active {{ current_order }}{% endif %}">
+                        Name
+                        <span class="sort-indicator"></span>
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort=email&order={{ next_order if current_sort == 'email' else 'asc' }}"
+                       class="sort-link {% if current_sort == 'email' %}active {{ current_order }}{% endif %}">
+                        Email
+                        <span class="sort-indicator"></span>
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort=company&order={{ next_order if current_sort == 'company' else 'asc' }}"
+                       class="sort-link {% if current_sort == 'company' %}active {{ current_order }}{% endif %}">
+                        Company
+                        <span class="sort-indicator"></span>
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort=job_title&order={{ next_order if current_sort == 'job_title' else 'asc' }}"
+                       class="sort-link {% if current_sort == 'job_title' %}active {{ current_order }}{% endif %}">
+                        Job Title
+                        <span class="sort-indicator"></span>
+                    </a>
+                </th>
+                <th>
+                    <a href="?sort=created_at&order={{ next_order if current_sort == 'created_at' else 'desc' }}"
+                       class="sort-link {% if current_sort == 'created_at' %}active {{ current_order }}{% endif %}">
+                        Registered
+                        <span class="sort-indicator"></span>
+                    </a>
+                </th>
             </tr>
         </thead>
         <tbody>
@@ -38,7 +85,7 @@
     {% endif %}
 
     <div class="admin-nav">
-        <a href="{{ url_for('main.index') }}">← Back to Home</a>
+        <a href="{{ url_for('main.index') }}">&larr; Back to Home</a>
     </div>
 </div>
 {% endblock %}

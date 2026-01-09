@@ -8,9 +8,37 @@
     {% block extra_css %}{% endblock %}
 </head>
 <body>
-    <main>
+    <nav class="navbar">
+        <div class="nav-brand">
+            <a href="{{ url_for('main.index') }}">Webinar Registration</a>
+        </div>
+        <div class="nav-links">
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="{{ url_for('main.webinar_info') }}">About</a>
+            <a href="{{ url_for('main.register') }}">Register</a>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">
+                            {{ message }}
+                            <button type="button" class="flash-close" onclick="this.parentElement.remove()">&times;</button>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </main>
+
+    <footer class="footer">
+        <p>&copy; 2026 Webinar Registration. Built with Flask.</p>
+    </footer>
 
     {% block extra_js %}{% endblock %}
 </body>

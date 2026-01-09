@@ -30,5 +30,5 @@ htmlcov/
 execution-state.json
 execution-log.md
 test-report.md
-errors/
-diagnostics/
+/errors/
+/diagnostics/

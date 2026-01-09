@@ -320,7 +320,7 @@ class TestAdminAttendees:
     def test_admin_attendees_shows_count(self, client):
         """Test that admin page shows registration count."""
         response = client.get('/admin/attendees')
-        assert b'Total registrations' in response.data
+        assert b'Total Registrations' in response.data
 
     def test_admin_attendees_empty_state(self, client):
         """Test that admin page shows empty state when no registrations."""
@@ -415,3 +415,392 @@ class TestRegistrationFlow:
         # API still works
         api = client.get('/api/health')
         assert api.status_code == 200
+
+
+# ========== Phase 3 Tests ==========
+
+class TestFormValidation:
+    """Tests for WTForms validation on registration."""
+
+    def test_register_rejects_empty_name(self, client):
+        """Test that empty name is rejected with error message."""
+        response = client.post('/register', data={
+            'name': '',
+            'email': 'test@example.com',
+            'company': 'Test Corp',
+            'job_title': 'Developer'
+        })
+        assert response.status_code == 200  # Returns form with errors
+        assert b'Name is required' in response.data
+
+    def test_register_rejects_short_name(self, client):
+        """Test that name shorter than 2 chars is rejected."""
+        response = client.post('/register', data={
+            'name': 'A',
+            'email': 'test@example.com',
+            'company': 'Test Corp',
+            'job_title': 'Developer'
+        })
+        assert response.status_code == 200
+        assert b'must be between 2 and 100 characters' in response.data
+
+    def test_register_rejects_invalid_email(self, client):
+        """Test that invalid email format is rejected."""
+        response = client.post('/register', data={
+            'name': 'Test User',
+            'email': 'not-an-email',
+            'company': 'Test Corp',
+            'job_title': 'Developer'
+        })
+        assert response.status_code == 200
+        assert b'valid email address' in response.data
+
+    def test_register_rejects_empty_company(self, client):
+        """Test that empty company is rejected."""
+        response = client.post('/register', data={
+            'name': 'Test User',
+            'email': 'test@example.com',
+            'company': '',
+            'job_title': 'Developer'
+        })
+        assert response.status_code == 200
+        assert b'Company is required' in response.data
+
+    def test_register_rejects_empty_job_title(self, client):
+        """Test that empty job title is rejected."""
+        response = client.post('/register', data={
+            'name': 'Test User',
+            'email': 'test@example.com',
+            'company': 'Test Corp',
+            'job_title': ''
+        })
+        assert response.status_code == 200
+        assert b'Job title is required' in response.data
+
+    def test_register_accepts_valid_data(self, client):
+        """Test that valid data is accepted and redirects."""
+        response = client.post('/register', data={
+            'name': 'Valid User',
+            'email': 'valid@example.com',
+            'company': 'Valid Corp',
+            'job_title': 'Developer'
+        }, follow_redirects=False)
+        assert response.status_code == 302
+        assert '/thank-you' in response.location
+
+    def test_register_shows_multiple_errors(self, client):
+        """Test that multiple validation errors are shown."""
+        response = client.post('/register', data={
+            'name': '',
+            'email': 'invalid',
+            'company': '',
+            'job_title': ''
+        })
+        assert response.status_code == 200
+        assert b'Name is required' in response.data
+        assert b'valid email address' in response.data
+        assert b'Company is required' in response.data
+        assert b'Job title is required' in response.data
+
+
+class TestDuplicateEmailPrevention:
+    """Tests for duplicate email prevention."""
+
+    def test_duplicate_email_rejected(self, app, client):
+        """Test that duplicate email registration is rejected."""
+        # First registration
+        client.post('/register', data={
+            'name': 'First User',
+            'email': 'duplicate@test.com',
+            'company': 'First Corp',
+            'job_title': 'Developer'
+        })
+
+        # Second registration with same email
+        response = client.post('/register', data={
+            'name': 'Second User',
+            'email': 'duplicate@test.com',
+            'company': 'Second Corp',
+            'job_title': 'Manager'
+        })
+
+        assert response.status_code == 200  # Returns form with error
+        assert b'already registered' in response.data
+
+    def test_duplicate_email_case_insensitive(self, app, client):
+        """Test that email uniqueness is case-insensitive."""
+        # First registration with lowercase
+        client.post('/register', data={
+            'name': 'First User',
+            'email': 'casetest@example.com',
+            'company': 'Test Corp',
+            'job_title': 'Developer'
+        })
+
+        # Second registration with uppercase
+        response = client.post('/register', data={
+            'name': 'Second User',
+            'email': 'CASETEST@EXAMPLE.COM',
+            'company': 'Test Corp',
+            'job_title': 'Developer'
+        })
+
+        assert response.status_code == 200
+        assert b'already registered' in response.data
+
+    def test_different_emails_allowed(self, app, client):
+        """Test that different emails can register."""
+        # First registration
+        response1 = client.post('/register', data={
+            'name': 'First User',
+            'email': 'first@test.com',
+            'company': 'Test Corp',
+            'job_title': 'Developer'
+        }, follow_redirects=False)
+        assert response1.status_code == 302
+
+        # Second registration with different email
+        response2 = client.post('/register', data={
+            'name': 'Second User',
+            'email': 'second@test.com',
+            'company': 'Test Corp',
+            'job_title': 'Developer'
+        }, follow_redirects=False)
+        assert response2.status_code == 302
+
+    def test_email_exists_service_method(self, app):
+        """Test the email_exists service method."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+
+            # Initially no email exists
+            assert not RegistrationService.email_exists('new@test.com')
+
+            # Create registration
+            RegistrationService.create_registration(
+                name='Test', email='exists@test.com',
+                company='Corp', job_title='Dev'
+            )
+
+            # Now email exists
+            assert RegistrationService.email_exists('exists@test.com')
+            assert RegistrationService.email_exists('EXISTS@TEST.COM')  # Case-insensitive
+
+
+class TestFlashMessages:
+    """Tests for flash message display."""
+
+    def test_success_flash_on_registration(self, client):
+        """Test that success flash appears after registration."""
+        response = client.post('/register', data={
+            'name': 'Flash Test User',
+            'email': 'flash@test.com',
+            'company': 'Flash Corp',
+            'job_title': 'Developer'
+        }, follow_redirects=True)
+
+        assert response.status_code == 200
+        assert b'Registration successful' in response.data
+
+    def test_form_preserves_input_on_error(self, client):
+        """Test that form preserves input when validation fails."""
+        response = client.post('/register', data={
+            'name': 'Preserved Name',
+            'email': 'invalid-email',
+            'company': 'Preserved Company',
+            'job_title': 'Preserved Title'
+        })
+
+        assert response.status_code == 200
+        assert b'Preserved Name' in response.data
+        assert b'Preserved Company' in response.data
+        assert b'Preserved Title' in response.data
+
+
+class TestWebinarInfoPage:
+    """Tests for the webinar information page (FR-001)."""
+
+    def test_webinar_info_page_loads(self, client):
+        """Test that webinar info page loads successfully."""
+        response = client.get('/webinar')
+        assert response.status_code == 200
+
+    def test_webinar_info_has_title(self, client):
+        """Test that webinar info page has event title."""
+        response = client.get('/webinar')
+        assert b'Cloud Infrastructure Fundamentals' in response.data
+
+    def test_webinar_info_has_date_time(self, client):
+        """Test that webinar info page shows date and time."""
+        response = client.get('/webinar')
+        assert b'February 15, 2026' in response.data
+        assert b'10:00 AM' in response.data
+
+    def test_webinar_info_has_agenda(self, client):
+        """Test that webinar info page includes agenda."""
+        response = client.get('/webinar')
+        assert b'Agenda' in response.data
+        assert b'Infrastructure as Code' in response.data
+
+    def test_webinar_info_has_speakers(self, client):
+        """Test that webinar info page shows speakers."""
+        response = client.get('/webinar')
+        assert b'Speakers' in response.data
+        assert b'Sarah Chen' in response.data
+        assert b'Marcus Johnson' in response.data
+
+    def test_webinar_info_has_register_link(self, client):
+        """Test that webinar info page links to registration."""
+        response = client.get('/webinar')
+        assert b'/register' in response.data
+        assert b'Register Now' in response.data
+
+    def test_landing_page_links_to_webinar_info(self, client):
+        """Test that landing page links to webinar info."""
+        response = client.get('/')
+        assert b'/webinar' in response.data
+        assert b'Learn More' in response.data
+
+
+class TestAdminSorting:
+    """Tests for admin attendee list sorting."""
+
+    def test_admin_default_sort_by_date_desc(self, app, client):
+        """Test default sort is by created_at descending."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            import time
+
+            RegistrationService.create_registration(
+                name='First User', email='first@test.com',
+                company='Corp', job_title='Dev'
+            )
+            time.sleep(0.1)  # Ensure different timestamps
+            RegistrationService.create_registration(
+                name='Second User', email='second@test.com',
+                company='Corp', job_title='Dev'
+            )
+
+        response = client.get('/admin/attendees')
+        # Second should appear before First (desc order)
+        second_pos = response.data.find(b'Second User')
+        first_pos = response.data.find(b'First User')
+        assert second_pos < first_pos
+
+    def test_admin_sort_by_name_asc(self, app, client):
+        """Test sorting by name ascending."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            RegistrationService.create_registration(
+                name='Zoe', email='zoe@test.com',
+                company='Corp', job_title='Dev'
+            )
+            RegistrationService.create_registration(
+                name='Alice', email='alice@test.com',
+                company='Corp', job_title='Dev'
+            )
+
+        response = client.get('/admin/attendees?sort=name&order=asc')
+        alice_pos = response.data.find(b'Alice')
+        zoe_pos = response.data.find(b'Zoe')
+        assert alice_pos < zoe_pos
+
+    def test_admin_shows_stats(self, app, client):
+        """Test that admin page shows statistics."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            for i in range(3):
+                RegistrationService.create_registration(
+                    name=f'User {i}', email=f'statsuser{i}@test.com',
+                    company='Corp', job_title='Dev'
+                )
+
+        response = client.get('/admin/attendees')
+        assert b'Total Registrations' in response.data
+
+    def test_admin_has_export_link(self, client, app):
+        """Test that admin page has export CSV link when registrations exist."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            RegistrationService.create_registration(
+                name='Export Test', email='export@test.com',
+                company='Corp', job_title='Dev'
+            )
+
+        response = client.get('/admin/attendees')
+        assert b'Export CSV' in response.data
+
+
+class TestCSVExport:
+    """Tests for CSV export functionality."""
+
+    def test_export_csv_returns_csv_content_type(self, client):
+        """Test that export returns CSV content type."""
+        response = client.get('/admin/export/csv')
+        assert response.status_code == 200
+        assert 'text/csv' in response.content_type
+
+    def test_export_csv_has_attachment_header(self, client):
+        """Test that export has attachment filename header."""
+        response = client.get('/admin/export/csv')
+        assert 'attachment' in response.headers.get('Content-Disposition', '')
+        assert 'webinar-registrations' in response.headers.get('Content-Disposition', '')
+        assert '.csv' in response.headers.get('Content-Disposition', '')
+
+    def test_export_csv_contains_headers(self, client):
+        """Test that CSV contains column headers."""
+        response = client.get('/admin/export/csv')
+        csv_content = response.data.decode('utf-8')
+        assert 'ID' in csv_content
+        assert 'Name' in csv_content
+        assert 'Email' in csv_content
+        assert 'Company' in csv_content
+        assert 'Job Title' in csv_content
+        assert 'Registered At' in csv_content
+
+    def test_export_csv_contains_data(self, app, client):
+        """Test that CSV contains registration data."""
+        with app.app_context():
+            from app.services.registration_service import RegistrationService
+            RegistrationService.create_registration(
+                name='CSV Export Test',
+                email='csvtest@example.com',
+                company='Export Corp',
+                job_title='Exporter'
+            )
+
+        response = client.get('/admin/export/csv')
+        csv_content = response.data.decode('utf-8')
+        assert 'CSV Export Test' in csv_content
+        assert 'csvtest@example.com' in csv_content
+        assert 'Export Corp' in csv_content
+        assert 'Exporter' in csv_content
+
+    def test_export_csv_empty_returns_headers_only(self, client):
+        """Test that empty export still returns headers."""
+        response = client.get('/admin/export/csv')
+        csv_content = response.data.decode('utf-8')
+        lines = csv_content.strip().split('\n')
+        assert len(lines) == 1  # Just the header row
+        assert 'Name' in lines[0]
+
+
+class TestErrorPages:
+    """Tests for custom error pages."""
+
+    def test_404_page_for_nonexistent_route(self, client):
+        """Test that 404 page is shown for nonexistent routes."""
+        response = client.get('/nonexistent-page-xyz')
+        assert response.status_code == 404
+        assert b'404' in response.data
+        assert b'Page Not Found' in response.data
+
+    def test_404_page_has_home_link(self, client):
+        """Test that 404 page has link to home."""
+        response = client.get('/nonexistent-page')
+        assert b'Go to Home' in response.data
+
+    def test_404_page_has_register_link(self, client):
+        """Test that 404 page has link to registration."""
+        response = client.get('/nonexistent-page')
+        assert b'/register' in response.data

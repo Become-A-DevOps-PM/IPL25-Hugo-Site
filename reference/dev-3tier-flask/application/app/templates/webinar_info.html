@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block title %}About the Webinar{% endblock %}
+
+{% block content %}
+<div class="webinar-info-page">
+    <header class="webinar-header">
+        <h1>Cloud Infrastructure Fundamentals</h1>
+        <p class="subtitle">A hands-on introduction to modern deployment practices</p>
+    </header>
+
+    <section class="event-details">
+        <h2>Event Details</h2>
+        <div class="details-grid">
+            <div class="detail-item">
+                <span class="detail-label">Date</span>
+                <span class="detail-value">February 15, 2026</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Time</span>
+                <span class="detail-value">10:00 AM - 12:00 PM CET</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Platform</span>
+                <span class="detail-value">Microsoft Teams (link sent after registration)</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Cost</span>
+                <span class="detail-value">Free</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="agenda">
+        <h2>Agenda</h2>
+        <ol class="agenda-list">
+            <li>
+                <strong>Introduction to Cloud Infrastructure</strong>
+                <span class="duration">(20 min)</span>
+                <p>Understanding the fundamentals of cloud computing and Azure services.</p>
+            </li>
+            <li>
+                <strong>Infrastructure as Code with Bicep</strong>
+                <span class="duration">(30 min)</span>
+                <p>Learn how to define and deploy infrastructure using declarative templates.</p>
+            </li>
+            <li>
+                <strong>Flask Application Deployment</strong>
+                <span class="duration">(30 min)</span>
+                <p>Hands-on demonstration of deploying a Python web application to Azure.</p>
+            </li>
+            <li>
+                <strong>Best Practices &amp; Q&amp;A</strong>
+                <span class="duration">(40 min)</span>
+                <p>Security considerations, monitoring, and audience questions.</p>
+            </li>
+        </ol>
+    </section>
+
+    <section class="speakers">
+        <h2>Speakers</h2>
+        <div class="speaker-cards">
+            <div class="speaker-card">
+                <div class="speaker-info">
+                    <h3>Dr. Sarah Chen</h3>
+                    <p class="speaker-title">Cloud Solutions Architect</p>
+                    <p class="speaker-bio">
+                        Sarah has 15 years of experience in cloud infrastructure and has helped
+                        hundreds of organizations migrate to Azure. She holds multiple Azure
+                        certifications and is a frequent speaker at tech conferences.
+                    </p>
+                </div>
+            </div>
+            <div class="speaker-card">
+                <div class="speaker-info">
+                    <h3>Marcus Johnson</h3>
+                    <p class="speaker-title">Senior DevOps Engineer</p>
+                    <p class="speaker-bio">
+                        Marcus specializes in CI/CD pipelines and infrastructure automation.
+                        He has authored several open-source tools for Azure deployment and
+                        teaches DevOps practices at technical universities.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="what-youll-learn">
+        <h2>What You'll Learn</h2>
+        <ul class="learning-outcomes">
+            <li>How to provision cloud resources using Infrastructure as Code</li>
+            <li>Best practices for Flask application deployment</li>
+            <li>Security fundamentals for web applications</li>
+            <li>Monitoring and observability strategies</li>
+            <li>Cost optimization techniques for cloud infrastructure</li>
+        </ul>
+    </section>
+
+    <section class="cta-box">
+        <h2>Ready to Join?</h2>
+        <p>Reserve your spot now and take the first step towards mastering cloud infrastructure.</p>
+        <a href="{{ url_for('main.register') }}" class="btn btn-primary btn-lg">Register Now</a>
+    </section>
+
+    <p class="back-link"><a href="{{ url_for('main.index') }}">&larr; Back to home</a></p>
+</div>
+{% endblock %}

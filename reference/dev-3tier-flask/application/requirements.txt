@@ -7,6 +7,11 @@ flask-sqlalchemy>=3.1.0
 # Database migrations
 flask-migrate>=4.0.0
 
+# Form handling and validation
+Flask-WTF==1.2.1
+WTForms==3.1.2
+email-validator==2.1.0
+
 # WSGI server for production
 gunicorn>=21.0.0
 
