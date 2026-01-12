@@ -1,0 +1,52 @@
+# =============================================================================
+# Docker Ignore File
+# =============================================================================
+# Prevents unnecessary files from being included in the Docker build context.
+# This speeds up builds and reduces image size.
+# =============================================================================
+
+# Git
+.git
+.gitignore
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments (we create one in the container)
+.venv/
+venv/
+ENV/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+*.cover
+.tox/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local database (not needed in container)
+local.db
+*.db
+
+# Documentation
+*.md
+docs/
+
+# Tests (optional - include if you want to run tests in container)
+# tests/
+
+# Deployment artifacts
+*.log
