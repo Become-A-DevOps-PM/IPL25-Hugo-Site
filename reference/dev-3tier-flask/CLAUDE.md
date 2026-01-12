@@ -28,6 +28,39 @@ ssh azureuser@$VM_IP "sudo journalctl -u flask-app -f"
 ./delete-all.sh
 ```
 
+## Default Credentials
+
+**This is an educational project. These credentials are intentionally documented for easy access.**
+
+### Admin Login (Web Application)
+
+| Field | Value |
+|-------|-------|
+| Username | `admin` |
+| Password | `Admin123!` |
+| Login URL | `/auth/login` |
+
+The admin user is created automatically on first deployment via the `ADMIN_PASSWORD` environment variable.
+
+### VM Access (SSH)
+
+| Field | Value |
+|-------|-------|
+| Username | `azureuser` |
+| Authentication | SSH key (no password) |
+
+### Database (PostgreSQL / Azure SQL)
+
+| Field | Value |
+|-------|-------|
+| Username | `adminuser` |
+| Password | Generated in `parameters.json` (gitignored) |
+| Database | `flask` |
+
+### Container Apps Deployment
+
+For Container Apps deployment, the admin password is set via the `ADMIN_PASSWORD` environment variable configured in the Container App settings.
+
 ## Architecture
 
 ```

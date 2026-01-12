@@ -30,9 +30,19 @@ export FLASK_APP=wsgi.py
 flask db upgrade
 ```
 
-### Create Admin User
+### Default Credentials
 
-Admin routes (`/admin/*`) require authentication. Create an admin user:
+**This is an educational project. Credentials are documented here for convenience.**
+
+| Username | Password | Login URL |
+|----------|----------|-----------|
+| `admin` | `Admin123!` | `/auth/login` |
+
+In production deployments, the admin user is created automatically via the `ADMIN_PASSWORD` environment variable.
+
+### Create Admin User (Manual)
+
+For local development, create an admin user manually:
 
 ```bash
 flask create-admin USERNAME

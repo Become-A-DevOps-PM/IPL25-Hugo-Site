@@ -16,6 +16,18 @@ open "https://$VM_IP/"
 ./delete-all.sh
 ```
 
+## Default Credentials
+
+**This is an educational project. Credentials are documented here for convenience.**
+
+| Service | Username | Password |
+|---------|----------|----------|
+| **Admin Login** (`/auth/login`) | `admin` | `Admin123!` |
+| **SSH Access** | `azureuser` | SSH key (no password) |
+| **Database** | `adminuser` | See `parameters.json` |
+
+The admin user is created automatically during deployment.
+
 ## What This Is
 
 A single-VM deployment running:
