@@ -22,5 +22,5 @@ fi
 flask db upgrade
 
 # Start Flask with hot reload
-echo "Starting Flask on http://localhost:5005 (hot reload enabled)"
-flask run --port 5005 --debug
+echo "Starting Flask on http://localhost:5000 (hot reload enabled)"
+flask run --debug

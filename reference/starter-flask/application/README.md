@@ -9,7 +9,7 @@ A minimal Flask app demonstrating database persistence with SQLAlchemy.
 ./run.sh
 ```
 
-Open http://localhost:5005
+Open http://localhost:5000
 
 ## Manual Setup
 
@@ -25,7 +25,7 @@ pip install -r requirements.txt
 flask db upgrade
 
 # 4. Start with hot reload
-flask run --port 5005 --debug
+flask run --debug
 ```
 
 ## Project Structure
@@ -76,4 +76,19 @@ pytest tests/ -v
 
 # If running in background:
 ./stop.sh
+```
+
+## Troubleshooting
+
+### Port 5000 in use (macOS)
+
+macOS Monterey and later uses port 5000 for AirPlay Receiver. To reclaim it:
+
+1. Open **System Settings**
+2. Go to **General** → **AirDrop & Handoff**
+3. Turn off **AirPlay Receiver**
+
+Alternatively, use a different port:
+```bash
+flask run --port 5001 --debug
 ```
