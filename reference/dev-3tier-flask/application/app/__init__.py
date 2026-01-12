@@ -56,6 +56,22 @@ def create_app(config_name='development'):
     from app.cli import register_commands
     register_commands(app)
 
+    # Auto-create database tables in production (safe for container deployments)
+    if config_name == 'production':
+        with app.app_context():
+            db.create_all()
+            # Auto-create admin user if none exists and ADMIN_PASSWORD is set
+            import os
+            admin_password = os.environ.get('ADMIN_PASSWORD')
+            if admin_password:
+                from app.models import User
+                if not User.query.filter_by(username='admin').first():
+                    try:
+                        AuthService.create_user('admin', admin_password)
+                        app.logger.info('Default admin user created')
+                    except Exception as e:
+                        app.logger.warning(f'Could not create admin user: {e}')
+
     return app
 
 

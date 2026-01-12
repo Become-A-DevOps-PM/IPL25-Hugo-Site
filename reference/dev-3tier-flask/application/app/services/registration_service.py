@@ -96,14 +96,20 @@ class RegistrationService:
         total = Registration.query.count()
 
         # Registrations grouped by date
-        by_date = db.session.query(
-            func.date(Registration.created_at).label('date'),
-            func.count(Registration.id).label('count')
-        ).group_by(func.date(Registration.created_at)).order_by(
-            func.date(Registration.created_at).desc()
-        ).limit(7).all()
+        # Use CAST for SQL Server compatibility instead of func.date()
+        try:
+            by_date = db.session.query(
+                func.cast(Registration.created_at, db.Date).label('date'),
+                func.count(Registration.id).label('count')
+            ).group_by(func.cast(Registration.created_at, db.Date)).order_by(
+                func.cast(Registration.created_at, db.Date).desc()
+            ).limit(7).all()
+            by_date_result = [{'date': str(d.date), 'count': d.count} for d in by_date]
+        except Exception:
+            # Fallback if date grouping fails
+            by_date_result = []
 
         return {
             'total': total,
-            'by_date': [{'date': str(d.date), 'count': d.count} for d in by_date]
+            'by_date': by_date_result
         }

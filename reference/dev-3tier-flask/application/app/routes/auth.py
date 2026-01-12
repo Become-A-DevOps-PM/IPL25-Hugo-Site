@@ -39,6 +39,9 @@ def login():
             return redirect(url_for('admin.attendees'))
         else:
             flash('Invalid username or password.', 'error')
+    elif request.method == 'POST':
+        # Form didn't validate - show generic error
+        flash('Invalid username or password.', 'error')
 
     return render_template('auth/login.html', form=form)
 
