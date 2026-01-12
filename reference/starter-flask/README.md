@@ -73,8 +73,16 @@ starter-flask/
 │   ├── provision-sql.sh    # Create Azure SQL Database
 │   ├── deploy.sh           # Deploy to Container Apps
 │   └── delete.sh           # Remove all resources
-└── docs/
-    └── code-review.md      # Architecture and patterns documentation
+└── docs/                   # Documentation
+    ├── architecture.md     # Architecture and design patterns
+    ├── future-improvements.md  # Enhancement ideas
+    ├── disable-airplay-macos.md  # macOS port 5000 fix
+    └── planning/           # Development history
+        ├── 01-initial-plan.md  # Original minimal Flask plan
+        ├── 02-database-plan.md # Database feature plan
+        ├── 03-notes-list-plan.md   # Notes list feature plan
+        ├── 04-migrations-design.md # Migrations design
+        └── test-report.md  # Test results
 ```
 
 ## Application Endpoints
@@ -233,6 +241,7 @@ Azure SQL requires **ODBC Driver 18**, which the default container builder (Oryx
 
 ## Learn More
 
-- [docs/code-review.md](docs/code-review.md) - Architecture and design patterns
+- [docs/architecture.md](docs/architecture.md) - Architecture and design patterns
+- [docs/future-improvements.md](docs/future-improvements.md) - Enhancement ideas
 - [Azure Container Apps Documentation](https://learn.microsoft.com/en-us/azure/container-apps/)
 - [Azure SQL Database Documentation](https://learn.microsoft.com/en-us/azure/azure-sql/)
