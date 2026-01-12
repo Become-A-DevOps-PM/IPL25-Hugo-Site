@@ -228,3 +228,129 @@ Key changes:
 - `RUN useradd --create-home appuser` - Creates a non-root user
 - `COPY --chown=appuser:appuser . .` - Sets file ownership
 - `USER appuser` - Switches to non-root user before running the app
+
+## Package Structure
+
+The current flat structure works well for small applications. As the app grows, consider migrating to a package-based structure.
+
+### When to Migrate
+
+Consider restructuring when any of these occur:
+- Adding a second blueprint (e.g., `admin`, `api`, `auth`)
+- Adding a third model (e.g., `User`, `Comment`)
+- Any single file exceeds 300 lines
+- Multiple developers working on routes simultaneously
+
+### Current Structure (Flat)
+
+```
+application/
+├── app.py              # create_app()
+├── config.py           # Config classes
+├── models.py           # All models
+├── routes.py           # All routes
+└── wsgi.py
+```
+
+### Package Structure
+
+```
+application/
+├── app/
+│   ├── __init__.py           # create_app() lives here
+│   ├── config.py
+│   ├── models/
+│   │   ├── __init__.py       # from .note import Note; from .user import User
+│   │   ├── note.py           # Note model
+│   │   └── user.py           # User model (future)
+│   ├── routes/
+│   │   ├── __init__.py       # Registers all blueprints
+│   │   ├── main.py           # Home, health routes
+│   │   ├── notes.py          # /notes routes
+│   │   └── api.py            # /api routes (future)
+│   └── templates/
+├── tests/
+│   ├── conftest.py
+│   ├── models/
+│   │   └── test_note.py
+│   └── routes/
+│       ├── test_main.py
+│       └── test_notes.py
+└── wsgi.py
+```
+
+### Key Changes
+
+**Imports change from:**
+```python
+from models import db, Note
+from config import config_by_name
+```
+
+**To:**
+```python
+from app.models import db, Note
+from app.config import config_by_name
+```
+
+**`app/__init__.py`:**
+```python
+from flask import Flask
+from flask_migrate import Migrate
+
+from app.config import config_by_name
+from app.models import db
+
+migrate = Migrate()
+
+def create_app(config_name=None):
+    config_class = config_by_name.get(config_name, config_by_name['default'])
+
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+    app.config['SQLALCHEMY_DATABASE_URI'] = config_class.get_database_url()
+
+    if app.config['SQLALCHEMY_DATABASE_URI']:
+        db.init_app(app)
+        migrate.init_app(app, db)
+
+    from app.routes import main_bp, notes_bp
+    app.register_blueprint(main_bp)
+    app.register_blueprint(notes_bp)
+
+    return app
+```
+
+**`app/models/__init__.py`:**
+```python
+from flask_sqlalchemy import SQLAlchemy
+
+db = SQLAlchemy()
+
+from app.models.note import Note  # noqa: E402
+```
+
+**`app/routes/__init__.py`:**
+```python
+from app.routes.main import bp as main_bp
+from app.routes.notes import bp as notes_bp
+```
+
+### Benefits
+
+| Aspect | Flat | Package |
+|--------|------|---------|
+| Adding new routes | Edit single file | Create new file |
+| Finding code | Scan one file | Navigate to specific module |
+| Merge conflicts | More likely | Less likely |
+| Circular imports | Manual care needed | Easier to avoid |
+| Test organization | Mirrors flat structure | Mirrors package structure |
+
+### Why Not Now
+
+The starter-flask app has ~200 lines across 5 files. Package structure would:
+- Triple the file count
+- Add `__init__.py` boilerplate
+- Make the app harder to understand at a glance
+
+Keep it flat until complexity demands otherwise.
