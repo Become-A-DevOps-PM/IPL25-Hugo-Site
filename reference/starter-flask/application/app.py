@@ -25,6 +25,46 @@ def create_app(config_name=None):
         migrate.init_app(app, db)
 
     app.register_blueprint(bp)
+
+    @app.context_processor
+    def inject_env_info():
+        db_uri = app.config.get('SQLALCHEMY_DATABASE_URI') or ''
+        if db_uri.startswith('sqlite:'):
+            db_type = 'SQLite'
+        elif db_uri.startswith('postgresql:'):
+            db_type = 'PostgreSQL'
+        else:
+            db_type = 'None'
+
+        return {
+            'env_info': {
+                'FLASK_ENV': os.environ.get('FLASK_ENV', 'local'),
+                'DB_TYPE': db_type
+            },
+            'env_table': [
+                {
+                    'name': 'FLASK_ENV',
+                    'env_value': os.environ.get('FLASK_ENV'),
+                    'actual_value': config_name
+                },
+                {
+                    'name': 'DATABASE_URL',
+                    'env_value': os.environ.get('DATABASE_URL'),
+                    'actual_value': db_uri if db_uri else None
+                },
+                {
+                    'name': 'USE_SQLITE',
+                    'env_value': os.environ.get('USE_SQLITE'),
+                    'actual_value': 'true' if db_uri.startswith('sqlite:') else 'false'
+                },
+                {
+                    'name': 'SECRET_KEY',
+                    'env_value': os.environ.get('SECRET_KEY'),
+                    'actual_value': app.config.get('SECRET_KEY')
+                }
+            ]
+        }
+
     return app
 
 
