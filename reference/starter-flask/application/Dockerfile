@@ -54,10 +54,15 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor
 COPY --from=builder /opt/venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
-# Create non-root user
+# Create non-root user and app directory
 RUN useradd --create-home appuser
 WORKDIR /app
+
+# Create instance directory for SQLite (must exist before switching to appuser)
+RUN mkdir -p /app/instance && chown appuser:appuser /app/instance
+
 COPY --chown=appuser:appuser . .
+RUN chmod +x entrypoint.sh
 USER appuser
 
 EXPOSE 5000
@@ -66,5 +71,5 @@ EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=10s --start-period=10s --retries=3 \
     CMD curl -f http://localhost:5000/health || exit 1
 
-# Run with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "wsgi:app"]
+# Run entrypoint (migrations + Gunicorn)
+CMD ["./entrypoint.sh"]

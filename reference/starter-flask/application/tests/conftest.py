@@ -2,6 +2,9 @@
 Pytest fixtures for testing.
 
 Uses in-memory SQLite for fast, isolated tests.
+
+Note: Tests use db.create_all() instead of migrations for speed.
+      Migration files are tested separately via integration tests.
 """
 
 import os

@@ -8,7 +8,11 @@ Database errors only occur when actually accessing database.
 import os
 import logging
 from flask import Flask
+from flask_migrate import Migrate
 from config import config_by_name
+
+# Global migrate instance for Flask-Migrate
+migrate = Migrate()
 
 
 def create_app(config_name: str = None) -> Flask:
@@ -45,17 +49,11 @@ def create_app(config_name: str = None) -> Flask:
         db_type = 'SQLite' if 'sqlite' in db_url else 'Azure SQL'
         logger.info(f"Database configured: {db_type}")
 
-        # Initialize database
+        # Initialize database and migrations
         from models import db
         db.init_app(app)
-
-        # Create tables (for learning environment - production would use migrations)
-        with app.app_context():
-            try:
-                db.create_all()
-                logger.info(f"{db_type} tables created/verified")
-            except Exception as e:
-                logger.warning(f"Could not create tables: {e}")
+        migrate.init_app(app, db)
+        logger.info("Flask-Migrate initialized - run 'flask db upgrade' to apply migrations")
     else:
         logger.warning("No database configured - form submissions will fail")
 

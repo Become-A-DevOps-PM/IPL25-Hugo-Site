@@ -55,6 +55,16 @@ az sql server firewall-rule create \
     --end-ip-address 0.0.0.0 \
     --output none
 
+# Allow all IPs (for learning environment - NOT for production!)
+echo "Opening firewall to all IPs (learning environment only)..."
+az sql server firewall-rule create \
+    --name "AllowAll" \
+    --server "$SQL_SERVER" \
+    --resource-group "$RESOURCE_GROUP" \
+    --start-ip-address 0.0.0.0 \
+    --end-ip-address 255.255.255.255 \
+    --output none
+
 # Create database (Basic tier - ~$5/month)
 echo "Creating database (Basic tier)..."
 az sql db create \

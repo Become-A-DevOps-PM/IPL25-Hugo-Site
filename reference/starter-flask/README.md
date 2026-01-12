@@ -68,6 +68,9 @@ starter-flask/
 │   ├── wsgi.py             # Gunicorn entry point
 │   ├── requirements.txt    # Python dependencies
 │   ├── Dockerfile          # Container build with ODBC driver
+│   ├── entrypoint.sh       # Container startup (runs migrations)
+│   ├── migrations/         # Flask-Migrate database migrations
+│   │   └── versions/       # Migration scripts
 │   ├── templates/          # Jinja2 templates
 │   │   ├── base.html
 │   │   ├── home.html
@@ -139,10 +142,51 @@ pip install -r requirements.txt
 
 # Run with SQLite (default for development)
 export USE_SQLITE=true
+
+# Apply database migrations
+flask db upgrade
+
+# Start the application
 python app.py
 
 # Access at http://localhost:5000
 ```
+
+## Database Migrations
+
+This project uses **Flask-Migrate** (Alembic) for database schema management.
+
+### Common Commands
+
+```bash
+cd application
+source .venv/bin/activate
+
+# Apply pending migrations
+flask db upgrade
+
+# Create a new migration after model changes
+flask db migrate -m "Add new field to Note"
+
+# Rollback one migration
+flask db downgrade
+
+# Show current migration version
+flask db current
+
+# Show migration history
+flask db history
+```
+
+### Container Deployment
+
+Migrations run automatically when the container starts via `entrypoint.sh`. The container:
+
+1. Checks if `DATABASE_URL` or `USE_SQLITE=true` is set
+2. Runs `flask db upgrade` if a database is configured
+3. Starts Gunicorn regardless of migration success (graceful degradation)
+
+See [PLAN-MIGRATIONS.md](PLAN-MIGRATIONS.md) for detailed documentation.
 
 ## Troubleshooting
 
@@ -203,7 +247,8 @@ The Dockerfile:
 
 ## Learn More
 
-- [PLAN-DATABASE.md](PLAN-DATABASE.md) - Detailed implementation design
+- [PLAN-DATABASE.md](PLAN-DATABASE.md) - Database extension design
+- [PLAN-MIGRATIONS.md](PLAN-MIGRATIONS.md) - Database migrations strategy
 - [TEST-REPORT.md](TEST-REPORT.md) - Test results and verification steps
 - [Azure Container Apps Documentation](https://learn.microsoft.com/en-us/azure/container-apps/)
 - [Azure SQL Database Documentation](https://learn.microsoft.com/en-us/azure/azure-sql/)
