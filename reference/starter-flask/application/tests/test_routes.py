@@ -33,9 +33,9 @@ class TestNotesNewRoute:
         assert b'<button' in response.data
 
     def test_notes_new_post_saves_note(self, client):
-        response = client.post('/notes/new', data={'content': 'test note'})
+        response = client.post('/notes/new', data={'content': 'test note'}, follow_redirects=True)
         assert response.status_code == 200
-        assert b'Note Saved' in response.data
+        assert b'Note saved' in response.data
 
     def test_notes_new_post_empty_shows_error(self, client):
         response = client.post('/notes/new', data={'content': ''})
