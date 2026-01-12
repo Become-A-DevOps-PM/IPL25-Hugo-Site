@@ -1,18 +1,19 @@
 """Admin blueprint for managing registrations.
 
-Note: No authentication in Phase 3. Routes are publicly accessible.
-Authentication will be added in Phase 4.
+Protected by @login_required - requires admin authentication.
 """
 from datetime import datetime
 import csv
 import io
 from flask import Blueprint, render_template, request, Response
+from flask_login import login_required
 from app.services.registration_service import RegistrationService
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
 
 @admin_bp.route('/attendees')
+@login_required
 def attendees():
     """Display list of all webinar registrations with sorting.
 
@@ -38,6 +39,7 @@ def attendees():
 
 
 @admin_bp.route('/export/csv')
+@login_required
 def export_csv():
     """Export all registrations as CSV file.
 

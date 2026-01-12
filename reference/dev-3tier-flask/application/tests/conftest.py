@@ -48,3 +48,28 @@ def runner(app):
         Flask CLI test runner.
     """
     return app.test_cli_runner()
+
+
+@pytest.fixture
+def authenticated_client(app, client):
+    """Create test client with authenticated admin user.
+
+    Creates an admin user and logs them in, returning a client
+    that can access protected routes.
+
+    Args:
+        app: Flask application fixture.
+        client: Flask test client fixture.
+
+    Returns:
+        Flask test client with authenticated session.
+    """
+    with app.app_context():
+        from app.services.auth_service import AuthService
+        AuthService.create_user('testadmin', 'testpassword123')
+
+    client.post('/auth/login', data={
+        'username': 'testadmin',
+        'password': 'testpassword123'
+    })
+    return client

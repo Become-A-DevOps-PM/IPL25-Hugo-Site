@@ -7,6 +7,7 @@ from app.routes.main import main_bp
 from app.routes.api import api_bp
 from app.routes.demo import demo_bp
 from app.routes.admin import admin_bp
+from app.routes.auth import auth_bp
 
 
 def register_blueprints(app):
@@ -19,3 +20,4 @@ def register_blueprints(app):
     app.register_blueprint(api_bp)
     app.register_blueprint(demo_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(auth_bp)

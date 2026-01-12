@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Login{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <h1>Admin Login</h1>
+    <p>Enter your credentials to access the admin area.</p>
+
+    <form method="POST" action="{{ url_for('auth.login') }}" class="login-form" novalidate>
+        {{ form.hidden_tag() }}
+
+        <div class="form-group {% if form.username.errors %}has-error{% endif %}">
+            {{ form.username.label }}
+            {{ form.username(placeholder='Username', class='form-control', autofocus=true) }}
+            {% if form.username.errors %}
+                <ul class="errors">
+                {% for error in form.username.errors %}
+                    <li class="error-message">{{ error }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group {% if form.password.errors %}has-error{% endif %}">
+            {{ form.password.label }}
+            {{ form.password(placeholder='Password', class='form-control') }}
+            {% if form.password.errors %}
+                <ul class="errors">
+                {% for error in form.password.errors %}
+                    <li class="error-message">{{ error }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group checkbox-group">
+            {{ form.remember_me(class='form-checkbox') }}
+            {{ form.remember_me.label }}
+        </div>
+
+        <div class="form-actions">
+            {{ form.submit(class='btn btn-primary') }}
+        </div>
+    </form>
+
+    <p class="back-link"><a href="{{ url_for('main.index') }}">&larr; Back to home</a></p>
+</div>
+{% endblock %}

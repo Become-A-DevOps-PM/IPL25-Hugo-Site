@@ -54,7 +54,12 @@ Single VM running nginx (reverse proxy) and Flask/Gunicorn on the same host.
 | `GET /register` | Registration form |
 | `POST /register` | Create registration (redirects to /thank-you) |
 | `GET /thank-you` | Confirmation page |
-| `GET /admin/attendees` | Attendee list |
+| `GET /webinar` | Webinar information page |
+| `GET /auth/login` | Admin login form |
+| `POST /auth/login` | Authenticate admin user |
+| `GET /auth/logout` | Log out and redirect to home |
+| `GET /admin/attendees` | Attendee list (login required) |
+| `GET /admin/export/csv` | Export attendees as CSV (login required) |
 | `GET /demo` | Demo form with entries (Phase 1) |
 | `POST /demo` | Create entry (redirects) |
 | `GET /api/health` | `{"status": "ok"}` |
@@ -86,23 +91,34 @@ dev-3tier-flask/
 ├── application/
 │   ├── app/
 │   │   ├── __init__.py        # create_app() factory
-│   │   ├── extensions.py      # Flask extensions (db)
+│   │   ├── extensions.py      # Flask extensions (db, login_manager)
+│   │   ├── cli.py             # CLI commands (create-admin)
 │   │   ├── routes/
 │   │   │   ├── main.py        # Landing page (/)
 │   │   │   ├── demo.py        # Demo app (/demo)
+│   │   │   ├── admin.py       # Admin pages (/admin/*)
+│   │   │   ├── auth.py        # Authentication (/auth/*)
 │   │   │   └── api.py         # API endpoints (/api/*)
 │   │   ├── models/
-│   │   │   └── entry.py       # Entry model
+│   │   │   ├── entry.py       # Entry model
+│   │   │   ├── registration.py # Registration model
+│   │   │   └── user.py        # User model (auth)
 │   │   ├── services/
-│   │   │   └── entry_service.py
+│   │   │   ├── entry_service.py
+│   │   │   ├── registration_service.py
+│   │   │   └── auth_service.py # Authentication service
+│   │   ├── forms/
+│   │   │   ├── registration.py # Registration form
+│   │   │   └── login.py       # Login form
 │   │   ├── templates/
 │   │   │   ├── base.html
 │   │   │   ├── landing.html
-│   │   │   └── demo.html
+│   │   │   ├── demo.html
+│   │   │   └── auth/login.html
 │   │   └── static/
 │   ├── tests/
 │   │   ├── conftest.py        # pytest fixtures
-│   │   └── test_routes.py     # 15 tests
+│   │   └── test_routes.py     # 118 tests
 │   ├── config.py              # Dev/Prod/Test configs
 │   ├── wsgi.py                # Gunicorn entry point
 │   └── requirements.txt
@@ -140,8 +156,10 @@ def create_app(config_class=None):
 
 | Blueprint | Prefix | Routes |
 |-----------|--------|--------|
-| `main_bp` | `/` | Landing page |
+| `main_bp` | `/` | Landing, register, thank-you, webinar |
 | `demo_bp` | `/demo` | Demo form + entries |
+| `admin_bp` | `/admin` | Attendees, CSV export (protected) |
+| `auth_bp` | `/auth` | Login, logout |
 | `api_bp` | `/api` | Health, entries API |
 
 ### Models
@@ -152,6 +170,22 @@ class Entry(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     value = db.Column(db.String(500), nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+# app/models/registration.py
+class Registration(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
+    company = db.Column(db.String(100), nullable=False)
+    job_title = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+# app/models/user.py
+class User(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False, index=True)
+    password_hash = db.Column(db.String(256), nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
 ```
 
 ### Configuration
@@ -255,6 +289,20 @@ deploy-all.sh
 └── deploy/scripts/verification-tests.sh
 ```
 
+## CLI Commands
+
+```bash
+# Create admin user
+flask create-admin USERNAME
+# Prompts for password (minimum 8 characters)
+
+# Example
+flask create-admin admin
+# Enter password: ********
+# Confirm password: ********
+# Admin user 'admin' created successfully.
+```
+
 ## Testing
 
 ### Local Tests
@@ -262,7 +310,7 @@ deploy-all.sh
 ```bash
 cd application
 source .venv/bin/activate
-pytest tests/ -v              # 15 tests
+pytest tests/ -v              # 118 tests
 pytest --cov=app tests/       # Coverage report
 ```
 
@@ -313,6 +361,27 @@ ssh azureuser@$VM_IP 'eval $(sudo cat /etc/flask-app/app.env) && psql "$DATABASE
 ssh azureuser@$VM_IP "sudo systemctl restart flask-app"
 ssh azureuser@$VM_IP "sudo systemctl restart nginx"
 ```
+
+## Security Features
+
+### Authentication (Phase 4)
+- Session-based authentication with Flask-Login
+- Password hashing with Werkzeug (PBKDF2)
+- Protected admin routes with `@login_required`
+- Remember-me functionality
+
+### Security Headers
+All responses include OWASP-recommended headers:
+- `X-Content-Type-Options: nosniff`
+- `X-Frame-Options: SAMEORIGIN`
+- `X-XSS-Protection: 1; mode=block`
+- `Referrer-Policy: strict-origin-when-cross-origin`
+- `Strict-Transport-Security` (production only)
+
+### Form Validation
+- WTForms with CSRF protection
+- Server-side validation
+- Duplicate email prevention
 
 ## Comparison with stage-ultimate
 
