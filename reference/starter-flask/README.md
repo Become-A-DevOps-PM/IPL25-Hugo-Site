@@ -1,39 +1,45 @@
 # Starter Flask - Azure Container Apps with SQL Database
 
-A minimal Flask deployment to Azure Container Apps with optional Azure SQL Database support. Features **graceful degradation**: the app starts and serves pages even without a database connection.
+A minimal Flask application for learning web development, containerization, and Azure deployment. Features **graceful degradation**: the app starts and serves pages even without a database connection.
 
-## Prerequisites
+## Get Started (Local Development)
 
-- Azure CLI installed and logged in (`az login`)
-- Active Azure subscription
+No Azure account needed. Run the app locally in under 2 minutes:
 
-## Quick Start
+```bash
+cd application
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+flask db upgrade
+flask run --debug
+```
+
+Open http://localhost:5000 - you now have a working Flask app with SQLite.
+
+To stop: `Ctrl+C` | To deactivate: `deactivate`
+
+## Deploy to Azure (Optional)
+
+**Prerequisites:** Azure CLI installed (`az login`)
 
 ### Option 1: With Azure SQL Database
 
 ```bash
-# 1. Provision SQL Database (~5 minutes)
-./deploy/provision-sql.sh
-
-# 2. Deploy application (~5-10 minutes)
-./deploy/deploy.sh
-
-# 3. Test
-curl https://<your-app-url>/
-curl https://<your-app-url>/notes
-
-# 4. Cleanup
-./deploy/delete.sh
+./deploy/provision-sql.sh   # Create database (~5 min)
+./deploy/deploy.sh          # Deploy app (~5-10 min)
 ```
 
-### Option 2: Without Database (Graceful Degradation)
+### Option 2: Without Database
 
 ```bash
-# Deploy without database
-./deploy/deploy.sh
+./deploy/deploy.sh          # App runs with graceful degradation
+```
 
-# App works, but note operations show error message
-curl https://<your-app-url>/
+### Cleanup
+
+```bash
+./deploy/delete.sh          # Remove all Azure resources
 ```
 
 ## What Gets Created
@@ -126,28 +132,14 @@ pytest tests/ --cov=. --cov-report=term-missing
 
 ## Local Development
 
+See "Get Started" section above for initial setup. Additional commands:
+
 ```bash
 cd application
+source .venv/bin/activate   # Activate existing venv
 
-# Create virtual environment
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-
-# Apply database migrations (uses SQLite by default)
-flask db upgrade
-
-# Start the application with hot reload
-flask run --debug
-
-# Access at http://localhost:5000
-```
-
-To stop: Press `Ctrl+C`
-
-To deactivate the virtual environment:
-```bash
-deactivate
+flask run --debug           # Start with hot reload
+flask run --port 5001       # Use different port (if 5000 is taken)
 ```
 
 ## Database Migrations
