@@ -85,3 +85,33 @@ class TestHealthRoute:
         assert 'database' in data
         # In testing mode with SQLite, should be connected
         assert data['database'] == 'connected'
+
+
+class TestNotesRoute:
+    """Tests for GET /notes."""
+
+    def test_notes_returns_200(self, client):
+        """Notes page should return 200."""
+        response = client.get('/notes')
+        assert response.status_code == 200
+
+    def test_notes_contains_title(self, client):
+        """Notes page should contain title."""
+        response = client.get('/notes')
+        assert b'Saved Notes' in response.data
+
+    def test_notes_shows_empty_message(self, client):
+        """Notes page should show empty message when no notes."""
+        response = client.get('/notes')
+        assert b'No notes saved' in response.data
+
+    def test_notes_shows_saved_notes(self, client, app):
+        """Notes page should display saved notes."""
+        from models import db, Note
+        with app.app_context():
+            note = Note(content='Test note for list')
+            db.session.add(note)
+            db.session.commit()
+
+        response = client.get('/notes')
+        assert b'Test note for list' in response.data

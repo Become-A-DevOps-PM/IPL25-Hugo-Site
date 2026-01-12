@@ -56,6 +56,30 @@ def form():
     return render_template('form.html')
 
 
+@bp.route('/notes')
+def notes():
+    """
+    Display all saved notes.
+
+    Shows list of notes if database is connected,
+    otherwise shows error message.
+    """
+    try:
+        from models import db, Note
+
+        if current_app.config.get('SQLALCHEMY_DATABASE_URI') is None:
+            flash('Database not configured.', 'error')
+            return render_template('notes.html', notes=[])
+
+        all_notes = Note.query.order_by(Note.created_at.desc()).all()
+        return render_template('notes.html', notes=all_notes)
+
+    except Exception as e:
+        logger.error(f"Database error: {e}")
+        flash(f"Failed to load notes: {str(e)}", 'error')
+        return render_template('notes.html', notes=[])
+
+
 @bp.route('/health')
 def health():
     """
