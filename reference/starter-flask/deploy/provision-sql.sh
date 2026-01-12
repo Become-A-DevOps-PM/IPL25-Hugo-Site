@@ -1,11 +1,6 @@
 #!/bin/bash
-# =============================================================================
-# PROVISION AZURE SQL DATABASE
-# =============================================================================
-# Creates Azure SQL Database (Basic tier, ~$5/month).
-# Run this before deploy.sh when using database.
-# =============================================================================
-
+# Provision Azure SQL Database (Basic tier, ~$5/month)
+# Run this before deploy.sh to enable database support
 set -e
 
 RESOURCE_GROUP="rg-starter-flask"

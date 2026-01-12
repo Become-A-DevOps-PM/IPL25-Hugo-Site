@@ -1,11 +1,5 @@
 #!/bin/bash
-# =============================================================================
-# DELETE ALL AZURE RESOURCES
-# =============================================================================
-# Removes the entire resource group and all contained resources.
-# Also cleans up local configuration files.
-# =============================================================================
-
+# Delete all Azure resources and clean up local config files
 set -e
 
 RESOURCE_GROUP="rg-starter-flask"

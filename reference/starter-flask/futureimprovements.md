@@ -191,3 +191,40 @@ def notes():
     )
     return render_template('notes.html', notes=pagination.items, pagination=pagination)
 ```
+
+## Non-Root Container User
+
+Run the container as a non-root user for improved security. If the container is compromised, the attacker has limited privileges.
+
+Update `Dockerfile`:
+
+```dockerfile
+# Flask with Azure SQL Database
+FROM python:3.11-slim
+
+# Install ODBC Driver 18 for SQL Server
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl gnupg2 unixodbc \
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
+    && curl -fsSL https://packages.microsoft.com/config/debian/12/prod.list > /etc/apt/sources.list.d/mssql-release.list \
+    && apt-get update \
+    && ACCEPT_EULA=Y apt-get install -y --no-install-recommends msodbcsql18 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create non-root user
+RUN useradd --create-home appuser
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+COPY --chown=appuser:appuser . .
+
+USER appuser
+EXPOSE 5000
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "wsgi:app"]
+```
+
+Key changes:
+- `RUN useradd --create-home appuser` - Creates a non-root user
+- `COPY --chown=appuser:appuser . .` - Sets file ownership
+- `USER appuser` - Switches to non-root user before running the app

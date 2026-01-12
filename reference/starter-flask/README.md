@@ -20,8 +20,7 @@ A minimal Flask deployment to Azure Container Apps with optional Azure SQL Datab
 
 # 3. Test
 curl https://<your-app-url>/
-curl https://<your-app-url>/form
-curl https://<your-app-url>/health
+curl https://<your-app-url>/notes
 
 # 4. Cleanup
 ./deploy/delete.sh
@@ -33,9 +32,8 @@ curl https://<your-app-url>/health
 # Deploy without database
 ./deploy/deploy.sh
 
-# App works, but form submissions show error message
-curl https://<your-app-url>/health
-# Returns: {"status": "ok", "database": "not_configured"}
+# App works, but note operations show error message
+curl https://<your-app-url>/
 ```
 
 ## What Gets Created
@@ -47,7 +45,7 @@ curl https://<your-app-url>/health
 | Container Apps Environment | Managed Kubernetes | Free |
 | Log Analytics Workspace | Logging and monitoring | Free tier |
 | Container App | Running Flask application | ~$5-10/month |
-| Azure SQL Database | Data persistence (optional) | ~$5/month |
+| Azure SQL Database | Data persistence (optional) | ~$5/month (free tier available) |
 
 **Total estimated cost:** ~$15-20/month
 
@@ -56,46 +54,37 @@ curl https://<your-app-url>/health
 ```
 starter-flask/
 ├── README.md               # This file
-├── PLAN.md                 # Original minimal deployment design
-├── PLAN-DATABASE.md        # Database extension design
-├── TEST-REPORT.md          # Test results and verification
-│
 ├── application/
 │   ├── app.py              # Flask application factory
-│   ├── config.py           # Configuration with lazy DB init
+│   ├── config.py           # Configuration classes
 │   ├── models.py           # SQLAlchemy Note model
-│   ├── routes.py           # Routes with graceful degradation
+│   ├── routes.py           # Route handlers
 │   ├── wsgi.py             # Gunicorn entry point
 │   ├── requirements.txt    # Python dependencies
 │   ├── Dockerfile          # Container build with ODBC driver
-│   ├── entrypoint.sh       # Container startup (runs migrations)
 │   ├── migrations/         # Flask-Migrate database migrations
-│   │   └── versions/       # Migration scripts
 │   ├── templates/          # Jinja2 templates
 │   │   ├── base.html
 │   │   ├── home.html
 │   │   ├── form.html
-│   │   └── thank_you.html
+│   │   └── notes.html
 │   └── tests/              # pytest test suite
-│       ├── conftest.py
-│       ├── test_routes.py
-│       ├── test_models.py
-│       └── test_graceful.py
-│
-└── deploy/
-    ├── provision-sql.sh    # Create Azure SQL Database
-    ├── deploy.sh           # Deploy to Container Apps
-    └── delete.sh           # Remove all resources
+├── deploy/
+│   ├── provision-sql.sh    # Create Azure SQL Database
+│   ├── deploy.sh           # Deploy to Container Apps
+│   └── delete.sh           # Remove all resources
+└── docs/
+    └── code-review.md      # Architecture and patterns documentation
 ```
 
 ## Application Endpoints
 
-| Route | Method | Response |
-|-------|--------|----------|
-| `/` | GET | Home page with link to form |
-| `/form` | GET | Form with single text field |
-| `/form` | POST | Saves note to database |
-| `/health` | GET | `{"status": "ok", "database": "connected\|not_configured"}` |
+| Route | Method | Description |
+|-------|--------|-------------|
+| `/` | GET | Home page |
+| `/notes` | GET | List all notes |
+| `/notes/new` | GET | Show form |
+| `/notes/new` | POST | Create note (redirects to `/notes`) |
 
 ## Key Design: Graceful Degradation
 
@@ -103,9 +92,8 @@ The application is designed to **start and serve pages without a database**:
 
 1. **App starts** even if `DATABASE_URL` is not set
 2. **Home page (`/`)** works without database
-3. **Form page (`/form`)** displays without database
+3. **Notes page (`/notes`)** displays without database (shows error message)
 4. **Form submission** fails gracefully with error message (no crash)
-5. **Health check** reports database status: `connected`, `disconnected`, or `not_configured`
 
 This allows deploying and testing the app before provisioning the database.
 
@@ -128,8 +116,6 @@ pytest tests/ -v
 pytest tests/ --cov=. --cov-report=term-missing
 ```
 
-**Test coverage:** 97% with 24 tests
-
 ## Local Development
 
 ```bash
@@ -140,16 +126,20 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-# Run with SQLite (default for development)
-export USE_SQLITE=true
-
-# Apply database migrations
+# Apply database migrations (uses SQLite by default)
 flask db upgrade
 
-# Start the application
-python app.py
+# Start the application with hot reload
+flask run --debug
 
 # Access at http://localhost:5000
+```
+
+To stop: Press `Ctrl+C`
+
+To deactivate the virtual environment:
+```bash
+deactivate
 ```
 
 ## Database Migrations
@@ -180,13 +170,18 @@ flask db history
 
 ### Container Deployment
 
-Migrations run automatically when the container starts via `entrypoint.sh`. The container:
+After deploying with `deploy.sh`, run migrations manually:
 
-1. Checks if `DATABASE_URL` or `USE_SQLITE=true` is set
-2. Runs `flask db upgrade` if a database is configured
-3. Starts Gunicorn regardless of migration success (graceful degradation)
+```bash
+# Open interactive shell in container
+az containerapp exec --name starter-flask-app --resource-group rg-starter-flask
 
-See [PLAN-MIGRATIONS.md](PLAN-MIGRATIONS.md) for detailed documentation.
+# Inside the container, run migrations
+flask db upgrade
+exit
+```
+
+This ensures migrations run once during deployment, not on every container startup.
 
 ## Troubleshooting
 
@@ -208,12 +203,6 @@ az containerapp show \
     --query "{name:name, url:properties.configuration.ingress.fqdn, status:properties.runningStatus}"
 ```
 
-### Check Database Connection
-
-```bash
-curl https://<your-app-url>/health | jq .
-```
-
 ### Redeploy After Changes
 
 ```bash
@@ -224,10 +213,10 @@ curl https://<your-app-url>/health | jq .
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `DATABASE_URL` | No | Azure SQL connection string |
-| `SECRET_KEY` | Recommended | Flask secret key |
-| `FLASK_ENV` | No | `development` or `production` |
-| `USE_SQLITE` | No | Set to `true` for SQLite mode |
+| `FLASK_ENV` | No | `local` (default), `azure`, or `pytest` |
+| `DATABASE_URL` | Azure only | Azure SQL connection string |
+| `SECRET_KEY` | Recommended | Flask session encryption key |
+| `USE_SQLITE` | No | Set to `true` to force SQLite in azure config |
 
 ## Azure SQL Connection String Format
 
@@ -235,20 +224,15 @@ curl https://<your-app-url>/health | jq .
 mssql+pyodbc://{user}:{password}@{server}.database.windows.net/{database}?driver=ODBC+Driver+18+for+SQL+Server
 ```
 
-## Why Dockerfile Instead of Oryx++?
+## Why Dockerfile?
 
-The original minimal deployment used Oryx++ (no Dockerfile) for simplicity. However, Azure SQL requires **ODBC Driver 18**, which Oryx++ doesn't install automatically.
+Azure SQL requires **ODBC Driver 18**, which the default container builder (Oryx++) doesn't install automatically. The Dockerfile:
 
-The Dockerfile:
 - Installs Microsoft ODBC Driver 18 for SQL Server
-- Uses multi-stage build for smaller image
-- Runs as non-root user for security
-- Includes health check configuration
+- Uses Gunicorn for production serving
 
 ## Learn More
 
-- [PLAN-DATABASE.md](PLAN-DATABASE.md) - Database extension design
-- [PLAN-MIGRATIONS.md](PLAN-MIGRATIONS.md) - Database migrations strategy
-- [TEST-REPORT.md](TEST-REPORT.md) - Test results and verification steps
+- [docs/code-review.md](docs/code-review.md) - Architecture and design patterns
 - [Azure Container Apps Documentation](https://learn.microsoft.com/en-us/azure/container-apps/)
 - [Azure SQL Database Documentation](https://learn.microsoft.com/en-us/azure/azure-sql/)

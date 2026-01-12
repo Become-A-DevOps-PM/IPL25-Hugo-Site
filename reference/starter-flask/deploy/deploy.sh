@@ -1,11 +1,6 @@
 #!/bin/bash
-# =============================================================================
-# DEPLOY FLASK APP TO AZURE CONTAINER APPS
-# =============================================================================
-# Uses `az containerapp up` with Dockerfile for ODBC driver support.
-# Optionally connects to Azure SQL Database if provision-sql.sh was run.
-# =============================================================================
-
+# Deploy Flask app to Azure Container Apps
+# Run provision-sql.sh first if you want database support
 set -e
 
 RESOURCE_GROUP="rg-starter-flask"
@@ -71,7 +66,7 @@ if [ -n "$DATABASE_URL" ]; then
         --set-env-vars \
             "DATABASE_URL=$DATABASE_URL" \
             "SECRET_KEY=$SECRET_KEY" \
-            "FLASK_ENV=production" \
+            "FLASK_ENV=azure" \
         --output none
 else
     # Without database (graceful degradation mode)
@@ -80,7 +75,7 @@ else
         --resource-group "$RESOURCE_GROUP" \
         --set-env-vars \
             "SECRET_KEY=$SECRET_KEY" \
-            "FLASK_ENV=production" \
+            "FLASK_ENV=azure" \
         --output none
 fi
 
@@ -95,11 +90,16 @@ echo ""
 echo "=== Deployment Complete ==="
 echo ""
 echo "Application URL: https://$APP_URL"
-echo "Form page:       https://$APP_URL/form"
-echo "Health check:    https://$APP_URL/health"
+echo "Notes:           https://$APP_URL/notes"
+echo "New note:        https://$APP_URL/notes/new"
 echo ""
 
-if [ -z "$DATABASE_URL" ]; then
+if [ -n "$DATABASE_URL" ]; then
+    echo "Database configured. Run migrations before first use:"
+    echo "  az containerapp exec --name $APP_NAME --resource-group $RESOURCE_GROUP"
+    echo "  Then run: flask db upgrade"
+    echo ""
+else
     echo "Note: Database not configured. Form submissions will show an error."
     echo "      Run ./deploy/provision-sql.sh then redeploy to enable database."
     echo ""

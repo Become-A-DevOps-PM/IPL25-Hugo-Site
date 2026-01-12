@@ -5,15 +5,6 @@ A minimal Flask app demonstrating database persistence with SQLAlchemy.
 ## Quick Start
 
 ```bash
-# Start the app (creates venv, installs deps, runs migrations, starts server)
-./run.sh
-```
-
-Open http://localhost:5000
-
-## Manual Setup
-
-```bash
 # 1. Create virtual environment
 python3 -m venv .venv
 source .venv/bin/activate
@@ -28,6 +19,15 @@ flask db upgrade
 flask run --debug
 ```
 
+Open http://localhost:5000
+
+To stop: Press `Ctrl+C`
+
+To deactivate the virtual environment:
+```bash
+deactivate
+```
+
 ## Project Structure
 
 ```
@@ -36,12 +36,11 @@ application/
 ├── config.py       # Configuration classes
 ├── models.py       # Database models
 ├── routes.py       # Route handlers
+├── wsgi.py         # Gunicorn entry point
 ├── templates/      # Jinja2 templates
 ├── migrations/     # Database migrations
 ├── tests/          # Test suite
-├── notes.db        # SQLite database (local dev)
-├── run.sh          # Development startup script
-└── stop.sh         # Stop server script
+└── notes.db        # SQLite database (created on first run)
 ```
 
 ## Routes
@@ -63,7 +62,7 @@ application/
 
 Default is `LocalConfig` - no environment variables needed for local development.
 
-**Graceful degradation:** The app starts even without a database configured. Pages that don't need the database work normally. Database operations fail with a clear error message, making it easier to understand which features require a database connection.
+**Graceful degradation:** The app starts even without a database configured. Pages that don't need the database work normally. Database operations fail with a clear error message.
 
 ## Environment Variables
 
@@ -71,43 +70,14 @@ Default is `LocalConfig` - no environment variables needed for local development
 |----------|----------|---------|-------------|
 | `FLASK_ENV` | No | `local` | Configuration to use: `local`, `azure`, or `pytest` |
 | `DATABASE_URL` | Azure only | None | Azure SQL Database connection string |
-| `USE_SQLITE` | No | `false` | Set to `true` to force SQLite in production config |
+| `USE_SQLITE` | No | `false` | Set to `true` to force SQLite in azure config |
 | `SECRET_KEY` | Production | `dev-secret-...` | Flask session encryption key |
-
-### Examples
-
-**Local development** (no variables needed):
-```bash
-./run.sh
-```
-
-**Azure deployment**:
-```bash
-export FLASK_ENV=azure
-export DATABASE_URL="mssql+pyodbc://user:pass@server.database.windows.net/dbname?driver=ODBC+Driver+18+for+SQL+Server"
-export SECRET_KEY="your-secure-random-key"
-```
-
-**Force SQLite in any environment**:
-```bash
-export USE_SQLITE=true
-flask run
-```
 
 ## Testing
 
 ```bash
 source .venv/bin/activate
 pytest tests/ -v
-```
-
-## Stop Server
-
-```bash
-# If running in foreground: Ctrl+C
-
-# If running in background:
-./stop.sh
 ```
 
 ## Database
