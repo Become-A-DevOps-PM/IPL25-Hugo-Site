@@ -1,31 +1,18 @@
-"""
-Flask application factory with lazy database initialization.
-
-Key feature: App starts even without database connection.
-Database errors only occur when actually accessing database.
-"""
+"""Flask application factory with lazy database initialization."""
 
 import os
 import logging
 from flask import Flask
 from flask_migrate import Migrate
 from config import config_by_name
+from models import db
+from routes import bp
 
-# Global migrate instance for Flask-Migrate
 migrate = Migrate()
 
 
 def create_app(config_name: str = None) -> Flask:
-    """
-    Create and configure the Flask application.
-
-    Args:
-        config_name: Configuration to use ('development', 'production', 'testing')
-                    Defaults to FLASK_ENV environment variable or 'development'.
-
-    Returns:
-        Configured Flask application instance.
-    """
+    """Create and configure the Flask application."""
     if config_name is None:
         config_name = os.environ.get('FLASK_ENV', 'development')
 
@@ -34,11 +21,11 @@ def create_app(config_name: str = None) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config_class)
 
-    # Get database URL (may be None for graceful degradation)
+    # Configure database
     db_url = config_class.get_database_url()
     app.config['SQLALCHEMY_DATABASE_URI'] = db_url
 
-    # Configure logging
+    # Setup logging
     logging.basicConfig(
         level=logging.DEBUG if app.config.get('DEBUG') else logging.INFO,
         format='%(asctime)s %(levelname)s %(name)s: %(message)s'
@@ -46,28 +33,18 @@ def create_app(config_name: str = None) -> Flask:
     logger = logging.getLogger(__name__)
 
     if db_url:
-        db_type = 'SQLite' if 'sqlite' in db_url else 'Azure SQL'
-        logger.info(f"Database configured: {db_type}")
-
-        # Initialize database and migrations
-        from models import db
         db.init_app(app)
         migrate.init_app(app, db)
-        logger.info("Flask-Migrate initialized - run 'flask db upgrade' to apply migrations")
+        db_type = 'SQLite' if 'sqlite' in db_url else 'Azure SQL'
+        logger.info(f"Database: {db_type}")
     else:
-        logger.warning("No database configured - form submissions will fail")
+        logger.warning("No database configured")
 
-    # Register routes
-    from routes import bp
     app.register_blueprint(bp)
-
     return app
 
 
-# For Gunicorn: gunicorn app:app
 app = create_app()
 
-
-# For direct running: python app.py
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
