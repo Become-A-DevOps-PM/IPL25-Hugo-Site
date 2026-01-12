@@ -1,0 +1,3 @@
+# Secret files created by provision-sql.sh
+.database-url
+.sql-server-name

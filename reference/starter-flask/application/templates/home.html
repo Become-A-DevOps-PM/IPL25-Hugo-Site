@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Starter Flask with Azure SQL</h1>
+<p>A minimal Flask application demonstrating Azure SQL Database connectivity with graceful degradation.</p>
+<p>The application can start and serve pages even without a database connection. Database errors only occur when actually attempting to save data.</p>
+<p><a href="{{ url_for('main.form') }}" class="button">Go to Form</a></p>
+{% endblock %}

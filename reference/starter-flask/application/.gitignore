@@ -1,0 +1,19 @@
+# Virtual environment
+.venv/
+
+# SQLite database
+notes.db
+
+# Python bytecode
+__pycache__/
+*.pyc
+
+# pytest cache
+.pytest_cache/
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# Flask instance folder
+instance/
