@@ -1,6 +1,6 @@
 """Route handlers."""
 
-from flask import Blueprint, render_template, request, flash, current_app
+from flask import Blueprint, render_template, request, flash, redirect, url_for, current_app
 from models import db, Note
 
 bp = Blueprint('main', __name__)
@@ -25,8 +25,8 @@ def notes():
     try:
         all_notes = Note.query.order_by(Note.created_at.desc()).all()
         return render_template('notes.html', notes=all_notes)
-    except Exception as e:
-        flash(f'Failed to load notes: {e}', 'error')
+    except Exception:
+        flash('Failed to load notes. Please try again.', 'error')
         return render_template('notes.html', notes=[])
 
 
@@ -47,9 +47,10 @@ def notes_new():
             note = Note(content=content)
             db.session.add(note)
             db.session.commit()
-            return render_template('thank_you.html', note=note)
-        except Exception as e:
-            flash(f'Failed to save: {e}', 'error')
+            flash('Note saved!', 'success')
+            return redirect(url_for('main.notes'))
+        except Exception:
+            flash('Failed to save note. Please try again.', 'error')
             return render_template('form.html', content=content)
 
     return render_template('form.html')

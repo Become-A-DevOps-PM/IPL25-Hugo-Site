@@ -26,6 +26,12 @@ def create_app(config_name=None):
 
     app.register_blueprint(bp)
 
+    def _mask_secret(value):
+        """Show only first 4 characters of a secret."""
+        if not value:
+            return None
+        return value[:4] + '...' if len(value) > 4 else value
+
     @app.context_processor
     def inject_env_info():
         db_uri = app.config.get('SQLALCHEMY_DATABASE_URI') or ''
@@ -59,8 +65,8 @@ def create_app(config_name=None):
                 },
                 {
                     'name': 'SECRET_KEY',
-                    'env_value': os.environ.get('SECRET_KEY'),
-                    'actual_value': app.config.get('SECRET_KEY')
+                    'env_value': _mask_secret(os.environ.get('SECRET_KEY')),
+                    'actual_value': _mask_secret(app.config.get('SECRET_KEY'))
                 }
             ]
         }
