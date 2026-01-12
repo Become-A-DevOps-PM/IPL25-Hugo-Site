@@ -42,9 +42,13 @@ Internet ──→ VM (nginx + Flask) ──→ PostgreSQL
 | URL | Description |
 |-----|-------------|
 | `https://<IP>/` | Landing page |
+| `https://<IP>/register` | Webinar registration form |
+| `https://<IP>/webinar` | Webinar information |
+| `https://<IP>/auth/login` | Admin login |
+| `https://<IP>/admin/attendees` | Attendee list (login required) |
+| `https://<IP>/admin/export/csv` | Export CSV (login required) |
 | `https://<IP>/demo` | Demo app with database entries |
 | `https://<IP>/api/health` | Health check (`{"status": "ok"}`) |
-| `https://<IP>/api/entries` | JSON API for entries |
 
 ## SSH Access
 
@@ -69,10 +73,25 @@ cd application
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+flask db upgrade          # Initialize database
+flask create-admin admin  # Create admin user (prompts for password)
 flask run
 ```
 
 The app uses SQLite locally and PostgreSQL in production.
+
+### Create Admin User
+
+Admin access requires creating a user first:
+
+```bash
+flask create-admin USERNAME
+# Password: ********  (minimum 8 characters)
+# Repeat for confirmation: ********
+# Admin user 'USERNAME' created successfully.
+```
+
+Then log in at `/auth/login` to access protected routes.
 
 ## Manual Deployment Steps
 
@@ -167,5 +186,11 @@ This deployment is designed for **learning environments only**:
 - SSL certificate is self-signed (browser warning expected)
 - No network segmentation
 - Direct SSH access to application server
+
+**Security features implemented:**
+- Admin routes protected by session-based authentication
+- Password hashing with Werkzeug (PBKDF2)
+- OWASP security headers (X-Frame-Options, X-Content-Type-Options, etc.)
+- CSRF protection on all forms
 
 For production patterns, see `reference/stage-ultimate/`.
