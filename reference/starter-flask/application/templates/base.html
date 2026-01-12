@@ -25,9 +25,8 @@
 <body>
     <nav>
         <a href="{{ url_for('main.home') }}">Home</a>
-        <a href="{{ url_for('main.form') }}">Add Note</a>
-        <a href="{{ url_for('main.notes') }}">List Notes</a>
-        <a href="{{ url_for('main.health') }}">Health</a>
+        <a href="{{ url_for('main.notes') }}">Notes</a>
+        <a href="{{ url_for('main.notes_new') }}">New Note</a>
     </nav>
 
     {% with messages = get_flashed_messages(with_categories=true) %}

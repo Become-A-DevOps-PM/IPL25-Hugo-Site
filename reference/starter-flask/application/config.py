@@ -1,25 +1,22 @@
-"""Configuration with lazy database initialization."""
+"""Configuration classes for different environments."""
 
 import os
 
 
 class Config:
     """Base configuration."""
-
     SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-change-in-production')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     @classmethod
     def get_database_url(cls):
-        """Get database URL. Returns None if not configured."""
         if os.environ.get('USE_SQLITE', '').lower() == 'true':
             return 'sqlite:///notes.db'
         return os.environ.get('DATABASE_URL')
 
 
-class DevelopmentConfig(Config):
-    """Development with SQLite."""
-
+class LocalConfig(Config):
+    """Local development on your machine. Uses SQLite."""
     DEBUG = True
 
     @classmethod
@@ -27,15 +24,13 @@ class DevelopmentConfig(Config):
         return 'sqlite:///notes.db'
 
 
-class ProductionConfig(Config):
-    """Production requires DATABASE_URL."""
-
+class AzureConfig(Config):
+    """Deployed to Azure. Requires DATABASE_URL environment variable."""
     DEBUG = False
 
 
-class TestingConfig(Config):
-    """Testing with in-memory SQLite."""
-
+class TestSuiteConfig(Config):
+    """Automated test suite (pytest). Uses in-memory SQLite."""
     TESTING = True
 
     @classmethod
@@ -44,8 +39,11 @@ class TestingConfig(Config):
 
 
 config_by_name = {
-    'development': DevelopmentConfig,
-    'production': ProductionConfig,
-    'testing': TestingConfig,
-    'default': DevelopmentConfig
+    'local': LocalConfig,
+    'azure': AzureConfig,
+    'testing': TestSuiteConfig,
+    # Aliases for compatibility
+    'development': LocalConfig,
+    'production': AzureConfig,
+    'default': LocalConfig
 }
