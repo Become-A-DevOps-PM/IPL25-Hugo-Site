@@ -39,6 +39,7 @@ application/
 ├── templates/      # Jinja2 templates
 ├── migrations/     # Database migrations
 ├── tests/          # Test suite
+├── notes.db        # SQLite database (local dev)
 ├── run.sh          # Development startup script
 └── stop.sh         # Stop server script
 ```
@@ -54,13 +55,44 @@ application/
 
 ## Configuration
 
-| Config | Use Case | Database |
-|--------|----------|----------|
-| `LocalConfig` | Your machine | SQLite |
-| `AzureConfig` | Azure deployment | Azure SQL |
-| `TestSuiteConfig` | pytest | In-memory SQLite |
+| FLASK_ENV | Config Class | Use Case | Database |
+|-----------|--------------|----------|----------|
+| `local` | `LocalConfig` | Your machine | SQLite |
+| `azure` | `AzureConfig` | Azure deployment | Azure SQL Database |
+| `pytest` | `PytestConfig` | Automated tests | In-memory SQLite |
 
 Default is `LocalConfig` - no environment variables needed for local development.
+
+**Graceful degradation:** The app starts even without a database configured. Pages that don't need the database work normally. Database operations fail with a clear error message, making it easier to understand which features require a database connection.
+
+## Environment Variables
+
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `FLASK_ENV` | No | `local` | Configuration to use: `local`, `azure`, or `pytest` |
+| `DATABASE_URL` | Azure only | None | Azure SQL Database connection string |
+| `USE_SQLITE` | No | `false` | Set to `true` to force SQLite in production config |
+| `SECRET_KEY` | Production | `dev-secret-...` | Flask session encryption key |
+
+### Examples
+
+**Local development** (no variables needed):
+```bash
+./run.sh
+```
+
+**Azure deployment**:
+```bash
+export FLASK_ENV=azure
+export DATABASE_URL="mssql+pyodbc://user:pass@server.database.windows.net/dbname?driver=ODBC+Driver+18+for+SQL+Server"
+export SECRET_KEY="your-secure-random-key"
+```
+
+**Force SQLite in any environment**:
+```bash
+export USE_SQLITE=true
+flask run
+```
 
 ## Testing
 
@@ -76,6 +108,26 @@ pytest tests/ -v
 
 # If running in background:
 ./stop.sh
+```
+
+## Database
+
+The SQLite database (`notes.db`) is stored in the application directory.
+
+### Reset Migrations
+
+To start fresh with a clean database and new migrations:
+
+```bash
+source .venv/bin/activate
+
+# Delete migrations and database
+rm -rf migrations/ notes.db
+
+# Recreate migrations
+flask db init
+flask db migrate -m "Initial schema"
+flask db upgrade
 ```
 
 ## Troubleshooting

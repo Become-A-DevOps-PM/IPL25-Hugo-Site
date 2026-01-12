@@ -14,7 +14,7 @@ class TestGracefulDegradation:
         os.environ['USE_SQLITE'] = 'false'
 
         from app import create_app
-        app = create_app('production')
+        app = create_app('azure')
         assert app is not None
 
         os.environ.pop('USE_SQLITE', None)
@@ -24,7 +24,7 @@ class TestGracefulDegradation:
         os.environ['USE_SQLITE'] = 'false'
 
         from app import create_app
-        app = create_app('production')
+        app = create_app('azure')
 
         with app.test_client() as client:
             response = client.get('/')
@@ -38,7 +38,7 @@ class TestGracefulDegradation:
         os.environ['USE_SQLITE'] = 'false'
 
         from app import create_app
-        app = create_app('production')
+        app = create_app('azure')
 
         with app.test_client() as client:
             response = client.get('/notes/new')
@@ -52,7 +52,7 @@ class TestGracefulDegradation:
         os.environ['USE_SQLITE'] = 'false'
 
         from app import create_app
-        app = create_app('production')
+        app = create_app('azure')
 
         with app.test_client() as client:
             response = client.post('/notes/new', data={'content': 'test note'})

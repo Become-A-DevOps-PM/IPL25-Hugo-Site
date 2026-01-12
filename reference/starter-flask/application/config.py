@@ -2,6 +2,9 @@
 
 import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+SQLITE_PATH = f"sqlite:///{os.path.join(BASE_DIR, 'notes.db')}"
+
 
 class Config:
     """Base configuration."""
@@ -11,7 +14,7 @@ class Config:
     @classmethod
     def get_database_url(cls):
         if os.environ.get('USE_SQLITE', '').lower() == 'true':
-            return 'sqlite:///notes.db'
+            return SQLITE_PATH
         return os.environ.get('DATABASE_URL')
 
 
@@ -21,15 +24,15 @@ class LocalConfig(Config):
 
     @classmethod
     def get_database_url(cls):
-        return 'sqlite:///notes.db'
+        return SQLITE_PATH
 
 
 class AzureConfig(Config):
-    """Deployed to Azure. Requires DATABASE_URL environment variable."""
+    """Deployed to Azure. Requires DATABASE_URL for Azure SQL Database."""
     DEBUG = False
 
 
-class TestSuiteConfig(Config):
+class PytestConfig(Config):
     """Automated test suite (pytest). Uses in-memory SQLite."""
     TESTING = True
 
@@ -41,9 +44,6 @@ class TestSuiteConfig(Config):
 config_by_name = {
     'local': LocalConfig,
     'azure': AzureConfig,
-    'testing': TestSuiteConfig,
-    # Aliases for compatibility
-    'development': LocalConfig,
-    'production': AzureConfig,
+    'pytest': PytestConfig,
     'default': LocalConfig
 }
