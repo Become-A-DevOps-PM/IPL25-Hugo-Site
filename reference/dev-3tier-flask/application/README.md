@@ -25,16 +25,20 @@ pip install -r requirements.txt
 
 ### Database Setup
 
-**Option 1: Using migrations (recommended)**
 ```bash
 export FLASK_APP=wsgi.py
 flask db upgrade
 ```
 
-**Option 2: Direct table creation**
+### Create Admin User
+
+Admin routes (`/admin/*`) require authentication. Create an admin user:
+
 ```bash
-export FLASK_APP=wsgi.py
-flask db-init
+flask create-admin USERNAME
+# Password: ********  (minimum 8 characters)
+# Repeat for confirmation: ********
+# Admin user 'USERNAME' created successfully.
 ```
 
 ### Run the Application
@@ -66,14 +70,36 @@ pytest tests/test_routes.py
 pytest --cov=app
 ```
 
-## API Endpoints
+## Routes
+
+### Public Routes
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | `/` | Web interface - view and add entries |
-| POST | `/` | Create new entry (form submission) |
-| GET | `/api/entries` | List all entries as JSON |
-| GET | `/api/health` | Health check endpoint |
+| GET | `/` | Landing page |
+| GET | `/register` | Registration form |
+| POST | `/register` | Submit registration |
+| GET | `/thank-you` | Registration confirmation |
+| GET | `/webinar` | Webinar information |
+| GET | `/demo/` | Demo app with entries |
+| POST | `/demo/` | Create demo entry |
+| GET | `/api/health` | Health check (`{"status": "ok"}`) |
+| GET | `/api/entries` | List entries as JSON |
+
+### Authentication Routes
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/auth/login` | Login form |
+| POST | `/auth/login` | Authenticate user |
+| GET | `/auth/logout` | Log out and redirect home |
+
+### Protected Routes (login required)
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/admin/attendees` | View all registrations |
+| GET | `/admin/export/csv` | Download registrations as CSV |
 
 ## Project Structure
 
