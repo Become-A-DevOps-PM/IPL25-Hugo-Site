@@ -2,7 +2,7 @@
 title = "Setup Overview"
 program = "IPL"
 cohort = "25"
-courses = ["SNS"]
+courses = ["SNS", "ASD"]
 description = "Complete setup checklist and verification"
 weight = 20
 +++
