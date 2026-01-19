@@ -41,11 +41,18 @@ cohort = "25"
 courses = ["SNS"]  # or ["ASD"] or ["SNS", "ASD"]
 ```
 
-### Current Content Assignment
+### Current Development Focus
 
-All existing content is tagged `courses = ["SNS"]`. When ASD course content is added:
-- New ASD-specific content: `courses = ["ASD"]`
-- Shared content (setup tutorials, cheat sheets): `courses = ["SNS", "ASD"]`
+**Active Course:** ASD (Agile Software Development and Deployment)
+
+- New content defaults to `courses = ["ASD"]`
+- SNS content is largely complete
+
+**When in doubt:**
+
+- Exercises in `application-development/` → ASD
+- Exercises in `deployment-foundation/`, `server-foundation/`, `network-foundation/` → SNS
+- Shared content (setup tutorials, cheat sheets) → `["SNS", "ASD"]`
 
 ## Related Repository - 2024 Reference Project
 
