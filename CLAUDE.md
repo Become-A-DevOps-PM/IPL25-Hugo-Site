@@ -19,7 +19,7 @@ This repository contains the Hugo-based documentation site for the DevOps PM IPL
 - 23 legacy files in 4 legacy directories
 - 8 theme override files (32KB)
 - 4 Claude Code skills + 2 custom commands
-- 1 reference implementation (stage-ultimate)
+- 3 reference implementations (stage-ultimate, dev-3tier-flask, starter-flask)
 
 ## Related Repository - 2024 Reference Project
 
@@ -196,6 +196,179 @@ echo "https://$PROXY_IP/"
   - Deployment pipeline
 - **PLAN-INFRASTRUCTURE.md** - Complete infrastructure specification
 - **PLAN-APPLICATION.md** - Complete application specification
+
+## Reference Implementation - Dev Three-Tier Flask
+
+**Location:** `reference/dev-3tier-flask/`
+
+A simplified Flask application deployment on Azure for learning application development. Single-VM deployment with nginx, Flask/Gunicorn, and PostgreSQL.
+
+### Architecture Overview
+
+```
+Internet ──→ VM (nginx:443 → Flask:5001) ──→ PostgreSQL
+             Ubuntu 24.04                     Azure PaaS
+             snet-default (10.0.0.0/24)       Public access
+```
+
+### Key Features
+
+| Component | Details |
+|-----------|---------|
+| VM | Standard_B1s, Ubuntu 24.04 LTS |
+| Web Server | nginx with self-signed SSL |
+| App Server | Gunicorn (2 workers) on port 5001 |
+| Database | PostgreSQL 16 Flexible Server |
+| Cost | ~$20/month |
+| Deploy time | 10-15 minutes |
+
+### Application Features
+
+- **Landing page** with webinar registration
+- **Admin authentication** (Flask-Login, session-based)
+- **Protected admin routes** for attendee management
+- **CSV export** functionality
+- **WTForms validation** with CSRF protection
+- **OWASP security headers**
+
+### Quick Start
+
+```bash
+# Deploy everything
+./deploy-all.sh
+
+# Access application
+VM_IP=$(az vm show -g rg-flask-dev -n vm-app --show-details -o tsv --query publicIps)
+open "https://$VM_IP/"
+
+# Default admin login: admin / Admin123!
+
+# Cleanup
+./delete-all.sh
+```
+
+### Directory Structure
+
+```
+reference/dev-3tier-flask/
+├── deploy-all.sh              # One-command deployment
+├── delete-all.sh              # Resource cleanup
+├── config.sh                  # Central configuration
+├── infrastructure/            # Bicep templates + cloud-init
+├── application/               # Flask app with blueprints
+│   ├── app/
+│   │   ├── routes/           # main, demo, admin, auth, api
+│   │   ├── models/           # Entry, Registration, User
+│   │   ├── services/         # Business logic layer
+│   │   └── forms/            # WTForms with validation
+│   └── tests/                # 118 pytest tests
+├── deploy/                    # Deployment scripts
+└── docs/                      # Extensive documentation
+    └── exercises/            # Phase 2-4 exercise guides
+```
+
+### Comparison with stage-ultimate
+
+| Aspect | dev-3tier-flask | stage-ultimate |
+|--------|-----------------|----------------|
+| Purpose | Application development | Infrastructure security |
+| VMs | 1 (combined) | 3 (bastion, proxy, app) |
+| SSH | Direct | Via bastion jump host |
+| PostgreSQL | Public access | Private DNS |
+| Complexity | Low | Moderate-High |
+
+Use **dev-3tier-flask** when learning Flask, Python, or basic Azure deployment.
+Use **stage-ultimate** when learning network security, defense in depth, or production patterns.
+
+## Reference Implementation - Starter Flask
+
+**Location:** `reference/starter-flask/`
+
+A minimal Flask application for learning Container Apps deployment with optional Azure SQL Database. Features **graceful degradation**: the app starts and serves pages even without a database connection.
+
+### Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                      User's Browser                              │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │ HTTPS
+┌───────────────────────────▼─────────────────────────────────────┐
+│              Azure Container Apps (managed ingress)              │
+└───────────────────────────┬─────────────────────────────────────┘
+                            │ Port 5000
+┌───────────────────────────▼─────────────────────────────────────┐
+│                    Flask App (Gunicorn)                          │
+└──────────────────────────┼──────────────────────────────────────┘
+                           │ SQLAlchemy
+┌──────────────────────────▼──────────────────────────────────────┐
+│  Local: SQLite (notes.db)  │  Azure: Azure SQL (Basic tier)     │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Key Features
+
+| Feature | Description |
+|---------|-------------|
+| Graceful Degradation | App starts without database; shows errors only when DB operations attempted |
+| Multi-Environment Config | `local` (SQLite), `azure` (Azure SQL), `pytest` (in-memory) |
+| Flask-Migrate | Database schema versioning with Alembic |
+| Container-Ready | Dockerfile with ODBC Driver 18 for Azure SQL |
+| Cost | ~$15-20/month |
+
+### Quick Start
+
+```bash
+# Local development (no Azure required)
+cd reference/starter-flask/application
+python3 -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
+flask db upgrade
+flask run --debug
+# Open http://localhost:5000
+
+# Deploy to Azure Container Apps
+./deploy/deploy.sh          # Without database (graceful degradation)
+# OR
+./deploy/provision-sql.sh   # Create Azure SQL first
+./deploy/deploy.sh          # Then deploy app
+
+# Cleanup
+./deploy/delete.sh
+```
+
+### Directory Structure
+
+```
+reference/starter-flask/
+├── README.md               # User-facing quick start
+├── application/
+│   ├── app.py              # Flask application factory
+│   ├── config.py           # Configuration classes
+│   ├── models.py           # SQLAlchemy Note model
+│   ├── routes.py           # Route handlers
+│   ├── wsgi.py             # Gunicorn entry point
+│   ├── Dockerfile          # Container build with ODBC driver
+│   ├── migrations/         # Flask-Migrate database migrations
+│   ├── templates/          # Jinja2 templates
+│   └── tests/              # pytest test suite
+├── deploy/
+│   ├── provision-sql.sh    # Create Azure SQL Database
+│   ├── deploy.sh           # Deploy to Container Apps
+│   └── delete.sh           # Remove all resources
+└── docs/
+    ├── architecture.md     # Architecture and design patterns
+    └── future-improvements.md  # Enhancement ideas
+```
+
+### Application Endpoints
+
+| Route | Method | Purpose |
+|-------|--------|---------|
+| `/` | GET | Home page |
+| `/notes` | GET | List all saved notes |
+| `/notes/new` | GET | Display note form |
+| `/notes/new` | POST | Save new note |
 
 ## Working Guidelines
 
@@ -398,14 +571,27 @@ docs/                                      (8 files + planning/)
     └── book-outline.md                  # Book concept notes
 
 reference/                                 # Reference implementations
-└── stage-ultimate/                       # Production-grade Flask deployment
-    ├── README.md                        # Quick-start guide
-    ├── ARCHITECTURE.md                  # 10 mermaid diagrams
-    ├── PLAN-APPLICATION.md              # App specification
-    ├── PLAN-INFRASTRUCTURE.md           # Infrastructure specification
-    ├── infrastructure/                  # Azure provisioning scripts
-    ├── application/                     # Flask application code
-    └── deploy/                          # Deployment automation
+├── stage-ultimate/                       # Production-grade Flask (3 VMs, bastion)
+│   ├── README.md                        # Quick-start guide
+│   ├── ARCHITECTURE.md                  # 10 mermaid diagrams
+│   ├── infrastructure/                  # Azure provisioning scripts
+│   ├── application/                     # Flask application code
+│   └── deploy/                          # Deployment automation
+├── dev-3tier-flask/                      # Simplified Flask (1 VM, direct SSH)
+│   ├── deploy-all.sh                    # One-command deployment
+│   ├── delete-all.sh                    # Resource cleanup
+│   ├── infrastructure/                  # Bicep templates + cloud-init
+│   ├── application/                     # Flask app with blueprints
+│   │   ├── app/routes/                 # main, demo, admin, auth, api
+│   │   ├── app/models/                 # Entry, Registration, User
+│   │   └── tests/                      # 118 pytest tests
+│   └── docs/exercises/                  # Phase 2-4 implementation guides
+└── starter-flask/                        # Minimal Flask for Container Apps
+    ├── application/                     # Flask app with graceful degradation
+    │   ├── app.py, models.py, routes.py
+    │   ├── Dockerfile                   # ODBC Driver 18 for Azure SQL
+    │   └── migrations/                  # Flask-Migrate
+    └── deploy/                          # Container Apps deployment
 ```
 
 ### Claude Skills (This Project)
@@ -932,12 +1118,17 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 | `static/presentations/` | Standalone HTML presentations (36 files) |
 | `static/presentations/swedish-tech-slides.css` | Swedish Tech branding |
 | `content/presentations/_index.md` | Presentations index page |
-| **Reference Implementation** | |
-| `reference/stage-ultimate/` | Production-grade Flask deployment |
+| **Reference Implementations** | |
+| `reference/stage-ultimate/` | Production-grade Flask (3 VMs, bastion, Key Vault) |
 | `reference/stage-ultimate/infrastructure/provision.sh` | Azure provisioning script |
-| `reference/stage-ultimate/application/` | Flask application (7 Python files) |
-| `reference/stage-ultimate/deploy/deploy.sh` | Deployment automation |
 | `reference/stage-ultimate/ARCHITECTURE.md` | 10 mermaid architecture diagrams |
+| `reference/dev-3tier-flask/` | Simplified Flask (1 VM, direct SSH, ~$20/month) |
+| `reference/dev-3tier-flask/deploy-all.sh` | One-command deployment |
+| `reference/dev-3tier-flask/application/` | Flask app with blueprints (118 tests) |
+| `reference/dev-3tier-flask/docs/exercises/` | Phase 2-4 implementation guides |
+| `reference/starter-flask/` | Minimal Flask for Container Apps (~$15-20/month) |
+| `reference/starter-flask/application/` | Flask app with graceful degradation |
+| `reference/starter-flask/deploy/deploy.sh` | Container Apps deployment |
 | **Theme Overrides** | |
 | `layouts/partials/pagination.html` | Hugo v0.148+ pagination fix |
 | `layouts/partials/custom-head.html` | Analytics + robots meta |
