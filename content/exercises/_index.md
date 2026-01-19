@@ -1,5 +1,8 @@
 +++
 title = "Exercises"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Hands-on curriculum exercises"
 weight = 23
 chapter = true

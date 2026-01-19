@@ -1,5 +1,8 @@
 +++
 title = "Network"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "IP addressing, routing, firewalls, and network architecture"
 weight = 2
 +++

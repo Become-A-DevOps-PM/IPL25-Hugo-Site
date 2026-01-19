@@ -1,5 +1,8 @@
 +++
 title = "The OSI Model"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 5
 date = 2024-11-19
 draft = false

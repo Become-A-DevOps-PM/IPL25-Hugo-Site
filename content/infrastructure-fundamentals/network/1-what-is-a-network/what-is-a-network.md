@@ -1,5 +1,8 @@
 +++
 title = "What Is A Network"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 1
 date = 2024-11-19
 draft = false

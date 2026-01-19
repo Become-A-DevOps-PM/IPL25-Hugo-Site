@@ -1,5 +1,8 @@
 +++
 title = "2. Command Line Interface"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 2
 +++
 

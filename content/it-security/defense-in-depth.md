@@ -1,5 +1,8 @@
 +++
 title = "Defense in Depth"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 2
 date = 2025-01-13
 draft = false

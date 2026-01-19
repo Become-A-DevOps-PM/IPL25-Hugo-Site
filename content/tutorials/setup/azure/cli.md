@@ -1,5 +1,8 @@
 +++
 title = "Azure CLI"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Install Azure CLI and Bicep"
 weight = 2
 +++

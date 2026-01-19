@@ -1,5 +1,8 @@
 +++
 title = "AI as Co-worker"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 1
 date = 2024-12-08
 draft = false

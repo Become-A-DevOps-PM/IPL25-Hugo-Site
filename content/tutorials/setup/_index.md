@@ -1,5 +1,8 @@
 +++
 title = "Setup"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Installation guides for all course tools"
 weight = 1
 +++

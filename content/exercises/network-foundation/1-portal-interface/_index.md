@@ -1,5 +1,8 @@
 +++
 title = "1. Portal Interface"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 1
 +++
 

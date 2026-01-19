@@ -1,5 +1,8 @@
 +++
 title = "Tutorials"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Supporting how-to guides"
 weight = 24
 chapter = true

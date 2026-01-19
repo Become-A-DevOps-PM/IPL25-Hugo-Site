@@ -1,5 +1,8 @@
 +++
 title = "Server Foundation"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Foundation exercises for server setup and provisioning"
 weight = 1
 +++

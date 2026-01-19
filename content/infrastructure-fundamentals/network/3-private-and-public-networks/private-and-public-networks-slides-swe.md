@@ -1,6 +1,8 @@
-
 +++
 title = "Privata och Offentliga Nätverk"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 type = "slide"
 date = 2024-12-02
 draft = false

@@ -1,5 +1,8 @@
 +++
 title = "Identity and Access Management (IAM)"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 type = "slide"
 date = 2025-01-13
 draft = false

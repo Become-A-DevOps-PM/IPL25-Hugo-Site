@@ -1,5 +1,8 @@
 +++
 title = "Demo Dice"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Randomize presentation order for team demos"
 weight = 10
 +++

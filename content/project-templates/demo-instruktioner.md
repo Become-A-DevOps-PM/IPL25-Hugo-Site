@@ -1,5 +1,8 @@
 +++
 title = "Demo-instruktioner"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 hidden = true
 +++
 

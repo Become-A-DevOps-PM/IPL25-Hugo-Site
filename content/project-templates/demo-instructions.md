@@ -1,5 +1,8 @@
 +++
 title = "Demo Instructions"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 20
 +++
 

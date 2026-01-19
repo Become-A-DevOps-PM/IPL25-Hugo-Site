@@ -1,5 +1,8 @@
 +++
 title = "How Web Applications Work"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Understanding the client-server architecture, HTTP communication, and server-side rendering"
 weight = 1
 +++

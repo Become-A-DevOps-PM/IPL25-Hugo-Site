@@ -1,5 +1,8 @@
 +++
 title = "DevOps PM IPL25"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Infrastructure, applications, and security for DevOps"
 weight = 1
 +++

@@ -1,5 +1,8 @@
 +++
 title = "6. Automating VM Creation, Nginx Installation, and Port Configuration Using a Bash Script"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 6
 date = 2024-11-25
 lastmod = 2025-11-24

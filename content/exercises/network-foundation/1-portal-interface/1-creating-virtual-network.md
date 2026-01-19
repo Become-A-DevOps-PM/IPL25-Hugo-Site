@@ -1,5 +1,8 @@
 +++
 title = "Creating a Virtual Network"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 1
 date = 2024-12-02
 draft = false

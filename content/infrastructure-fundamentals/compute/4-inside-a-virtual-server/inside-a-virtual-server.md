@@ -1,5 +1,8 @@
 +++
 title = "Inside a Virtual Server"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 4
 date = 2024-11-17
 draft = false

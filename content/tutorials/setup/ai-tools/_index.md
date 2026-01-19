@@ -1,5 +1,8 @@
 +++
 title = "AI Tools"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "AI assistants and CLI tools"
 weight = 5
 +++

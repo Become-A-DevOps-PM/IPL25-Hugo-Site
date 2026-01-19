@@ -1,5 +1,8 @@
 +++
 title = "Cheat Sheets"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Quick reference guides for commands and syntax"
 weight = 26
 +++

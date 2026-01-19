@@ -1,5 +1,8 @@
 +++
 title = "Understanding SSH"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "A beginner's guide to SSH authentication and key management"
 weight = 1
 +++

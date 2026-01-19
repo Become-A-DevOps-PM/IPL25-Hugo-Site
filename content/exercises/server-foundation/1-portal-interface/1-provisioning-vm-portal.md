@@ -1,5 +1,8 @@
 +++
 title = "1. Provisioning a VM via Azure Portal"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 1
 date = 2024-11-25
 lastmod = 2025-11-24

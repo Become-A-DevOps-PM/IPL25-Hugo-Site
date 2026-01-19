@@ -1,5 +1,8 @@
 +++
 title = "Application"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Web application concepts and architecture"
 weight = 21
 chapter = true

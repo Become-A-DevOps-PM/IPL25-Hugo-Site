@@ -1,5 +1,8 @@
 +++
 title = "Risk Analysis"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 type = "slide"
 date = 2025-01-03
 draft = false

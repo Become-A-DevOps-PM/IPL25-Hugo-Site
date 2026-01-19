@@ -1,5 +1,8 @@
 +++
 title = "From Intent to Code"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 2
 date = 2024-12-08
 draft = false

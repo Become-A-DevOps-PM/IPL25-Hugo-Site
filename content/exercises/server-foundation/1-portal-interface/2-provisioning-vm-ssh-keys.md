@@ -1,5 +1,8 @@
 +++
 title = "2. Provisioning a VM with SSH Keys and Exploring Linux"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 2
 date = 2024-11-25
 lastmod = 2025-11-24

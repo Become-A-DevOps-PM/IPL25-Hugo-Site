@@ -1,5 +1,8 @@
 +++
 title = "Bash Scripting Cheat Sheet"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 20
 date = 2024-11-25
 draft = false

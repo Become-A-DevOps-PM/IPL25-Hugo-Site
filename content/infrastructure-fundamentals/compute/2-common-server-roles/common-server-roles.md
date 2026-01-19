@@ -1,5 +1,8 @@
 +++
 title = "Common Server Roles"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 2
 date = 2024-11-17
 draft = false

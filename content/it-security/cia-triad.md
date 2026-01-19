@@ -1,5 +1,8 @@
 +++
 title = "CIA Triad"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 3
 date = 2025-01-13
 draft = false

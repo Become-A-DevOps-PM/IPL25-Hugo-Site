@@ -1,5 +1,8 @@
 +++
 title = "What is a Server?"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 1
 date = 2024-11-17
 draft = false

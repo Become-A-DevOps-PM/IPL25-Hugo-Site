@@ -22,6 +22,15 @@ theme = "docdock"
   # customCSS = ["css/custom.css"]
   # customJS = ["js/custom.js"]
 
+# Program and course taxonomy
+[params.program]
+  id = "IPL"
+  name = "IT Project Management"
+
+[params.courses]
+  SNS = "Server, Network, Storage And IT Security"
+  ASD = "Agile Software Development And Deployment"
+
 # Menu configuration
 [menu]
   [[menu.shortcuts]]

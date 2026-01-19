@@ -1,5 +1,8 @@
 +++
 title = "Week 3 Technical Recap"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 type = "slide"
 date = 2025-12-15
 weight = 3

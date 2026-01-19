@@ -1,5 +1,8 @@
 +++
 title = "Deploy Files with SCP"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Transfer files from your local machine to a remote server using SCP"
 weight = 20
 date = 2025-12-01

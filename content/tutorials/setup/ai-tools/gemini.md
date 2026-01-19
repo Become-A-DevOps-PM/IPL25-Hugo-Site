@@ -1,5 +1,8 @@
 +++
 title = "Gemini"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Set up Google Gemini and Gemini CLI"
 weight = 3
 +++

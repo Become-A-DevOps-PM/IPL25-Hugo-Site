@@ -1,5 +1,8 @@
 +++
 title = "Configure HTTPS Manually with Self-Signed Certificate"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Manually configure nginx with SSL/TLS using a self-signed certificate on an Azure VM"
 weight = 25
 date = 2025-12-13

@@ -1,5 +1,8 @@
 +++
 title = "Project Templates"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Templates for demos and retrospectives"
 weight = 27
 +++

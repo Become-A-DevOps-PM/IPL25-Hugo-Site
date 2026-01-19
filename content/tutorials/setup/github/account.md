@@ -1,5 +1,8 @@
 +++
 title = "GitHub Account"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Create a GitHub account"
 weight = 1
 +++

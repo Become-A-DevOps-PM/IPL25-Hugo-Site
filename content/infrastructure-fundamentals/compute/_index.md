@@ -1,5 +1,8 @@
 +++
 title = "Compute"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Servers, virtual machines, and processing"
 weight = 1
 +++

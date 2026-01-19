@@ -1,5 +1,8 @@
 +++
 title = "Cloud-init Cheat Sheet"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 30
 date = 2024-11-25
 draft = false

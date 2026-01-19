@@ -1,5 +1,8 @@
 +++
 title = "Security by Design"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 5
 date = 2025-01-13
 draft = false

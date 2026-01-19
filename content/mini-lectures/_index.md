@@ -1,5 +1,8 @@
 +++
 title = "Mini-Lectures"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 85
 chapter = true
 +++

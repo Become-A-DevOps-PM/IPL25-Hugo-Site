@@ -1,5 +1,8 @@
 +++
 title = "Production Deployment with systemd"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Configure Flask as a system service with secure credential storage"
 weight = 6
 +++

@@ -1,5 +1,8 @@
 +++
 title = "Add Database Persistence"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Store contact form submissions in a database using SQLAlchemy"
 weight = 3
 +++

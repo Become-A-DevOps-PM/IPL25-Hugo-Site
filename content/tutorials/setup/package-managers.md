@@ -1,5 +1,8 @@
 +++
 title = "Package Managers"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Install package managers for your platform"
 weight = 1
 +++

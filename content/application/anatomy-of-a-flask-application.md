@@ -1,5 +1,8 @@
 +++
 title = "Anatomy of a Flask Application"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Understanding how a Python Flask application handles requests, renders templates, and connects to databases"
 weight = 2
 +++

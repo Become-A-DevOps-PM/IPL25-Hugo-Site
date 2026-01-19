@@ -1,5 +1,8 @@
 +++
 title = "Creating a Virtual Network with Enhanced Security"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 2
 date = 2024-12-02
 draft = false

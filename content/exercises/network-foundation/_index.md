@@ -1,5 +1,8 @@
 +++
 title = "Network Foundation"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Foundation exercises for Azure networking and security"
 weight = 2
 +++

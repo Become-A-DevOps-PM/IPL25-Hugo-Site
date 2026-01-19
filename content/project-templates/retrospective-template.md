@@ -1,5 +1,8 @@
 +++
 title = "Retrospective Template"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 10
 +++
 

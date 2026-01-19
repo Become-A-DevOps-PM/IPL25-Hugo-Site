@@ -1,5 +1,8 @@
 +++
 title = "5. Provisioning a VM Using AZ CLI, Configuring Nginx, and Allowing HTTP Traffic"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 5
 date = 2024-11-25
 lastmod = 2025-11-24

@@ -1,5 +1,8 @@
 +++
 title = "Course Introduction"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Introduction presentation for the Server, Network and IT Security course"
 weight = 1
 +++

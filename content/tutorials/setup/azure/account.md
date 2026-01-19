@@ -1,5 +1,8 @@
 +++
 title = "Azure Account"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Create an Azure pay-as-you-go account"
 weight = 1
 +++

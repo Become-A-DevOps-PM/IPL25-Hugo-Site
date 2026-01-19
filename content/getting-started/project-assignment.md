@@ -1,5 +1,8 @@
 +++
 title = "Project Assignment"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Your first project manager assignment at CM Corp"
 weight = 10
 +++

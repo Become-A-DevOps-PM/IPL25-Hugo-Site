@@ -1,5 +1,8 @@
 +++
 title = "Firewalls"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 4
 date = 2024-11-24
 draft = false

@@ -1,5 +1,8 @@
 +++
 title = "Securely Manage Servers Behind a Bastion Host"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 10
 date = 2024-02-26
 draft = false

@@ -1,5 +1,8 @@
 +++
 title = "AAA"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 4
 date = 2025-01-13
 draft = false

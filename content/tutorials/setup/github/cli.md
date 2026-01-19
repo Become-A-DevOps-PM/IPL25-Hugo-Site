@@ -1,5 +1,8 @@
 +++
 title = "GitHub CLI"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Install GitHub CLI"
 weight = 2
 +++

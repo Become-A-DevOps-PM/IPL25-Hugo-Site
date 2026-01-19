@@ -1,5 +1,8 @@
 +++
 title = "PostgreSQL"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Install PostgreSQL database"
 weight = 4
 +++

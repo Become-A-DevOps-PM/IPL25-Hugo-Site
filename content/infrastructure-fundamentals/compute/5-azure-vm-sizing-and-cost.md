@@ -1,5 +1,8 @@
 +++
 title = "Azure VM Sizing and Cost (Azure)"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 5
 date = 2024-11-25
 draft = false

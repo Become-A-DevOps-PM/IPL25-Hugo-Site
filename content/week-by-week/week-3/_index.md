@@ -1,5 +1,8 @@
 +++
 title = "Week 3"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Storage concepts, web application architecture, and Flask deployment"
 weight = 3
 +++

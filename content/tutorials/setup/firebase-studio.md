@@ -1,5 +1,8 @@
 +++
 title = "Firebase Studio (Cloud-Based Alternative)"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Set up a cloud-based development environment with Firebase Studio"
 weight = 100
 +++

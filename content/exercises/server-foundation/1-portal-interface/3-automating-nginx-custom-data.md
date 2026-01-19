@@ -1,5 +1,8 @@
 +++
 title = "3. Automating Nginx Installation with Custom Data Scripts"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 3
 date = 2024-11-25
 lastmod = 2025-11-24

@@ -1,5 +1,8 @@
 +++
 title = "Provision Azure PostgreSQL"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Create a managed PostgreSQL database in Azure and learn to connect to it"
 weight = 4
 +++

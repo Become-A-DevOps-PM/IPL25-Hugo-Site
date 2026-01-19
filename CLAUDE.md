@@ -21,6 +21,32 @@ This repository contains the Hugo-based documentation site for the DevOps PM IPL
 - 4 Claude Code skills + 2 custom commands
 - 3 reference implementations (stage-ultimate, dev-3tier-flask, starter-flask)
 
+## Course Taxonomy
+
+**Program:** IPL (IT Project Management - Swedish: IT-Projektledning)
+**Current Cohort:** 25
+
+| Tag | Full Name |
+|-----|-----------|
+| SNS | Server, Network, Storage And IT Security |
+| ASD | Agile Software Development And Deployment |
+
+### Frontmatter Format
+
+All content files include course taxonomy fields:
+
+```toml
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]  # or ["ASD"] or ["SNS", "ASD"]
+```
+
+### Current Content Assignment
+
+All existing content is tagged `courses = ["SNS"]`. When ASD course content is added:
+- New ASD-specific content: `courses = ["ASD"]`
+- Shared content (setup tutorials, cheat sheets): `courses = ["SNS", "ASD"]`
+
 ## Related Repository - 2024 Reference Project
 
 **Location:** `/Users/lasse/Library/Mobile Documents/iCloud~md~obsidian/Documents/IPL25-Server-Network-Security`

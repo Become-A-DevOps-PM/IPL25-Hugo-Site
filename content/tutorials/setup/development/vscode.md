@@ -1,5 +1,8 @@
 +++
 title = "Visual Studio Code"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Install VS Code and extensions"
 weight = 2
 +++

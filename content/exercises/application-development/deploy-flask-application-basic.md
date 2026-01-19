@@ -1,5 +1,8 @@
 +++
 title = "Deploy a Flask Application (Basic)"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Transfer and run a Python web application on your Azure VM"
 weight = 2
 +++

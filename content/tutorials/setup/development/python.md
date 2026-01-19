@@ -1,5 +1,8 @@
 +++
 title = "Python"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Install Python 3.11+"
 weight = 3
 +++

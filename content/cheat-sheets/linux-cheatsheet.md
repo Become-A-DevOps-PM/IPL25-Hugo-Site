@@ -1,5 +1,8 @@
 +++
 title = "Linux Command Line Cheat Sheet"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 10
 date = 2024-11-25
 draft = false

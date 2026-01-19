@@ -1,5 +1,8 @@
 +++
 title = "Development"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Development environment setup"
 weight = 3
 +++

@@ -1,5 +1,8 @@
 +++
 title = "Inuti en virtuell server"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 type = "slide"
 date = 2024-11-17
 draft = false

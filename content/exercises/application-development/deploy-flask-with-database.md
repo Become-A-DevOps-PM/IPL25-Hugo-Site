@@ -1,5 +1,8 @@
 +++
 title = "Deploy Flask with Database"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Deploy the database-enabled Flask application to Azure VM with PostgreSQL"
 weight = 5
 +++

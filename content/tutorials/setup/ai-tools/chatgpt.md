@@ -1,5 +1,8 @@
 +++
 title = "ChatGPT"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Set up ChatGPT AI assistant"
 weight = 2
 +++

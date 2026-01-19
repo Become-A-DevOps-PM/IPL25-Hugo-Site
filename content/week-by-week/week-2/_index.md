@@ -1,5 +1,8 @@
 +++
 title = "Week 2"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Network fundamentals: IP addressing, firewalls, and network architecture"
 weight = 2
 +++

@@ -1,5 +1,8 @@
 +++
 title = "Zero Trust Architecture"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 6
 date = 2025-01-13
 draft = false

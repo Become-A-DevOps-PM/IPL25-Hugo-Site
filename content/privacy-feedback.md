@@ -1,5 +1,8 @@
 +++
 title = "Feedback Privacy Information"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "How we handle your feedback data"
 +++
 

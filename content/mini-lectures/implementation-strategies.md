@@ -1,5 +1,8 @@
 +++
 title = "Implementation Strategies"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 3
 date = 2024-12-08
 draft = false

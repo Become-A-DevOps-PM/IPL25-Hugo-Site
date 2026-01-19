@@ -1,5 +1,8 @@
 +++
 title = "Week 1"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Server foundations: compute concepts, SSH, and hands-on exercises"
 weight = 1
 +++

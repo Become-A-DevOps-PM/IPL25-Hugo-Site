@@ -1,5 +1,8 @@
 +++
 title = "Claude"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Set up Claude AI assistant"
 weight = 1
 +++

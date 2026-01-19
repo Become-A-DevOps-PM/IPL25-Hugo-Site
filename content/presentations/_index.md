@@ -1,5 +1,8 @@
 +++
 title = "Presentations"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Course presentations and slides"
 weight = 25
 chapter = true

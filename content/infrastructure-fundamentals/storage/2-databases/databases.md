@@ -1,5 +1,8 @@
 +++
 title = "Databases"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 weight = 2
 date = 2024-11-19
 draft = false

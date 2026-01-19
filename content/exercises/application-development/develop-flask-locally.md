@@ -1,5 +1,8 @@
 +++
 title = "Develop and Run a Flask Application Locally"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Set up and run a Python web application on your development machine"
 weight = 1
 +++

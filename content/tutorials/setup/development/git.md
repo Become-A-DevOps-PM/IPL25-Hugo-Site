@@ -1,5 +1,8 @@
 +++
 title = "Git"
+program = "IPL"
+cohort = "25"
+courses = ["SNS"]
 description = "Install Git version control"
 weight = 1
 +++
