@@ -11,4 +11,4 @@ weight = 2
 
 Agile Software Development And Deployment - week-by-week learning materials.
 
-Coming soon.
+{{< children />}}
