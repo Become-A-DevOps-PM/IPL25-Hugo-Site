@@ -20,3 +20,6 @@ Thumbs.db
 node_modules/
 # Structurizr working directory
 .structurizr/
+
+# Course evaluation analysis (private)
+docs/sns-course-evaluation-analysis.md
