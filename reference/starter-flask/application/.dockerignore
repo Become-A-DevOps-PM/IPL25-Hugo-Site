@@ -1,0 +1,30 @@
+# Virtual environment
+.venv/
+
+# SQLite database files
+*.db
+instance/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# pytest cache
+.pytest_cache/
+
+# Coverage reports
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Tests (not needed in production container)
+tests/

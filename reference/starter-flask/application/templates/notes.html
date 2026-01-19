@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}List Notes - Starter Flask{% endblock %}
+
+{% block content %}
+<h1>List Notes</h1>
+
+{% if notes %}
+    {% for note in notes %}
+    <div class="note">
+        <p><strong>#{{ note.id }}</strong> - {{ note.created_at.strftime('%Y-%m-%d %H:%M') if note.created_at else 'N/A' }}</p>
+        <p>{{ note.content }}</p>
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No notes saved yet.</p>
+{% endif %}
+{% endblock %}

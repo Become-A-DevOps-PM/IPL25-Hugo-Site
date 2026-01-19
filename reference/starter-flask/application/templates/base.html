@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Starter Flask{% endblock %}</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: system-ui, sans-serif; line-height: 1.6; max-width: 600px; margin: 0 auto; padding: 2rem; }
+        nav { margin-bottom: 2rem; border-bottom: 1px solid #ddd; padding-bottom: 1rem; }
+        nav a { margin-right: 1rem; }
+        h1, p, .form-group { margin-bottom: 1rem; }
+        label { display: block; font-weight: bold; margin-bottom: .5rem; }
+        input, textarea { width: 100%; padding: .5rem; font: inherit; border: 1px solid #ccc; border-radius: 4px; }
+        textarea { min-height: 100px; resize: vertical; }
+        button, .button { background: #07c; color: #fff; padding: .5rem 1rem; border: none; border-radius: 4px; cursor: pointer; text-decoration: none; font: inherit; }
+        button:hover, .button:hover { background: #05a; }
+        .alert { padding: 1rem; margin-bottom: 1rem; border-radius: 4px; }
+        .alert-error { background: #fee; color: #900; }
+        .alert-success { background: #efe; color: #060; }
+        .card { background: #fff; padding: 1.5rem; border-radius: 8px; box-shadow: 0 1px 3px #0002; }
+        .note { background: #f0f0f0; padding: 1rem; border-radius: 4px; margin: 1rem 0; }
+        footer { margin-top: 2rem; padding-top: 1rem; border-top: 1px solid #ddd; font-size: 0.75rem; color: #666; }
+        footer code { background: #f0f0f0; padding: 0.1rem 0.3rem; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <nav>
+        <a href="{{ url_for('main.home') }}">Home</a>
+        <a href="{{ url_for('main.notes') }}">Notes</a>
+        <a href="{{ url_for('main.notes_new') }}">New Note</a>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="card">
+        {% block content %}{% endblock %}
+    </div>
+
+    <footer>
+        <strong>Environment:</strong> <code>{{ env_info.FLASK_ENV }}</code> |
+        <strong>Database:</strong> <code>{{ env_info.DB_TYPE }}</code>
+        <table style="width: 100%; margin-top: 0.5rem; font-size: 0.7rem;">
+            <tr>
+                <th style="text-align: left; width: 110px;">Variable</th>
+                <th style="text-align: left; white-space: nowrap;">Env Value</th>
+                <th style="text-align: left;">Actual Value</th>
+            </tr>
+            {% for var in env_table %}
+            <tr>
+                <td><code>{{ var.name }}</code></td>
+                <td style="white-space: nowrap;"><code>{{ var.env_value if var.env_value else '(not set)' }}</code></td>
+                <td><code>{{ var.actual_value if var.actual_value else '(none)' }}</code></td>
+            </tr>
+            {% endfor %}
+        </table>
+    </footer>
+</body>
+</html>

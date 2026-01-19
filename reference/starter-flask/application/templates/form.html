@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Submit Note - Starter Flask{% endblock %}
+
+{% block content %}
+<h1>Submit a Note</h1>
+<p>Enter some text below. It will be saved to Azure SQL Database.</p>
+
+<form method="POST">
+    <div class="form-group">
+        <label for="content">Your note</label>
+        <textarea id="content" name="content" rows="4" maxlength="500"
+                  placeholder="Enter your note here...">{{ content|default('', true) }}</textarea>
+    </div>
+    <button type="submit">Save Note</button>
+</form>
+{% endblock %}
