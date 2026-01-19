@@ -483,7 +483,7 @@ content/                                   (118 markdown files, 744KB)
 │   │   ├── 2-command-line-interface/    # Exercise 3
 │   │   │   └── 3-virtual-network-az-cli.md
 │   │   └── legacy/                       # 3 v1 files
-│   └── application-development/          # Complete (6 exercises)
+│   └── deployment-foundation/            # Complete (6 exercises)
 │       ├── 1. develop-flask-locally.md
 │       ├── 2. deploy-flask-application-basic.md
 │       ├── 3. add-database-persistence.md
@@ -978,8 +978,8 @@ server-foundation/
 - ✅ Interface-based organization
 - ✅ Legacy preserved
 
-**6. Exercises - Application Development** (6 files)
-- ✅ Complete Flask application lifecycle
+**6. Exercises - Deployment Foundation** (6 files)
+- ✅ Complete Flask deployment lifecycle
 - ✅ Local development → Azure deployment → Production
 - ✅ Database persistence with SQLAlchemy
 - ✅ Azure PostgreSQL provisioning
@@ -1081,7 +1081,7 @@ When migrating content from the 2024 project:
 4. **Infrastructure Fundamentals - Storage** - 3 topics with articles + bilingual slides (no standalone HTML yet)
 5. **Exercises - Server Foundation** - 6 exercises organized by interface type (Portal/CLI)
 6. **Exercises - Network Foundation** - 3 exercises organized by interface type (Portal/CLI)
-7. **Exercises - Application Development** - 6 exercises covering full Flask lifecycle:
+7. **Exercises - Deployment Foundation** - 6 exercises covering full Flask deployment lifecycle:
    - Local development with Flask
    - Basic deployment to Azure VM
    - Database persistence with SQLAlchemy/SQLite
@@ -1136,7 +1136,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 | `content/infrastructure-fundamentals/` | Core concepts (60 files: compute/network/storage) |
 | `content/exercises/server-foundation/` | Server exercises (19 files: 6 active + 10 legacy) |
 | `content/exercises/network-foundation/` | Network exercises (9 files: 3 active + 3 legacy) |
-| `content/exercises/application-development/` | Flask exercises (7 files: 6 active) |
+| `content/exercises/deployment-foundation/` | Deployment exercises (7 files: 6 active) |
 | `content/cheat-sheets/` | Quick reference materials (4 files) |
 | `content/project-templates/` | Demo + retrospective templates (6 files, bilingual) |
 | `content/*/legacy/` | Legacy content directories (23 files total) |

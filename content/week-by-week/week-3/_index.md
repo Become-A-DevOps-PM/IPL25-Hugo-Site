@@ -22,7 +22,7 @@ Understand the concepts behind data storage and web applications:
 
 Put theory into practice:
 
-- [Application Development Exercises](/exercises/application-development/) - From local Flask development to VM deployment
+- [Deployment Foundation Exercises](/exercises/deployment-foundation/) - From local Flask development to VM deployment
 
 ## Recap
 

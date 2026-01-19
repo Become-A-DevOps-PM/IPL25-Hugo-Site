@@ -2,13 +2,13 @@
 title = "Application Development"
 program = "IPL"
 cohort = "25"
-courses = ["SNS"]
-description = "Flask application development and deployment exercises"
-weight = 2
+courses = ["ASD"]
+description = "Exercises for building Flask web applications from scratch"
+weight = 4
 +++
 
 # Application Development
 
-Exercises for developing and deploying Flask web applications.
+Exercises for building Python Flask web applications, from basic concepts to complete features.
 
 {{< children />}}
