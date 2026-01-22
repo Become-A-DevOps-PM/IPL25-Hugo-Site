@@ -585,9 +585,10 @@ static/                                    (2.4MB)
 │   ├── revealjs-skill/                   # Swedish Tech presentations
 │   ├── student-technical-writer/         # Student-facing content style
 │   └── technical-textbook-writer/        # Formal textbook style
-└── commands/                             # 2 custom slash commands
+└── commands/                             # 3 custom slash commands
     ├── check-links.md                   # Link checking command
     ├── lint-md.md                       # Markdown linting command
+    ├── verify-exercise.md               # Exercise end-to-end testing command
     └── scripts/                         # Supporting scripts
         ├── crawl-links-local.sh
         └── crawl-links-public.sh
@@ -1177,6 +1178,7 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 | `.claude/skills/technical-textbook-writer/` | Formal textbook style (4 files) |
 | `.claude/commands/check-links.md` | Link checking slash command |
 | `.claude/commands/lint-md.md` | Markdown linting slash command |
+| `.claude/commands/verify-exercise.md` | Exercise end-to-end testing command |
 | **Documentation** | |
 | `docs/hugo-github-pages-setup.md` | Complete setup tutorial (34KB) |
 | `docs/feedback-system-plan.md` | Feedback feature design (superseded) |
