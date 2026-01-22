@@ -10,25 +10,11 @@
             Get the latest tech news delivered straight to your inbox.
             No spam, just the stories that matter.
         </p>
-        <button class="btn btn--primary hero__cta" id="subscribeBtn">
+        <a href="{{ url_for('public.subscribe') }}" class="btn btn--primary hero__cta">
             Subscribe Now
-        </button>
+        </a>
     </div>
 </section>
-
-<!-- Subscribe Modal -->
-<div class="modal-overlay" id="modalOverlay">
-    <div class="modal" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
-        <div class="modal__header">
-            <h2 class="modal__title" id="modalTitle">Coming Soon!</h2>
-            <button class="modal__close" id="modalClose" aria-label="Close modal">&times;</button>
-        </div>
-        <div class="modal__body">
-            <p>We're working hard to bring you the best newsletter experience.</p>
-            <p style="margin-top: 1rem;">Check back soon to subscribe!</p>
-        </div>
-    </div>
-</div>
 {% endblock %}
 
 {% block extra_css %}
@@ -96,40 +82,3 @@
 </style>
 {% endblock %}
 
-{% block scripts %}
-<script>
-    // Modal functionality
-    const subscribeBtn = document.getElementById('subscribeBtn');
-    const modalOverlay = document.getElementById('modalOverlay');
-    const modalClose = document.getElementById('modalClose');
-    const modal = modalOverlay.querySelector('.modal');
-
-    // Open modal
-    subscribeBtn.addEventListener('click', function() {
-        modalOverlay.classList.add('active');
-        modalClose.focus();
-    });
-
-    // Close modal - close button
-    modalClose.addEventListener('click', function() {
-        modalOverlay.classList.remove('active');
-        subscribeBtn.focus();
-    });
-
-    // Close modal - click outside
-    modalOverlay.addEventListener('click', function(event) {
-        if (event.target === modalOverlay) {
-            modalOverlay.classList.remove('active');
-            subscribeBtn.focus();
-        }
-    });
-
-    // Close modal - Escape key
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape' && modalOverlay.classList.contains('active')) {
-            modalOverlay.classList.remove('active');
-            subscribeBtn.focus();
-        }
-    });
-</script>
-{% endblock %}
