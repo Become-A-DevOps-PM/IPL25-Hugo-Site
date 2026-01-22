@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}News Flash - Stay Informed{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero__container">
+        <h1 class="hero__title">Stay Ahead of the Curve</h1>
+        <p class="hero__subtitle">
+            Get the latest tech news delivered straight to your inbox.
+            No spam, just the stories that matter.
+        </p>
+        <button class="btn btn--primary hero__cta" id="subscribeBtn">
+            Subscribe Now
+        </button>
+    </div>
+</section>
+
+<!-- Subscribe Modal -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal" role="dialog" aria-labelledby="modalTitle" aria-modal="true">
+        <div class="modal__header">
+            <h2 class="modal__title" id="modalTitle">Coming Soon!</h2>
+            <button class="modal__close" id="modalClose" aria-label="Close modal">&times;</button>
+        </div>
+        <div class="modal__body">
+            <p>We're working hard to bring you the best newsletter experience.</p>
+            <p style="margin-top: 1rem;">Check back soon to subscribe!</p>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+        color: white;
+        padding: 6rem 2rem;
+        text-align: center;
+        min-height: 60vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .hero__container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .hero__title {
+        font-size: 3rem;
+        font-weight: 800;
+        margin-bottom: 1.5rem;
+        line-height: 1.2;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .hero__subtitle {
+        font-size: 1.25rem;
+        margin-bottom: 2.5rem;
+        opacity: 0.95;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+        line-height: 1.7;
+    }
+
+    .hero__cta {
+        font-size: 1.125rem;
+        padding: 1rem 2.5rem;
+        background-color: white;
+        color: var(--color-primary);
+    }
+
+    .hero__cta:hover {
+        background-color: #f8fafc;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .hero {
+            padding: 4rem 1.5rem;
+        }
+
+        .hero__title {
+            font-size: 2rem;
+        }
+
+        .hero__subtitle {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Modal functionality
+    const subscribeBtn = document.getElementById('subscribeBtn');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalClose = document.getElementById('modalClose');
+    const modal = modalOverlay.querySelector('.modal');
+
+    // Open modal
+    subscribeBtn.addEventListener('click', function() {
+        modalOverlay.classList.add('active');
+        modalClose.focus();
+    });
+
+    // Close modal - close button
+    modalClose.addEventListener('click', function() {
+        modalOverlay.classList.remove('active');
+        subscribeBtn.focus();
+    });
+
+    // Close modal - click outside
+    modalOverlay.addEventListener('click', function(event) {
+        if (event.target === modalOverlay) {
+            modalOverlay.classList.remove('active');
+            subscribeBtn.focus();
+        }
+    });
+
+    // Close modal - Escape key
+    document.addEventListener('keydown', function(event) {
+        if (event.key === 'Escape' && modalOverlay.classList.contains('active')) {
+            modalOverlay.classList.remove('active');
+            subscribeBtn.focus();
+        }
+    });
+</script>
+{% endblock %}
