@@ -30,12 +30,11 @@ def subscribe_confirm():
     email = request.form.get("email", "")
     name = request.form.get("name", "")
 
-    # Use business layer for validation and processing
+    # Use business layer for full subscription flow
     service = SubscriptionService()
+    success, error = service.subscribe(email, name)
 
-    # Validate email
-    is_valid, error = service.validate_email(email)
-    if not is_valid:
+    if not success:
         # Return to form with error message, preserving input
         return render_template(
             "subscribe.html",
@@ -44,10 +43,13 @@ def subscribe_confirm():
             name=name,
         )
 
-    # Process subscription data (normalize email and name)
-    data = service.process_subscription(email, name)
+    # Subscription saved successfully - show thank you page
+    # Use normalized values for display
+    normalized_email = service.normalize_email(email)
+    normalized_name = service.normalize_name(name)
 
-    # Verification: print to terminal (no persistence yet)
-    print(f"New subscription: {data['email']} ({data['name']})")
-
-    return render_template("thank_you.html", email=data["email"], name=data["name"])
+    return render_template(
+        "thank_you.html",
+        email=normalized_email,
+        name=normalized_name,
+    )

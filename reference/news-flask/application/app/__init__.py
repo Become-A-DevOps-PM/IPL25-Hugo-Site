@@ -11,8 +11,14 @@ application factory pattern. This pattern enables:
 import os
 
 from flask import Flask
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
 
 from .config import config
+
+# Create extensions at module level (initialized in create_app)
+db = SQLAlchemy()
+migrate = Migrate()
 
 
 def create_app(config_name: str | None = None) -> Flask:
@@ -37,6 +43,13 @@ def create_app(config_name: str | None = None) -> Flask:
 
     # Load configuration
     app.config.from_object(config[config_name])
+
+    # Initialize extensions
+    db.init_app(app)
+    migrate.init_app(app, db)
+
+    # Import models (after db.init_app to avoid circular imports)
+    from .data import models  # noqa: F401
 
     # Register blueprints
     from .presentation.routes.public import bp as public_bp
