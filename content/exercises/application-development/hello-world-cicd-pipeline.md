@@ -4,7 +4,7 @@ program = "IPL"
 cohort = "25"
 courses = ["ASD"]
 description = "Build and deploy a Hello World Flask app to Azure Container Apps with automated CI/CD using GitHub Actions"
-weight = 50
+weight = 2
 +++
 
 # Hello World CI/CD Pipeline
@@ -300,6 +300,48 @@ Before automating with GitHub Actions, deploy once manually to verify that the a
    curl -sf "https://$FQDN"
    ```
 
+7. **Update** the application — now that the deployment works, change the message to verify you can deploy updates:
+
+   > `app.py`
+
+   ```python
+   from flask import Flask
+
+   app = Flask(__name__)
+
+
+   @app.route('/')
+   def hello():
+       return 'Hello, Universe!'
+
+
+   if __name__ == '__main__':
+       app.run(debug=True)
+   ```
+
+8. **Rebuild** the image with a new tag and **update** the container app:
+
+   ```bash
+   az acr build \
+     --registry $ACR_NAME \
+     --image hello-cicd:manual-v2 \
+     --file Dockerfile .
+
+   az containerapp update \
+     --name $CONTAINER_APP \
+     --resource-group $RESOURCE_GROUP \
+     --image $ACR_SERVER/hello-cicd:manual-v2
+   ```
+
+9. **Verify** the updated deployment:
+
+   ```bash
+   sleep 10
+   curl -sf "https://$FQDN"
+   ```
+
+   You should now see `Hello, Universe!` — confirming that you can build, deploy, and update the application manually.
+
 > ℹ **Concept Deep Dive**
 >
 > **`az acr build`** builds the Docker image on Azure infrastructure instead of on your local machine. This means you do not need Docker Desktop installed. It also guarantees the image is built for linux/amd64, avoiding architecture mismatches if you develop on Apple Silicon (ARM).
@@ -308,13 +350,15 @@ Before automating with GitHub Actions, deploy once manually to verify that the a
 >
 > The `--target-port 5000` flag tells Container Apps which port your application listens on (matching the gunicorn `--bind` in the Dockerfile). Container Apps routes incoming HTTPS traffic on port 443 to your container on port 5000.
 >
+> **`az containerapp update`** vs **`az containerapp create`:** You use `create` for the initial deployment and `update` for subsequent deployments. The `update` command only changes the image — it preserves all existing configuration (ingress, ports, environment variables). This is the same command the GitHub Actions workflow uses in Step 5.
+>
 > ⚠ **Common Mistakes**
 >
 > - Running `az acr build` from the wrong directory — you must be in the directory containing the Dockerfile
 > - Forgetting `--target-port 5000` — Container Apps defaults to port 80, and your app will not respond
 > - Missing `--ingress external` — the app deploys but is not accessible from the internet
 >
-> ✓ **Quick check:** `curl -sf "https://$FQDN"` returns `Hello, World!`
+> ✓ **Quick check:** `curl -sf "https://$FQDN"` returns `Hello, Universe!`
 
 ### **Step 5:** Automate with GitHub Actions
 
@@ -455,12 +499,16 @@ Now that the manual deployment works, automate it with a GitHub Actions workflow
 
          - name: Verify deployment
            run: |
-             sleep 10
              FQDN=$(az containerapp show \
                --name ${{ vars.CONTAINER_APP }} \
                --resource-group ${{ vars.RESOURCE_GROUP }} \
                --query "properties.configuration.ingress.fqdn" -o tsv)
-             curl -sf "https://$FQDN" || (echo "Health check failed!" && exit 1)
+             for i in 1 2 3 4 5; do
+               curl -sf "https://$FQDN" && exit 0
+               echo "Attempt $i failed, retrying in 10s..."
+               sleep 10
+             done
+             echo "Health check failed after 5 attempts!" && exit 1
    ```
 
 9. **Commit** and **push** the workflow:

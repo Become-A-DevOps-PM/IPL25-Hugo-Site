@@ -4,7 +4,7 @@ program = "IPL"
 cohort = "25"
 courses = ["ASD"]
 description = "Add user authentication, protected admin routes, and security hardening to the News Flash application"
-weight = 4
+weight = 5
 +++
 
 # Authentication and Security

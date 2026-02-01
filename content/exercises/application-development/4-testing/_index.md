@@ -4,7 +4,7 @@ program = "IPL"
 cohort = "25"
 courses = ["ASD"]
 description = "Learn to write automated tests for Flask applications, from basic route tests to comprehensive security testing"
-weight = 5
+weight = 6
 +++
 
 # Testing (Optional Advanced)

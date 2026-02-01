@@ -4,7 +4,7 @@ program = "IPL"
 cohort = "25"
 courses = ["ASD"]
 description = "Prepare and deploy the News Flash application to Azure Container Apps with Azure SQL Database and automated CI/CD"
-weight = 3
+weight = 4
 +++
 
 # Deployment Preparation

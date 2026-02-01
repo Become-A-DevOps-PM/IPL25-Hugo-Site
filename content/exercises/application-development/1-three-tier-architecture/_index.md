@@ -4,7 +4,7 @@ program = "IPL"
 cohort = "25"
 courses = ["ASD"]
 description = "Build a complete Flask web application using three-tier architecture"
-weight = 2
+weight = 3
 +++
 
 # Three-Tier Architecture
