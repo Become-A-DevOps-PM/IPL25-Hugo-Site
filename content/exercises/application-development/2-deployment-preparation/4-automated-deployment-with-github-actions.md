@@ -211,6 +211,7 @@ The workflow file defines what happens when code is pushed to the main branch. I
          - 'Dockerfile'
          - 'requirements.txt'
          - 'wsgi.py'
+         - 'entrypoint.sh'
          - 'migrations/**'
          - '.github/workflows/deploy.yml'
 
@@ -234,17 +235,13 @@ The workflow file defines what happens when code is pushed to the main branch. I
              tenant-id: ${{ vars.AZURE_TENANT_ID }}
              subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-         - name: Login to ACR
-           run: az acr login --name ${{ vars.ACR_NAME }}
-
          - name: Set image tag
            run: echo "IMAGE_TAG=$(echo ${{ github.sha }} | cut -c1-7)" >> $GITHUB_ENV
 
-         - name: Build and push
+         - name: Build and push with ACR
            run: |
-             ACR_SERVER=$(az acr show --name ${{ vars.ACR_NAME }} --query loginServer -o tsv)
-             docker build --tag $ACR_SERVER/news-flash:${{ env.IMAGE_TAG }} .
-             docker push $ACR_SERVER/news-flash:${{ env.IMAGE_TAG }}
+             az acr build --registry ${{ vars.ACR_NAME }} \
+               --image news-flash:${{ env.IMAGE_TAG }} .
 
          - name: Deploy to Container Apps
            run: |
@@ -263,9 +260,11 @@ The workflow file defines what happens when code is pushed to the main branch. I
 > - **Rollback** — deploy a previous tag to revert to a known-good version
 > - **Auditability** — you can see which commit is running in production at any time
 >
+> **`az acr build`** builds the Docker image on Azure instead of on the GitHub Actions runner. This has two advantages: the runner does not need Docker installed (ACR Tasks handle the build), and the image is built as linux/amd64 regardless of the build host. Note that there is no separate "Login to ACR" step — `az acr build` uses the Azure CLI authentication from the login step, not Docker credentials.
+>
 > The **`permissions`** block is required for OIDC. `id-token: write` allows the workflow to request a JWT from GitHub's identity provider. `contents: read` allows checking out the repository code. These are the minimum permissions needed.
 >
-> The **`paths`** filter prevents unnecessary deployments. If you edit only the README, no deployment runs. The workflow only triggers when files that affect the running application change: source code (`app/**`), dependencies (`requirements.txt`), container definition (`Dockerfile`, `wsgi.py`), database schema (`migrations/**`), or the workflow itself.
+> The **`paths`** filter prevents unnecessary deployments. If you edit only the README, no deployment runs. The workflow only triggers when files that affect the running application change: source code (`app/**`), dependencies (`requirements.txt`), container definition (`Dockerfile`, `wsgi.py`, `entrypoint.sh`), database schema (`migrations/**`), or the workflow itself.
 >
 > The **`${{ vars.ACR_NAME }}`** syntax reads from GitHub repository variables (set in Step 2). Using variables instead of hardcoded values makes the workflow portable — a different team can fork the repository and set their own values.
 >
@@ -278,21 +277,16 @@ The workflow file defines what happens when code is pushed to the main branch. I
 >
 > ✓ **Quick check:** `.github/workflows/deploy.yml` exists with correct syntax (no YAML indentation errors)
 
-### **Step 4:** Add Database Migration and Health Check
+### **Step 4:** Add Health Check
 
-The workflow should also run database migrations after deploying a new image, and verify that the application responds correctly. If either step fails, the workflow fails visibly in GitHub — the team knows immediately that something is wrong.
+The workflow should verify that the application responds correctly after deployment. Database migrations run automatically at container startup via `entrypoint.sh` — the workflow does not need a separate migration step. If the health check fails, the workflow fails visibly in GitHub — the team knows immediately that something is wrong.
 
 1. **Open** the workflow file at `.github/workflows/deploy.yml`
 
-2. **Add** the following steps after the "Deploy to Container Apps" step:
+2. **Add** the following step after the "Deploy to Container Apps" step:
 
    ```yaml
-         - name: Run migrations
-           run: |
-             az containerapp exec \
-               --name ${{ env.CONTAINER_APP }} \
-               --resource-group ${{ env.RESOURCE_GROUP }} \
-               --command "flask" -- db upgrade
+         # Migrations run automatically at container startup via entrypoint.sh
 
          - name: Health check
            run: |
@@ -307,28 +301,26 @@ The workflow should also run database migrations after deploying a new image, an
 
    - Checkout
    - Azure login
-   - ACR login
    - Set image tag
-   - Build and push
+   - Build and push with ACR
    - Deploy to Container Apps
-   - Run migrations
    - Health check
 
 > ℹ **Concept Deep Dive**
 >
-> **Migrations run after deployment** because the new container may include schema changes that the new code depends on. The sequence is: deploy new image → run migrations → verify health. If migrations fail, the database transaction is rolled back automatically, and the workflow fails with a visible error in GitHub Actions.
+> **Migrations run at container startup** because `entrypoint.sh` executes `flask db upgrade` before starting Gunicorn. This is more reliable than using `az containerapp exec` in the pipeline, which requires an interactive terminal and can fail in CI/CD environments.
 >
-> The **health check** uses `curl -sf` where `-s` is silent mode (no progress bar) and `-f` fails on HTTP errors (4xx, 5xx). If the application does not respond with a 200 status code, `curl` returns a non-zero exit code, the `||` branch runs, and the workflow step fails.
+> The **health check** uses `curl -sf` where `-s` is silent mode (no progress bar) and `-f` fails on HTTP errors (4xx, 5xx). If the application does not respond with a 200 status code, `curl` returns a non-zero exit code, the `||` branch runs, and the workflow step fails. The health check implicitly verifies that migrations succeeded — if they had failed, the container would not have started, and the health check would fail.
 >
-> In a more sophisticated pipeline, you would add a wait/retry loop before the health check to account for container startup time. For a learning environment, the container is usually ready by the time migrations complete.
+> In a more sophisticated pipeline, you would add a wait/retry loop before the health check to account for container startup time. For a learning environment, the container is usually ready by the time the deploy step completes.
 >
 > ⚠ **Common Mistakes**
 >
-> - Placing migration before deployment — the old container does not have the new migration files
-> - Forgetting the `--` separator in `az containerapp exec` — the CLI parser may misinterpret `db upgrade`
 > - Using `http://` in the health check URL — Container Apps only serves HTTPS, and `curl` will get a redirect
+> - Adding a manual migration step with `az containerapp exec` — this requires an interactive terminal and fails in GitHub Actions
+> - Not including `entrypoint.sh` in the `paths` filter — changes to the startup script should trigger a deployment
 >
-> ✓ **Quick check:** The workflow YAML is valid and contains all 8 steps
+> ✓ **Quick check:** The workflow YAML is valid and contains all 6 steps
 
 ### **Step 5:** Test the Complete Pipeline
 
@@ -384,11 +376,10 @@ Time to verify the entire automated pipeline works end-to-end. You will make a s
 > 2. GitHub detects the push matches the `paths` filter
 > 3. GitHub Actions starts the workflow on an `ubuntu-latest` runner
 > 4. The runner authenticates with Azure using OIDC (no stored secrets)
-> 5. Docker builds the image and tags it with the 7-digit commit hash
-> 6. The image is pushed to ACR
-> 7. Container Apps pulls the new image and restarts the container
-> 8. Migrations run inside the new container
-> 9. A health check verifies the application responds
+> 5. `az acr build` builds the image on Azure and tags it with the 7-digit commit hash
+> 6. Container Apps pulls the new image and restarts the container
+> 7. `entrypoint.sh` runs database migrations at container startup
+> 8. A health check verifies the application responds
 >
 > This entire process runs automatically on every qualifying push. The developer's workflow becomes: write code → commit → push → done. The pipeline handles building, deploying, migrating, and verifying.
 >
@@ -408,9 +399,9 @@ Time to verify the entire automated pipeline works end-to-end. You will make a s
 > - Managed identity created with AcrPush and Contributor roles
 > - OIDC federation configured for your GitHub repository
 > - GitHub Actions workflow triggers on push to main
-> - Docker image tagged with 7-digit commit hash appears in ACR
+> - Docker image tagged with 7-digit commit hash appears in ACR (built via `az acr build`)
 > - Container App automatically updated with new image
-> - Database migrations run automatically
+> - Database migrations run automatically at container startup
 > - Health check passes
 > - Application reflects the code change
 >
@@ -419,7 +410,7 @@ Time to verify the entire automated pipeline works end-to-end. You will make a s
 > - [ ] Managed identity `id-news-flash-deploy` exists with correct role assignments
 > - [ ] Federated credential links your GitHub repository to the managed identity
 > - [ ] Four repository variables set in GitHub (CLIENT_ID, TENANT_ID, SUBSCRIPTION_ID, ACR_NAME)
-> - [ ] `.github/workflows/deploy.yml` created with all 8 steps
+> - [ ] `.github/workflows/deploy.yml` created with all 6 steps
 > - [ ] Pushing to main triggers the workflow
 > - [ ] Docker image in ACR has a 7-digit commit hash tag
 > - [ ] Container App runs the image matching the latest commit
@@ -449,11 +440,11 @@ You've successfully automated the News Flash deployment with GitHub Actions:
 
 - ✓ Created a managed identity with least-privilege role assignments for ACR and Container Apps
 - ✓ Configured OIDC federation for passwordless authentication between GitHub and Azure
-- ✓ Built a GitHub Actions workflow that builds, pushes, deploys, migrates, and verifies on every push
+- ✓ Built a GitHub Actions workflow that builds, pushes, deploys, and verifies on every push (migrations run at container startup)
 - ✓ Used 7-digit commit hash tags for immutable, traceable Docker images
 - ✓ Added path filters to avoid unnecessary deployments
 
-> **Key takeaway:** Modern CI/CD pipelines use identity federation instead of stored secrets. OIDC means no passwords in GitHub, no secrets to rotate, and no credentials to leak. Combined with immutable image tags and automated health checks, this pipeline provides a reliable, traceable deployment process that runs on every push to main.
+> **Key takeaway:** Modern CI/CD pipelines use identity federation instead of stored secrets. OIDC means no passwords in GitHub, no secrets to rotate, and no credentials to leak. Combined with `az acr build` for cloud-native image building, immutable commit-hash image tags, automatic migrations via `entrypoint.sh`, and health checks, this pipeline provides a reliable, traceable deployment process that runs on every push to main.
 
 ## Going Deeper (Optional)
 

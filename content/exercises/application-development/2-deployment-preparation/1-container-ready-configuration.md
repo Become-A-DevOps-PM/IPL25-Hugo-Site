@@ -235,10 +235,32 @@ Docker packages your application and all its dependencies into a container image
 
    EXPOSE 5000
 
-   CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "--timeout", "120", "wsgi:app"]
+   # Run migrations at startup, then start gunicorn
+   CMD ["bash", "entrypoint.sh"]
    ```
 
-2. **Create** a new file named `.dockerignore` in the project root:
+2. **Create** a new file named `entrypoint.sh` in the project root. This script runs database migrations before starting the application — a common production pattern that ensures the database schema is always up to date when a new version deploys:
+
+   > `entrypoint.sh`
+
+   ```bash
+   #!/bin/bash
+   set -e
+
+   echo "Running database migrations..."
+   flask db upgrade
+
+   echo "Starting application..."
+   exec gunicorn --bind 0.0.0.0:5000 --workers 2 --timeout 120 wsgi:app
+   ```
+
+3. **Make** the script executable:
+
+   ```bash
+   chmod +x entrypoint.sh
+   ```
+
+4. **Create** a new file named `.dockerignore` in the project root:
 
    > `.dockerignore`
 
@@ -251,7 +273,6 @@ Docker packages your application and all its dependencies into a container image
    *.db
    .git/
    .gitignore
-   migrations/
    ```
 
 > ℹ **Concept Deep Dive**
@@ -262,7 +283,9 @@ Docker packages your application and all its dependencies into a container image
 >
 > **`--no-cache-dir`** tells pip not to store downloaded packages in a cache directory. Since the Docker image is immutable after build, caching pip downloads would only increase image size with no benefit.
 >
-> **`.dockerignore`** excludes files from the Docker build context. This makes builds faster (less data sent to the Docker daemon) and images smaller (no development artifacts). The `instance/` directory contains the local SQLite database, which should never be baked into the image — the production container uses Azure SQL instead.
+> **`entrypoint.sh`** runs database migrations before starting the application server. The `exec` command replaces the shell process with gunicorn, so gunicorn becomes PID 1 and receives signals correctly (important for graceful shutdown). The `set -e` flag ensures the container fails to start if migrations fail — this is safer than running an application against an outdated schema.
+>
+> **`.dockerignore`** excludes files from the Docker build context. This makes builds faster (less data sent to the Docker daemon) and images smaller (no development artifacts). The `instance/` directory contains the local SQLite database, which should never be baked into the image — the production container uses Azure SQL instead. Note that `migrations/` is **not** excluded — the container needs migration scripts for `flask db upgrade` to work at startup.
 >
 > ⚠ **Common Mistakes**
 >
@@ -327,7 +350,8 @@ Time to verify that everything works together. You will build the Docker image, 
 > - ☐ `gunicorn` and `pyodbc` added to `requirements.txt`
 > - ☐ `wsgi.py` created as the Gunicorn entry point
 > - ☐ `Dockerfile` builds successfully with ODBC Driver and layer caching
-> - ☐ `.dockerignore` excludes development artifacts
+> - ☐ `entrypoint.sh` created to run migrations at startup
+> - ☐ `.dockerignore` excludes development artifacts (but keeps `migrations/`)
 > - ☐ Container runs and serves the application via Gunicorn
 
 ## Common Issues

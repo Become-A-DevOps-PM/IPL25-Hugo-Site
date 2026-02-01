@@ -42,7 +42,7 @@ Build the News Flash Docker image, push it to Azure Container Registry, deploy i
 
 ### **Step 1:** Build and Push Docker Image to ACR
 
-The Dockerfile created in the container-ready exercise packages the application into a container image. Now you need to build that image, tag it with the ACR registry address, and push it to your private registry. Once the image is in ACR, Container Apps can pull and run it.
+The Dockerfile created in the container-ready exercise packages the application into a container image. Azure Container Registry can build images directly in the cloud using `az acr build` — this eliminates local Docker authentication and avoids CPU architecture mismatches (e.g., building on an Apple Silicon Mac produces ARM images, but Container Apps requires AMD64).
 
 1. **Source** your configuration file:
 
@@ -50,32 +50,15 @@ The Dockerfile created in the container-ready exercise packages the application 
    source .azure-config
    ```
 
-2. **Get** the ACR login server address:
+2. **Build** the image on Azure and push it to ACR in one command:
 
    ```bash
-   ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer -o tsv)
-   echo "ACR Login Server: $ACR_LOGIN_SERVER"
+   az acr build --registry $ACR_NAME --image news-flash:latest .
    ```
 
-3. **Authenticate** Docker with your container registry:
+   This uploads your source code to Azure, builds the Docker image on an AMD64 build server, and stores it in your registry — all in one step.
 
-   ```bash
-   az acr login --name $ACR_NAME
-   ```
-
-4. **Build** the Docker image with the ACR tag:
-
-   ```bash
-   docker build --tag $ACR_LOGIN_SERVER/news-flash:latest .
-   ```
-
-5. **Push** the image to ACR:
-
-   ```bash
-   docker push $ACR_LOGIN_SERVER/news-flash:latest
-   ```
-
-6. **Verify** the image appears in the registry:
+3. **Verify** the image appears in the registry:
 
    ```bash
    az acr repository list --name $ACR_NAME -o table
@@ -85,23 +68,27 @@ The Dockerfile created in the container-ready exercise packages the application 
 
 > ℹ **Concept Deep Dive**
 >
-> The `az acr login` command configures Docker's credential helper to authenticate with your private registry. Without this step, `docker push` would be rejected with an authentication error.
+> `az acr build` is an **ACR Task** that builds Docker images in the cloud. Instead of building locally and pushing separately, ACR Tasks upload your source code (respecting `.dockerignore`), build the image on Azure's infrastructure, and store the result directly in the registry.
 >
-> The image tag format is `<registry>.azurecr.io/<repository>:<tag>`. The registry address tells Docker where to push the image. The repository name (`news-flash`) is the logical name for your application. The tag (`:latest`) identifies a specific version — here it means "most recent build."
+> This approach has three advantages over local `docker build` + `docker push`:
 >
-> The build happens locally on your machine using the Dockerfile in the project root. Docker reads the Dockerfile, executes each instruction (install ODBC driver, copy requirements, install dependencies, copy application code), and produces a container image. The push uploads this image to ACR where Container Apps can access it.
+> - **No architecture mismatch** — ACR builds on AMD64 (linux/amd64), which is what Container Apps expects. Building locally on an Apple Silicon Mac produces ARM images that crash on Azure.
+> - **No local authentication needed** — you do not need `az acr login` or Docker credential helpers. The Azure CLI authenticates directly.
+> - **Consistent builds** — every team member gets the same build environment regardless of their local operating system.
+>
+> The image tag format is `<repository>:<tag>`. The registry address is inferred from the `--registry` flag. The repository name (`news-flash`) is the logical name for your application. The tag (`:latest`) identifies a specific version.
 >
 > ⚠ **Common Mistakes**
 >
-> - Forgetting `az acr login` before pushing — Docker cannot authenticate with ACR without it
-> - Building without the ACR prefix — `docker build -t news-flash .` creates a local-only image that cannot be pushed
-> - Running `docker push` before the build completes — the tagged image must exist locally first
+> - Using `docker build` locally on Apple Silicon Macs — produces ARM images that fail on Azure (AMD64)
+> - Forgetting the `.` at the end — this specifies the build context (current directory)
+> - Including large files that should be in `.dockerignore` — everything not excluded gets uploaded to Azure
 >
 > ✓ **Quick check:** `az acr repository list --name $ACR_NAME` shows `news-flash`
 
 ### **Step 2:** Update Container App with News Flash Image
 
-The Container App currently runs nginx. Now you will update it to pull and run your Flask application image from ACR. This requires providing ACR credentials so Container Apps can authenticate with your private registry.
+The Container App currently runs nginx. Now you will update it to pull and run your Flask application image from ACR. This requires two steps: first register ACR credentials so Container Apps can authenticate with your private registry, then update the container image.
 
 1. **Source** your configuration file:
 
@@ -117,20 +104,36 @@ The Container App currently runs nginx. Now you will update it to pull and run y
    ACR_PASSWORD=$(az acr credential show --name $ACR_NAME --query "passwords[0].value" -o tsv)
    ```
 
-3. **Update** the Container App to use the News Flash image:
+3. **Register** the ACR credentials on the Container App:
+
+   ```bash
+   az containerapp registry set \
+     --name $CA_NAME \
+     --resource-group $RESOURCE_GROUP \
+     --server $ACR_LOGIN_SERVER \
+     --username $ACR_USERNAME \
+     --password $ACR_PASSWORD
+   ```
+
+4. **Update** the Container App to use the News Flash image:
 
    ```bash
    az containerapp update \
      --name $CA_NAME \
      --resource-group $RESOURCE_GROUP \
-     --image $ACR_LOGIN_SERVER/news-flash:latest \
-     --registry-server $ACR_LOGIN_SERVER \
-     --registry-username $ACR_USERNAME \
-     --registry-password $ACR_PASSWORD \
+     --image $ACR_LOGIN_SERVER/news-flash:latest
+   ```
+
+5. **Update** the ingress target port from 80 (nginx) to 5000 (Flask/Gunicorn):
+
+   ```bash
+   az containerapp ingress update \
+     --name $CA_NAME \
+     --resource-group $RESOURCE_GROUP \
      --target-port 5000
    ```
 
-4. **Get** the application URL:
+6. **Get** the application URL:
 
    ```bash
    az containerapp show \
@@ -140,19 +143,20 @@ The Container App currently runs nginx. Now you will update it to pull and run y
      -o tsv
    ```
 
-5. **Open** the URL in your browser — you will likely see an error page. This is expected because the database connection is not configured yet.
+7. **Open** the URL in your browser — you will likely see an error page. This is expected because the database connection is not configured yet.
 
 > ℹ **Concept Deep Dive**
 >
-> The `az containerapp update` command replaces the running container image. Container Apps pulls the new image from ACR using the provided credentials, stops the old container (nginx), and starts a new container with the Flask application.
+> Updating a Container App from one image to another requires two separate configurations:
 >
-> The `--target-port 5000` flag tells Container Apps which port the application listens on. This must match the Gunicorn `--bind` port in the Dockerfile (`0.0.0.0:5000`). Container Apps routes incoming HTTPS traffic from port 443 to this internal port.
+> - **Registry credentials** (`az containerapp registry set`) tell Container Apps how to authenticate with your private ACR. These credentials are stored once and reused for all future image pulls — including during restarts and scaling events.
+> - **Image update** (`az containerapp update`) tells Container Apps which image to run. Container Apps pulls the new image from ACR, stops the old container (nginx), and starts a new container with the Flask application.
 >
-> The `--registry-server`, `--registry-username`, and `--registry-password` flags configure ACR authentication. Container Apps stores these credentials and uses them whenever it needs to pull the image — including during restarts and scaling events.
+> The **target port** must be updated separately because the ingress configuration is distinct from the container configuration. The original nginx container used port 80, but Flask/Gunicorn listens on port 5000. Container Apps routes incoming HTTPS traffic from port 443 to this internal port.
 >
 > ⚠ **Common Mistakes**
 >
-> - Using `--target-port 80` (the nginx port) instead of `--target-port 5000` — Flask/Gunicorn listens on 5000
+> - Forgetting to update the target port from 80 to 5000 — the app runs but is unreachable
 > - Forgetting the registry credentials — Container Apps cannot pull from a private registry without authentication
 > - Panicking at the error page — the application needs environment variables before it can connect to the database
 >
@@ -174,11 +178,21 @@ The application needs three environment variables to run in production: `FLASK_E
    DATABASE_URL=$(cat .database-url)
    ```
 
-3. **Generate** a secure secret key:
+3. **Generate** a secure secret key and save it for reuse:
 
    ```bash
-   SECRET_KEY=$(openssl rand -hex 32)
+   if [ -f .secret-key ]; then
+     SECRET_KEY=$(cat .secret-key)
+     echo "Reusing existing SECRET_KEY"
+   else
+     SECRET_KEY=$(openssl rand -hex 32)
+     echo "$SECRET_KEY" > .secret-key
+     chmod 600 .secret-key
+     echo "Generated new SECRET_KEY (saved to .secret-key)"
+   fi
    ```
+
+   > **Why save the key?** If `SECRET_KEY` changes between deployments, all existing user sessions are invalidated. Saving it to a file ensures consistency across deployments. The `.secret-key` file should be in `.gitignore`.
 
 4. **Set** the environment variables on the Container App:
 
@@ -211,26 +225,44 @@ The application needs three environment variables to run in production: `FLASK_E
 >
 > ✓ **Quick check:** The application landing page loads without database errors
 
-### **Step 4:** Run Database Migrations
+### **Step 4:** Verify Database Migrations
 
-The application code is running and connected to Azure SQL, but the database has no tables yet. Flask-Migrate (Alembic) manages the database schema — the `flask db upgrade` command reads the migration files and creates all necessary tables.
+The `entrypoint.sh` created in the container-ready exercise runs `flask db upgrade` automatically every time the container starts. This means migrations run when you first deploy, and again whenever you deploy a new version with schema changes. You do not need to run migrations manually.
 
-1. **Source** your configuration file:
+1. **Check** the container logs to verify migrations ran at startup:
 
    ```bash
    source .azure-config
+   az containerapp logs show \
+     --name $CA_NAME \
+     --resource-group $RESOURCE_GROUP \
+     --tail 15
    ```
 
-2. **Run** the database migration inside the running container:
+   You should see output like:
+
+   ```text
+   Running database migrations...
+   INFO  [alembic.runtime.migration] Context impl MSSQLImpl.
+   INFO  [alembic.runtime.migration] Will assume transactional DDL.
+   INFO  [alembic.runtime.migration] Running upgrade  -> 679fad3d6210, Add subscribers table
+   INFO  [alembic.runtime.migration] Running upgrade 679fad3d6210 -> 56de8aa8fc6c, Add user model
+   Starting application...
+   [INFO] Starting gunicorn 22.0.0
+   ```
+
+2. **Create** an admin user so you can access the admin panel. The `create-admin` CLI command runs inside the container via `az containerapp exec`:
 
    ```bash
    az containerapp exec \
      --name $CA_NAME \
      --resource-group $RESOURCE_GROUP \
-     --command "flask" -- db upgrade
+     --command "flask create-admin admin -p Admin1234"
    ```
 
-   You should see output indicating that migrations are being applied.
+   You should see: `Admin user 'admin' created successfully.`
+
+   > **Note:** `az containerapp exec` requires an interactive terminal. If you get a TTY error, try wrapping the command with `script -q /dev/null bash -c '...'`.
 
 3. **Test** the application end-to-end by visiting the application URL:
 
@@ -239,20 +271,30 @@ The application code is running and connected to Azure SQL, but the database has
    - **Submit** a test subscription with your name and email
    - **Verify** the thank you page appears
 
-4. **Confirm** data persisted by checking the subscription count or revisiting the admin page (if available)
+4. **Log in** to the admin panel to verify the admin user works:
+
+   - **Navigate** to `/login` on the application URL
+   - **Enter** username `admin` and password `Admin1234`
+   - **Verify** the admin subscribers page loads and shows your test subscription
+
+5. **Confirm** data persisted by checking the subscriber list in the admin panel
 
 > ℹ **Concept Deep Dive**
 >
-> `az containerapp exec` opens a shell session inside the running container, similar to `docker exec`. The `--command "flask" -- db upgrade` runs the Flask CLI command `flask db upgrade` which applies all pending Alembic migrations.
+> Running migrations at container startup (via `entrypoint.sh`) is the standard pattern for containerized applications. The alternative — running `az containerapp exec` to execute commands inside a running container — requires an interactive terminal and fails in CI/CD pipelines like GitHub Actions.
 >
-> Migrations must run after the `DATABASE_URL` environment variable is configured, because `flask db upgrade` needs to connect to the database. The migration files in the `migrations/` directory define the schema changes — Alembic compares the current database state to the desired state and applies only the missing changes.
+> The `entrypoint.sh` pattern is reliable because:
 >
-> In a production pipeline, migrations typically run as a one-time step after each deployment. If a migration fails, the database transaction is rolled back automatically, leaving the database in its previous state.
+> - **Automatic** — migrations run on every deployment without manual intervention
+> - **Idempotent** — Alembic tracks which migrations have already been applied and skips them
+> - **Fail-safe** — if migrations fail, the container does not start (thanks to `set -e`), preventing the application from running against an outdated schema
+>
+> Alembic compares the current database state to the desired state and applies only the missing changes. If the database is already up to date, `flask db upgrade` completes instantly with no changes.
 >
 > ⚠ **Common Mistakes**
 >
-> - Running migrations before setting `DATABASE_URL` — the command fails because it cannot connect to the database
-> - Forgetting the `--` separator before `db upgrade` — the CLI parser may misinterpret the arguments
+> - Excluding `migrations/` from `.dockerignore` — the container needs migration scripts to run `flask db upgrade`
+> - Not checking logs after first deploy — always verify that migrations ran successfully
 > - Not testing the application after migration — always verify that the schema changes work correctly
 >
 > ✓ **Quick check:** The subscribe form works end-to-end (submit → thank you page)
@@ -293,53 +335,44 @@ Manually running four steps every time you deploy is error-prone. A deployment s
    echo "  ACR:            $ACR_NAME"
    echo ""
 
-   # Step 1: Build and push
+   # Step 1: Build on Azure (avoids ARM/AMD64 mismatch on Apple Silicon)
    ACR_LOGIN_SERVER=$(az acr show --name "$ACR_NAME" --query loginServer -o tsv)
-   echo "Logging in to ACR..."
-   az acr login --name "$ACR_NAME"
 
-   echo "Building Docker image..."
-   docker build --tag "$ACR_LOGIN_SERVER/news-flash:latest" "$PROJECT_DIR"
-
-   echo "Pushing image to ACR..."
-   docker push "$ACR_LOGIN_SERVER/news-flash:latest"
+   echo "Building image on Azure Container Registry..."
+   az acr build --registry "$ACR_NAME" --image news-flash:latest "$PROJECT_DIR"
 
    # Step 2: Update Container App
    ACR_USERNAME=$(az acr credential show --name "$ACR_NAME" --query username -o tsv)
    ACR_PASSWORD=$(az acr credential show --name "$ACR_NAME" --query "passwords[0].value" -o tsv)
+
+   # Step 3: Reuse or generate SECRET_KEY
+   SECRET_KEY_FILE="$PROJECT_DIR/.secret-key"
+   if [ -f "$SECRET_KEY_FILE" ]; then
+     SECRET_KEY=$(cat "$SECRET_KEY_FILE")
+     echo "Reusing existing SECRET_KEY from .secret-key"
+   else
+     SECRET_KEY=$(openssl rand -hex 32)
+     echo "$SECRET_KEY" > "$SECRET_KEY_FILE"
+     chmod 600 "$SECRET_KEY_FILE"
+     echo "Generated new SECRET_KEY (saved to .secret-key)"
+   fi
 
    echo "Updating Container App..."
    az containerapp update \
      --name "$CA_NAME" \
      --resource-group "$RESOURCE_GROUP" \
      --image "$ACR_LOGIN_SERVER/news-flash:latest" \
-     --registry-server "$ACR_LOGIN_SERVER" \
-     --registry-username "$ACR_USERNAME" \
-     --registry-password "$ACR_PASSWORD" \
-     --target-port 5000 \
-     --output none
-
-   # Step 3: Configure environment variables
-   SECRET_KEY=$(openssl rand -hex 32)
-
-   az containerapp update \
-     --name "$CA_NAME" \
-     --resource-group "$RESOURCE_GROUP" \
      --set-env-vars \
        "FLASK_ENV=production" \
        "SECRET_KEY=$SECRET_KEY" \
        "DATABASE_URL=$DATABASE_URL" \
      --output none
 
-   # Step 4: Run migrations
-   echo "Waiting for container to start..."
-   sleep 15
+   # Migrations run automatically at container startup via entrypoint.sh
 
-   echo "Running database migrations..."
-   az containerapp exec \
-     --name "$CA_NAME" \
-     --resource-group "$RESOURCE_GROUP" \
-     --command "flask" -- db upgrade
+   # Wait for new revision to become ready
+   echo "Waiting for deployment to complete..."
+   sleep 15
 
    # Get application URL
    APP_FQDN=$(az containerapp show \
@@ -379,7 +412,9 @@ Manually running four steps every time you deploy is error-prone. A deployment s
 >
 > The script uses `$PROJECT_DIR` to resolve paths relative to the project root, regardless of where you run the script from. This is a common pattern in deployment scripts.
 >
-> The `sleep 15` before running migrations gives the new container time to start. In a production environment, you would use a readiness probe instead, but for a learning environment a fixed delay is sufficient.
+> The `SECRET_KEY` is saved to `.secret-key` on the first run and reused on subsequent deployments. This prevents invalidating user sessions every time you deploy. The `.secret-key` file should be in `.gitignore` alongside `.azure-config` and `.database-url`.
+>
+> The `sleep 15` gives the new container time to start and run migrations (via `entrypoint.sh`). In a production environment, you would use a readiness probe instead, but for a learning environment a fixed delay is sufficient.
 >
 > The `--output none` flag on `az containerapp update` suppresses the verbose JSON output, keeping the deployment log readable.
 >
@@ -429,13 +464,13 @@ Manually running four steps every time you deploy is error-prone. A deployment s
 
 You've successfully deployed the News Flash application to Azure Container Apps:
 
-- ✓ Built and pushed the Docker image to Azure Container Registry
+- ✓ Built and pushed the Docker image to Azure Container Registry using `az acr build`
 - ✓ Updated the Container App from nginx to the Flask application
 - ✓ Configured environment variables following the 12-Factor App methodology
-- ✓ Ran database migrations inside the running container
+- ✓ Verified database migrations ran automatically at container startup
 - ✓ Created a deployment script to automate the entire process
 
-> **Key takeaway:** Deployment is a sequence of well-defined steps: build, push, update, configure, migrate. Automating these steps in a script ensures consistency and prevents human error. The 12-Factor App principle of environment-driven configuration means the same Docker image works in every environment — only the environment variables change.
+> **Key takeaway:** Deployment is a sequence of well-defined steps: build, push, update, configure. Migrations run automatically at container startup via `entrypoint.sh`, eliminating a manual step. Automating these steps in a script ensures consistency and prevents human error. The 12-Factor App principle of environment-driven configuration means the same Docker image works in every environment — only the environment variables change.
 
 ## Going Deeper (Optional)
 

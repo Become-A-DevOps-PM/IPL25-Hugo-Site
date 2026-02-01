@@ -226,9 +226,18 @@ The application needs a database to persist subscriber data. Azure SQL Database 
    echo "SQL Password: $SQL_PASSWORD"
    ```
 
-   Save both values — you will need the password later and cannot retrieve it from Azure.
+   **Save both values immediately.** You will need the password later and cannot retrieve it from Azure after creation.
 
-3. **Create** the SQL Server:
+3. **Save** the SQL password and server name to `.azure-config` so you can retrieve them later:
+
+   ```bash
+   cat >> .azure-config << EOF
+   SQL_SERVER="$SQL_SERVER"
+   SQL_PASSWORD="$SQL_PASSWORD"
+   EOF
+   ```
+
+4. **Create** the SQL Server:
 
    ```bash
    az sql server create \
@@ -239,7 +248,7 @@ The application needs a database to persist subscriber data. Azure SQL Database 
      --admin-password "$SQL_PASSWORD"
    ```
 
-4. **Configure** firewall rules to allow connections:
+5. **Configure** firewall rules to allow connections:
 
    ```bash
    # Allow Azure services (required for Container Apps)
@@ -259,7 +268,7 @@ The application needs a database to persist subscriber data. Azure SQL Database 
      --end-ip-address 255.255.255.255
    ```
 
-5. **Create** the database:
+6. **Create** the database:
 
    ```bash
    az sql db create \
@@ -270,14 +279,14 @@ The application needs a database to persist subscriber data. Azure SQL Database 
      --capacity 5
    ```
 
-6. **Build** the connection string and save it to `.database-url`:
+7. **Build** the connection string and save it to `.database-url`:
 
    ```bash
    echo "mssql+pyodbc://sqladmin:${SQL_PASSWORD}@${SQL_SERVER}.database.windows.net/newsflash?driver=ODBC+Driver+18+for+SQL+Server" > .database-url
    chmod 600 .database-url
    ```
 
-7. **Add** `.database-url` to your `.gitignore`:
+8. **Add** `.database-url` to your `.gitignore`:
 
    ```bash
    echo ".database-url" >> .gitignore
@@ -323,13 +332,7 @@ Before moving on, verify that all resources are provisioned correctly and create
 
    You should see the container registry, Container Apps Environment, Container App, SQL Server, and SQL Database.
 
-3. **Append** the SQL Server name to your configuration file:
-
-   ```bash
-   echo "SQL_SERVER=\"$SQL_SERVER\"" >> .azure-config
-   ```
-
-4. **Create** a `deploy` directory and a cleanup script:
+3. **Create** a `deploy` directory and a cleanup script:
 
    ```bash
    mkdir -p deploy
@@ -360,7 +363,7 @@ Before moving on, verify that all resources are provisioned correctly and create
      echo "Deleting resource group $RESOURCE_GROUP..."
      az group delete --name "$RESOURCE_GROUP" --yes --no-wait
      echo "Deletion started (runs in background)."
-     rm -f "$PROJECT_DIR/.azure-config" "$PROJECT_DIR/.database-url"
+     rm -f "$PROJECT_DIR/.azure-config" "$PROJECT_DIR/.database-url" "$PROJECT_DIR/.secret-key"
      echo "Local config files removed."
    else
      echo "Cancelled."
@@ -388,7 +391,10 @@ Before moving on, verify that all resources are provisioned correctly and create
    CAE_NAME="cae-news-flash"
    CA_NAME="ca-news-flash"
    SQL_SERVER="sql-news-flash-..."
+   SQL_PASSWORD="..."
    ```
+
+   > **Important:** `.azure-config` now contains the SQL password. Keep this file in `.gitignore` and never commit it. You can use the password to connect to the database directly via the Azure Portal Query editor or `sqlcmd` for troubleshooting.
 
 > ℹ **Concept Deep Dive**
 >
@@ -402,7 +408,7 @@ Before moving on, verify that all resources are provisioned correctly and create
 >
 > Always run `deploy/delete.sh` when you are done working for the day, or when you have completed the deployment exercises.
 >
-> ✓ **Quick check:** `.azure-config` contains all six values, `deploy/delete.sh` exists and is executable
+> ✓ **Quick check:** `.azure-config` contains all seven values (including `SQL_PASSWORD`), `deploy/delete.sh` exists and is executable
 
 > ✓ **Success indicators:**
 >
