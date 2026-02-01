@@ -2,7 +2,7 @@
 title = "Tutorials"
 program = "IPL"
 cohort = "25"
-courses = ["SNS"]
+courses = ["SNS", "ASD"]
 description = "Supporting how-to guides"
 weight = 24
 chapter = true
