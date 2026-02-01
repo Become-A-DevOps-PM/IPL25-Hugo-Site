@@ -24,10 +24,10 @@ Create a GitHub Actions workflow that automatically builds, pushes, and deploys 
 
 > **Before starting, ensure you have:**
 >
-> - Application deployed manually and accessible via HTTPS
-> - `.azure-config` file with all resource names
-> - GitHub repository with the News Flash application code pushed
-> - Azure CLI authenticated (`az login`)
+> - ✓ Application deployed manually and accessible via HTTPS
+> - ✓ `.azure-config` file with all resource names
+> - ✓ GitHub repository with the News Flash application code pushed
+> - ✓ Azure CLI authenticated (`az login`)
 
 ## Exercise Steps
 
@@ -94,7 +94,7 @@ A managed identity is Azure's way to grant permissions without passwords or stor
      --scope $RG_ID
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > A **managed identity** is an Azure Active Directory object that represents a non-human actor (like a CI/CD pipeline). Unlike a service principal with a client secret, a managed identity has no password to rotate or leak. Azure manages the credentials internally.
 >
@@ -105,13 +105,13 @@ A managed identity is Azure's way to grant permissions without passwords or stor
 >
 > Each role is scoped to a specific resource. The `AcrPush` role is scoped to the ACR (not the entire subscription), and `Contributor` is scoped to the resource group (not other resource groups). This limits the blast radius if the identity is compromised.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Assigning roles to the `clientId` instead of `principalId` — role assignments require the principal (object) ID
 > - Using `Owner` instead of `Contributor` — Owner can manage access control, which the pipeline does not need
 > - Forgetting the `AcrPush` role — the pipeline will fail at the `docker push` step
 >
-> **Quick check:** `az role assignment list --assignee $PRINCIPAL_ID -o table` shows both role assignments
+> ✓ **Quick check:** `az role assignment list --assignee $PRINCIPAL_ID -o table` shows both role assignments
 
 ### **Step 2:** Configure OIDC Federation for GitHub
 
@@ -163,7 +163,7 @@ OIDC (OpenID Connect) federation creates a trust relationship between GitHub and
    | `AZURE_SUBSCRIPTION_ID` | The subscription ID printed above |
    | `ACR_NAME` | Your ACR name (e.g., `acrnewsflash1a2b3c4d`) |
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **OIDC federation** eliminates stored secrets entirely. The flow works like this:
 >
@@ -177,14 +177,14 @@ OIDC (OpenID Connect) federation creates a trust relationship between GitHub and
 >
 > **Repository variables** (not secrets) are used here because none of these values are sensitive. The client ID, tenant ID, and subscription ID are identifiers — not credentials. They identify which Azure identity to use, but without the OIDC token from the correct GitHub repository, they are useless.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Using `repo:owner/repo:ref:refs/heads/*` (wildcard) — this allows any branch to deploy, defeating branch protection
 > - Putting values in GitHub Secrets instead of Variables — the workflow uses `vars.` prefix, not `secrets.`
 > - Forgetting to replace `<owner>/<repo>` with actual values — the federated credential will not match
 > - Adding extra spaces around the values when pasting into GitHub — trim whitespace carefully
 >
-> **Quick check:** `az identity federated-credential show --name github-deploy --identity-name id-news-flash-deploy --resource-group rg-news-flash` returns the credential details
+> ✓ **Quick check:** `az identity federated-credential show --name github-deploy --identity-name id-news-flash-deploy --resource-group rg-news-flash` returns the credential details
 
 ### **Step 3:** Create the GitHub Actions Workflow
 
@@ -255,7 +255,7 @@ The workflow file defines what happens when code is pushed to the main branch. I
                --image $ACR_SERVER/news-flash:${{ env.IMAGE_TAG }}
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **The 7-digit commit hash** (`${{ github.sha }} | cut -c1-7`) creates immutable, traceable image tags. Instead of overwriting `:latest` on every deploy, each build gets a unique tag like `:a1b2c3d`. This provides:
 >
@@ -269,14 +269,14 @@ The workflow file defines what happens when code is pushed to the main branch. I
 >
 > The **`${{ vars.ACR_NAME }}`** syntax reads from GitHub repository variables (set in Step 2). Using variables instead of hardcoded values makes the workflow portable — a different team can fork the repository and set their own values.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting the `permissions` block — OIDC login fails with "AADSTS700024" error
 > - Using `secrets.` instead of `vars.` — the values were stored as variables, not secrets
 > - Hardcoding the ACR name in the workflow — use variables for portability
 > - Missing `paths` filter — every push (including documentation changes) triggers a deployment
 >
-> **Quick check:** `.github/workflows/deploy.yml` exists with correct syntax (no YAML indentation errors)
+> ✓ **Quick check:** `.github/workflows/deploy.yml` exists with correct syntax (no YAML indentation errors)
 
 ### **Step 4:** Add Database Migration and Health Check
 
@@ -314,7 +314,7 @@ The workflow should also run database migrations after deploying a new image, an
    - Run migrations
    - Health check
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **Migrations run after deployment** because the new container may include schema changes that the new code depends on. The sequence is: deploy new image → run migrations → verify health. If migrations fail, the database transaction is rolled back automatically, and the workflow fails with a visible error in GitHub Actions.
 >
@@ -322,13 +322,13 @@ The workflow should also run database migrations after deploying a new image, an
 >
 > In a more sophisticated pipeline, you would add a wait/retry loop before the health check to account for container startup time. For a learning environment, the container is usually ready by the time migrations complete.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Placing migration before deployment — the old container does not have the new migration files
 > - Forgetting the `--` separator in `az containerapp exec` — the CLI parser may misinterpret `db upgrade`
 > - Using `http://` in the health check URL — Container Apps only serves HTTPS, and `curl` will get a redirect
 >
-> **Quick check:** The workflow YAML is valid and contains all 8 steps
+> ✓ **Quick check:** The workflow YAML is valid and contains all 8 steps
 
 ### **Step 5:** Test the Complete Pipeline
 
@@ -376,7 +376,7 @@ Time to verify the entire automated pipeline works end-to-end. You will make a s
 
 7. **Browse** the application URL and **confirm** your change is live
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The complete pipeline flow is:
 >
@@ -394,16 +394,16 @@ Time to verify the entire automated pipeline works end-to-end. You will make a s
 >
 > You can check any commit hash against the running container image to answer: "which version of the code is currently in production?" This traceability is essential for debugging production issues.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Pushing changes to files not in the `paths` filter — the workflow will not trigger (this is by design)
 > - The workflow fails at Azure login — verify the four GitHub variables match the values from Step 2
 > - The workflow fails at `az acr login` — verify the `AcrPush` role assignment from Step 1
 > - Health check fails — the application may need a few seconds to start; check the workflow logs for details
 >
-> **Quick check:** GitHub Actions shows a green checkmark, and the application reflects your change
+> ✓ **Quick check:** GitHub Actions shows a green checkmark, and the application reflects your change
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Managed identity created with AcrPush and Contributor roles
 > - OIDC federation configured for your GitHub repository
@@ -414,7 +414,7 @@ Time to verify the entire automated pipeline works end-to-end. You will make a s
 > - Health check passes
 > - Application reflects the code change
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
 > - [ ] Managed identity `id-news-flash-deploy` exists with correct role assignments
 > - [ ] Federated credential links your GitHub repository to the managed identity
@@ -447,11 +447,11 @@ Time to verify the entire automated pipeline works end-to-end. You will make a s
 
 You've successfully automated the News Flash deployment with GitHub Actions:
 
-- Created a managed identity with least-privilege role assignments for ACR and Container Apps
-- Configured OIDC federation for passwordless authentication between GitHub and Azure
-- Built a GitHub Actions workflow that builds, pushes, deploys, migrates, and verifies on every push
-- Used 7-digit commit hash tags for immutable, traceable Docker images
-- Added path filters to avoid unnecessary deployments
+- ✓ Created a managed identity with least-privilege role assignments for ACR and Container Apps
+- ✓ Configured OIDC federation for passwordless authentication between GitHub and Azure
+- ✓ Built a GitHub Actions workflow that builds, pushes, deploys, migrates, and verifies on every push
+- ✓ Used 7-digit commit hash tags for immutable, traceable Docker images
+- ✓ Added path filters to avoid unnecessary deployments
 
 > **Key takeaway:** Modern CI/CD pipelines use identity federation instead of stored secrets. OIDC means no passwords in GitHub, no secrets to rotate, and no credentials to leak. Combined with immutable image tags and automated health checks, this pipeline provides a reliable, traceable deployment process that runs on every push to main.
 
@@ -464,6 +464,6 @@ You've successfully automated the News Flash deployment with GitHub Actions:
 > - Add build caching to speed up Docker builds in GitHub Actions
 > - Configure branch protection rules to require the workflow to pass before merging
 
-## Done!
+## Done! 🎉
 
 Your deployment pipeline is fully automated. Push code to main and the pipeline handles the rest — build, push, deploy, migrate, and verify. Every deployment is traceable to an exact commit, and no passwords are stored anywhere.

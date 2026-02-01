@@ -500,6 +500,6 @@ You've successfully completed a full development cycle which:
 > - Configure deployment tracking to see which environments have which code
 > - Use Jira's built-in reports to analyze development metrics across sprints
 
-## Done!
+## Done! 🎉
 
 You've mastered the integrated development workflow. From now on, every feature you build can be tracked from the initial user story through to the deployed code. This is the same workflow used by professional software teams worldwide to maintain visibility, accountability, and traceability in their development process.

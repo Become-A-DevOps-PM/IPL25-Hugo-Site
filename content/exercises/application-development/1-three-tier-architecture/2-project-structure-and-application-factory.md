@@ -24,9 +24,9 @@ Organize a Flask application using three-tier architecture and the application f
 
 > **Before starting, ensure you have:**
 >
-> - Python 3.11 or later installed
-> - Basic understanding of Python packages and modules
-> - Familiarity with virtual environments
+> - ✓ Python 3.11 or later installed
+> - ✓ Basic understanding of Python packages and modules
+> - ✓ Familiarity with virtual environments
 
 ## Exercise Steps
 
@@ -84,7 +84,7 @@ Flask applications can quickly become difficult to maintain if all code lives in
    touch application/app/presentation/routes/__init__.py
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The three-tier architecture separates your application into distinct layers:
 >
@@ -94,13 +94,13 @@ Flask applications can quickly become difficult to maintain if all code lives in
 >
 > This separation means you can change how data is stored (switching databases) without touching business logic, or redesign your UI without affecting how data is processed.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting `__init__.py` files makes directories invisible to Python imports
 > - Placing business logic in routes creates tight coupling and makes testing difficult
 > - Mixing database queries directly in route handlers violates separation of concerns
 >
-> **Quick check:** All directories created and `__init__.py` files exist
+> ✓ **Quick check:** All directories created and `__init__.py` files exist
 
 ### **Step 2:** Create Configuration Files
 
@@ -152,7 +152,7 @@ Every Python project needs proper dependency management and environment configur
    cp application/.env.example application/.env
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The 12-Factor App methodology recommends storing configuration in environment variables. This approach:
 >
@@ -162,13 +162,13 @@ Every Python project needs proper dependency management and environment configur
 >
 > The `.env.example` file documents required variables without exposing actual values. New developers copy it to `.env` and fill in their values.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Committing `.env` to version control exposes secrets
 > - Using `==` instead of `>=` in requirements pins to exact versions, blocking security updates
 > - Forgetting to add `__pycache__/` to `.gitignore` clutters your repository
 >
-> **Quick check:** `.env` file exists and is listed in `.gitignore`
+> ✓ **Quick check:** `.env` file exists and is listed in `.gitignore`
 
 ### **Step 3:** Implement the Application Factory
 
@@ -224,7 +224,7 @@ The application factory pattern creates your Flask application inside a function
        return app
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `create_app()` function is the application factory. When called, it:
 >
@@ -235,13 +235,13 @@ The application factory pattern creates your Flask application inside a function
 >
 > The custom `template_folder` and `static_folder` paths align with our three-tier architecture, placing presentation assets in the presentation layer.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Creating the app at module level (`app = Flask(__name__)`) prevents testing with different configs
 > - Forgetting to import `config` will cause `NameError` at runtime
 > - Using relative imports incorrectly (`from config` vs `from .config`) breaks package structure
 >
-> **Quick check:** File saved with no syntax errors
+> ✓ **Quick check:** File saved with no syntax errors
 
 ### **Step 4:** Add Configuration Management
 
@@ -301,7 +301,7 @@ Configuration classes organize your application settings in a type-safe, documen
    }
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The configuration hierarchy works through inheritance:
 >
@@ -312,13 +312,13 @@ Configuration classes organize your application settings in a type-safe, documen
 >
 > The `config` dictionary maps string names to classes, allowing `create_app("testing")` to load test configuration. This is cleaner than if/else chains and makes adding new environments trivial.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Using `DEBUG=True` in production exposes sensitive information in error pages
 > - Hardcoding secrets instead of using environment variables
 > - Forgetting to set a strong `SECRET_KEY` in production breaks session security
 >
-> **Quick check:** Config file created with all four configuration classes
+> ✓ **Quick check:** Config file created with all four configuration classes
 
 ### **Step 5:** Test Your Implementation
 
@@ -353,7 +353,7 @@ Testing ensures your application factory works correctly before adding more comp
    - No import errors or exceptions
    - Server running message: `Running on http://127.0.0.1:5000`
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Virtual environment created and activated
 > - Dependencies installed without errors
@@ -361,14 +361,14 @@ Testing ensures your application factory works correctly before adding more comp
 > - Browser shows 404 Not Found (no routes defined yet)
 > - No Python errors in terminal output
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
-> - [ ] All directories created with correct structure
-> - [ ] `__init__.py` files exist in `app/` and `presentation/routes/`
-> - [ ] `requirements.txt`, `.env`, and `.gitignore` created
-> - [ ] `create_app()` function exists in `app/__init__.py`
-> - [ ] Configuration classes defined in `app/config.py`
-> - [ ] Application starts without import errors
+> - ☐ All directories created with correct structure
+> - ☐ `__init__.py` files exist in `app/` and `presentation/routes/`
+> - ☐ `requirements.txt`, `.env`, and `.gitignore` created
+> - ☐ `create_app()` function exists in `app/__init__.py`
+> - ☐ Configuration classes defined in `app/config.py`
+> - ☐ Application starts without import errors
 
 ## Common Issues
 
@@ -388,9 +388,9 @@ Testing ensures your application factory works correctly before adding more comp
 
 You've successfully implemented the project structure and application factory which:
 
-- Organizes code into three-tier architecture for clear separation of concerns
-- Uses the application factory pattern for flexible configuration and testing
-- Implements configuration management with environment-aware settings
+- ✓ Organizes code into three-tier architecture for clear separation of concerns
+- ✓ Uses the application factory pattern for flexible configuration and testing
+- ✓ Implements configuration management with environment-aware settings
 
 > **Key takeaway:** The application factory pattern is essential for maintainable Flask applications because it enables testing with different configurations and keeps your application modular. You'll use this pattern in virtually every production Flask project.
 
@@ -402,3 +402,7 @@ You've successfully implemented the project structure and application factory wh
 > - Research Flask extensions and how they integrate with the application factory
 > - Implement logging configuration that changes based on environment
 > - Add type hints to all configuration values for better IDE support
+
+## Done! 🎉
+
+Great job! You've set up a well-organized Flask project with three-tier architecture and the application factory pattern. This foundation will support every feature you build going forward, keeping your codebase maintainable and testable as it grows.

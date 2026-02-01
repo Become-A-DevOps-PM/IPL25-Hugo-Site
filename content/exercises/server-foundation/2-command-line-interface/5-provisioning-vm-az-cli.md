@@ -1,13 +1,16 @@
 +++
-title = "5. Provisioning a VM Using AZ CLI, Configuring Nginx, and Allowing HTTP Traffic"
+title = "Provisioning a VM Using AZ CLI, Configuring Nginx, and Allowing HTTP Traffic"
 program = "IPL"
 cohort = "25"
 courses = ["SNS"]
+description = "Provision an Azure Virtual Machine using the Azure CLI, install Nginx web server, and configure Network Security Groups to allow HTTP traffic."
 weight = 5
 date = 2024-11-25
 lastmod = 2025-11-24
 draft = false
 +++
+
+# Provisioning a VM Using AZ CLI, Configuring Nginx, and Allowing HTTP Traffic
 
 ## Goal
 
@@ -251,6 +254,6 @@ You've successfully provisioned a VM using Azure CLI which:
 > - Configure HTTPS with a self-signed certificate on port 443
 > - Explore Azure CLI commands for scaling and monitoring your VM
 
-## Done 🎉
+## Done! 🎉
 
 You have successfully provisioned a VM using Azure CLI, logged in with SSH, installed and tested Nginx, and configured port 80 for HTTP traffic. This exercise demonstrates the fundamental workflow for command-line infrastructure management in Azure.

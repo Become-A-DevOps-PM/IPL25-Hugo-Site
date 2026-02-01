@@ -23,20 +23,10 @@ Build a visually engaging landing page with a styled hero section and an accessi
 
 > **Before starting, ensure you have:**
 >
-> - A Flask application with base template and working routes
-> - Flask development server running
-> - Browser developer tools available (F12)
-
-## Before You Begin
-
-> **Start each session by activating your environment:**
->
-> ```bash
-> cd application
-> source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-> ```
->
-> You'll know it's active when you see `(.venv)` in your terminal prompt.
+> - ✓ A Flask application with base template and working routes
+> - ✓ Flask development server running
+> - ✓ Browser developer tools available (F12)
+> - ✓ Virtual environment activated (`cd application && source .venv/bin/activate`)
 
 ## Exercise Steps
 
@@ -335,7 +325,7 @@ Testing interactive components requires checking multiple user flows. You need t
    - After closing the modal by any method, the Subscribe button should be focused
    - You can verify this by pressing Tab immediately after closing - the next element should receive focus
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Hero section fills at least 60% of the viewport height
 > - Gradient smoothly transitions from dark blue to light blue
@@ -344,17 +334,17 @@ Testing interactive components requires checking multiple user flows. You need t
 > - All three close methods work (button, overlay, Escape)
 > - Focus returns to Subscribe button after closing
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
-> - [ ] Hero displays with gradient background
-> - [ ] Text is readable against the gradient
-> - [ ] Subscribe button has hover effect
-> - [ ] Modal opens on button click
-> - [ ] Modal closes via X button
-> - [ ] Modal closes via overlay click
-> - [ ] Modal closes via Escape key
-> - [ ] Focus management works correctly
-> - [ ] Responsive design works on mobile widths
+> - ☐ Hero displays with gradient background
+> - ☐ Text is readable against the gradient
+> - ☐ Subscribe button has hover effect
+> - ☐ Modal opens on button click
+> - ☐ Modal closes via X button
+> - ☐ Modal closes via overlay click
+> - ☐ Modal closes via Escape key
+> - ☐ Focus management works correctly
+> - ☐ Responsive design works on mobile widths
 
 ## Common Issues
 
@@ -376,11 +366,11 @@ Testing interactive components requires checking multiple user flows. You need t
 
 You've successfully built an interactive landing page that:
 
-- Uses CSS gradients for a modern, professional appearance
-- Implements responsive design with media queries
-- Creates an accessible modal dialog with ARIA attributes
-- Handles multiple user interaction methods
-- Manages focus for keyboard accessibility
+- ✓ Uses CSS gradients for a modern, professional appearance
+- ✓ Implements responsive design with media queries
+- ✓ Creates an accessible modal dialog with ARIA attributes
+- ✓ Handles multiple user interaction methods
+- ✓ Manages focus for keyboard accessibility
 
 > **Key takeaway:** Accessible interactive components require attention to both visual users (animations, hover effects) and keyboard/screen reader users (ARIA attributes, focus management). Building accessibility in from the start is much easier than retrofitting it later.
 
@@ -393,3 +383,7 @@ You've successfully built an interactive landing page that:
 > - Implement a fade-out animation when the modal closes
 > - Add a second button in the modal to prepare for the subscription form
 > - Research the `inert` attribute as a modern alternative to manual focus trapping
+
+## Done! 🎉
+
+Great job! You've learned how to build an engaging hero section with CSS gradients and implement an accessible modal dialog with proper focus management. These frontend skills form the foundation for creating polished, user-friendly web applications.

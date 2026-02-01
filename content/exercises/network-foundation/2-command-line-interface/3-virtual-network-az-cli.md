@@ -1,5 +1,6 @@
 +++
 title = "Virtual Network with Enhanced Security"
+description = "Build a three-tier network infrastructure on Azure with NSGs, ASGs, and a bastion host using Azure CLI."
 program = "IPL"
 cohort = "25"
 courses = ["SNS"]
@@ -7,6 +8,8 @@ weight = 3
 date = 2024-12-05
 draft = false
 +++
+
+# Virtual Network with Enhanced Security
 
 ## Goal
 

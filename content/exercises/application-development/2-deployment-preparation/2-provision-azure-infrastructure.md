@@ -24,10 +24,10 @@ Create the Azure infrastructure needed to host the News Flash application: a res
 
 > **Before starting, ensure you have:**
 >
-> - Container-ready application with Dockerfile, wsgi.py, and production config
-> - Azure CLI installed and authenticated (`az login`)
-> - Docker installed on your development machine
-> - An active Azure subscription
+> - ✓ Container-ready application with Dockerfile, wsgi.py, and production config
+> - ✓ Azure CLI installed and authenticated (`az login`)
+> - ✓ Docker installed on your development machine
+> - ✓ An active Azure subscription
 
 ## Exercise Steps
 
@@ -92,7 +92,7 @@ Every Azure deployment starts with a resource group — a logical container that
    echo ".azure-config" >> .gitignore
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > A **resource group** is Azure's organizational unit. It is not a billing boundary or a security boundary — it is a logical grouping. When you delete a resource group, Azure deletes every resource inside it. This makes cleanup straightforward: one command removes everything.
 >
@@ -100,13 +100,13 @@ Every Azure deployment starts with a resource group — a logical container that
 >
 > ACR names cannot contain hyphens and must be globally unique because the registry URL becomes `<name>.azurecr.io`. The random suffix ensures uniqueness.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Using hyphens in the ACR name — only lowercase letters and numbers are allowed
 > - Forgetting `--admin-enabled true` — Container Apps needs credentials to pull images
 > - Not saving the ACR name — you will need it in every subsequent step
 >
-> **Quick check:** `az acr show --name $ACR_NAME --resource-group rg-news-flash` returns registry details without errors
+> ✓ **Quick check:** `az acr show --name $ACR_NAME --resource-group rg-news-flash` returns registry details without errors
 
 ### **Step 2:** Create Container Apps Environment
 
@@ -138,7 +138,7 @@ The Container Apps Environment is the hosting platform where your containers run
    EOF
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > A **Container Apps Environment** is a shared boundary for one or more Container Apps. It provides:
 >
@@ -148,12 +148,12 @@ The Container Apps Environment is the hosting platform where your containers run
 >
 > You can run multiple Container Apps in the same environment. They share the networking and logging infrastructure but run as independent containers with separate scaling rules.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Creating the environment in a different location than the resource group — keep everything in `swedencentral`
 > - Not waiting for the command to complete — it provisions infrastructure and takes a couple of minutes
 >
-> **Quick check:** `az containerapp env show --name cae-news-flash --resource-group rg-news-flash` returns environment details
+> ✓ **Quick check:** `az containerapp env show --name cae-news-flash --resource-group rg-news-flash` returns environment details
 
 ### **Step 3:** Deploy nginx to Verify Infrastructure
 
@@ -191,7 +191,7 @@ Before deploying your application, verify that the infrastructure works by deplo
 
 4. **Open** `https://<fqdn>` in your browser — you should see the "Welcome to nginx!" page
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **External ingress** exposes the Container App to the internet via Azure's managed HTTPS endpoint. Azure automatically provisions a TLS certificate and terminates HTTPS at the edge — you do not need to configure SSL certificates, nginx reverse proxy, or load balancers. The URL follows the pattern `<app-name>.<random-hash>.<region>.azurecontainerapps.io`.
 >
@@ -199,13 +199,13 @@ Before deploying your application, verify that the infrastructure works by deplo
 >
 > This "deploy nginx first" strategy is a common infrastructure verification pattern. It isolates infrastructure problems from application problems — if nginx does not work, the issue is with Azure configuration, not your code.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting `--ingress external` — without it, the Container App has no public URL
 > - Using `http://` instead of `https://` — Container Apps only serves HTTPS
 > - Not seeing the nginx page — wait a minute for the container to start, then refresh
 >
-> **Quick check:** Browser shows "Welcome to nginx!" at the HTTPS URL
+> ✓ **Quick check:** Browser shows "Welcome to nginx!" at the HTTPS URL
 
 ### **Step 4:** Provision Azure SQL Database
 
@@ -283,7 +283,7 @@ The application needs a database to persist subscriber data. Azure SQL Database 
    echo ".database-url" >> .gitignore
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **Azure SQL Database** is a fully managed relational database. The Basic tier provides 5 DTUs (Database Transaction Units) — a blended measure of CPU, memory, and I/O. This is sufficient for a learning environment with light traffic.
 >
@@ -296,14 +296,14 @@ The application needs a database to persist subscriber data. Azure SQL Database 
 >
 > The password includes `Aa1!` appended to the random string to guarantee Azure SQL's complexity requirements (uppercase, lowercase, number, special character).
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Not saving the password — Azure does not store or display it after creation
 > - Forgetting the `AllowAzureServices` firewall rule — Container Apps cannot connect without it
 > - Using the wrong connection string format — `mssql+pyodbc://` is required, not `mssql://` or `sqlserver://`
 > - Forgetting `chmod 600` on `.database-url` — the file contains a password and should not be world-readable
 >
-> **Quick check:** `az sql db show --name newsflash --server $SQL_SERVER --resource-group rg-news-flash` returns database details
+> ✓ **Quick check:** `az sql db show --name newsflash --server $SQL_SERVER --resource-group rg-news-flash` returns database details
 
 ### **Step 5:** Verify Resources and Create Cleanup Script
 
@@ -390,7 +390,7 @@ Before moving on, verify that all resources are provisioned correctly and create
    SQL_SERVER="sql-news-flash-..."
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `--no-wait` flag on `az group delete` starts the deletion in the background and returns immediately. Resource group deletion can take several minutes because Azure must deprovision every resource inside it. The `--yes` flag skips Azure CLI's own confirmation prompt since the script already asks for confirmation.
 >
@@ -402,9 +402,9 @@ Before moving on, verify that all resources are provisioned correctly and create
 >
 > Always run `deploy/delete.sh` when you are done working for the day, or when you have completed the deployment exercises.
 >
-> **Quick check:** `.azure-config` contains all six values, `deploy/delete.sh` exists and is executable
+> ✓ **Quick check:** `.azure-config` contains all six values, `deploy/delete.sh` exists and is executable
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Resource group `rg-news-flash` exists in `swedencentral`
 > - Container registry responds to `az acr show` commands
@@ -415,7 +415,7 @@ Before moving on, verify that all resources are provisioned correctly and create
 > - `.database-url` contains the connection string
 > - `deploy/delete.sh` exists and is executable
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
 > - [ ] Resource group created in `swedencentral`
 > - [ ] Container registry created with admin access enabled
@@ -447,12 +447,12 @@ Before moving on, verify that all resources are provisioned correctly and create
 
 You've successfully provisioned the Azure infrastructure for the News Flash application:
 
-- Created a resource group to organize all project resources
-- Provisioned a private container registry for Docker images
-- Set up a Container Apps Environment as the hosting platform
-- Verified infrastructure by deploying an nginx container
-- Provisioned Azure SQL Database with firewall rules for connectivity
-- Created a cleanup script to manage costs
+- ✓ Created a resource group to organize all project resources
+- ✓ Provisioned a private container registry for Docker images
+- ✓ Set up a Container Apps Environment as the hosting platform
+- ✓ Verified infrastructure by deploying an nginx container
+- ✓ Provisioned Azure SQL Database with firewall rules for connectivity
+- ✓ Created a cleanup script to manage costs
 
 > **Key takeaway:** Always verify infrastructure with a simple deployment (like nginx) before introducing application complexity. This isolates infrastructure issues from application issues and saves significant debugging time. When nginx works, you know the network, ingress, and Container Apps Environment are correctly configured.
 
@@ -465,6 +465,6 @@ You've successfully provisioned the Azure infrastructure for the News Flash appl
 > - Investigate Azure Monitor and Log Analytics for container log analysis
 > - Compare Container Apps with other Azure compute options (App Service, AKS, Container Instances)
 
-## Done!
+## Done! 🎉
 
 Your Azure infrastructure is ready. The resource group, container registry, Container Apps Environment, and SQL database are all provisioned and verified. The nginx container proves everything works — now it is time to deploy the actual application.

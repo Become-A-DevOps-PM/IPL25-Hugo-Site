@@ -367,6 +367,6 @@ You've successfully tested the business layer's core logic which:
 > - Add tests for email domains with hyphens and numbers (e.g., `user@my-domain123.co.uk`)
 > - Research property-based testing with the Hypothesis library for automated edge case discovery
 
-## Done!
+## Done! 🎉
 
 You've tested the business layer's validation and normalization logic. These tests ensure data quality regardless of how users submit information -- through the web form, an API, or any future interface.

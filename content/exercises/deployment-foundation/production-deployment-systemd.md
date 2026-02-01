@@ -396,9 +396,7 @@ Learn to view application logs using journalctl. All output from the service (st
 >
 > ✓ **Quick check:** Form submissions appear in journalctl output
 
-## Useful Commands Reference
-
-> **Common systemctl commands:**
+> ℹ **Common systemctl commands:**
 >
 > ```bash
 > # Check service status

@@ -1,5 +1,6 @@
 +++
-title = "3. Automating Nginx Installation with Custom Data Scripts"
+title = "Automating Nginx Installation with Custom Data Scripts"
+description = "Learn to automate Nginx installation during Azure VM provisioning using custom data scripts and cloud-init."
 program = "IPL"
 cohort = "25"
 courses = ["SNS"]
@@ -8,6 +9,8 @@ date = 2024-11-25
 lastmod = 2025-11-24
 draft = false
 +++
+
+# Automating Nginx Installation with Custom Data Scripts
 
 ## Goal
 
@@ -23,9 +26,9 @@ Automate the installation and configuration of Nginx during VM provisioning usin
 
 > **Before starting, ensure you have:**
 >
-> - An active Azure subscription
-> - An SSH key pair available (or ability to generate one)
-> - Basic familiarity with SSH connections
+> - ✓ An active Azure subscription
+> - ✓ An SSH key pair available (or ability to generate one)
+> - ✓ Basic familiarity with SSH connections
 
 ## Exercise Steps
 
@@ -71,7 +74,7 @@ Custom data scripts allow you to automate configuration tasks that would otherwi
 
 5. **Click** **Review + Create**, and then **Create**
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The **Custom Data** field allows you to execute a script during the initial boot of the VM, automating configurations and software installations.
 >
@@ -82,13 +85,13 @@ Custom data scripts allow you to automate configuration tasks that would otherwi
 >
 > It is important that you 1) don't use `sudo` 2) make sure it is _non-interactive_ 3) use a shebang
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Adding `sudo` to commands (custom data runs as root)
 > - Forgetting the shebang (`#!/bin/bash`)
 > - Using interactive prompts that hang the script
 >
-> **Quick check:** Open a browser and go to `http://<VM_Public_IP>`. You should see the **"Welcome to Nginx!"** default page. This might take a minute, so be patient and refresh the page.
+> ✓ **Quick check:** Open a browser and go to `http://<VM_Public_IP>`. You should see the **"Welcome to Nginx!"** default page. This might take a minute, so be patient and refresh the page.
 
 ### **Step 3:** Edit the Nginx Default Page
 
@@ -119,7 +122,7 @@ Now that Nginx is running, you'll connect to the server and modify its default p
 4. **Modify** the content (e.g., add "Hello World" to the `<h1>` tag)
 5. **Save** and exit by pressing `Ctrl+x`, `y`, and `Enter`
 
-> **Quick check:** Refresh the page in your browser or rerun the `curl localhost` command to see the updated content.
+> ✓ **Quick check:** Refresh the page in your browser or rerun the `curl localhost` command to see the updated content.
 
 ### **Step 4:** Clean Up Resources (Optional)
 
@@ -143,10 +146,10 @@ Deleting resources when you're finished prevents unnecessary charges and keeps y
 
 You've successfully automated Nginx installation using Azure custom data scripts which:
 
-- Eliminates manual configuration steps after VM creation
-- Demonstrates infrastructure-as-code principles
-- Shows how cloud-init processes startup scripts
-- Provides a foundation for more complex automation
+- ✓ Eliminates manual configuration steps after VM creation
+- ✓ Demonstrates infrastructure-as-code principles
+- ✓ Shows how cloud-init processes startup scripts
+- ✓ Provides a foundation for more complex automation
 
 > **Key takeaway:** Custom data scripts transform VM provisioning from a multi-step manual process into a single automated deployment, making your infrastructure reproducible and consistent.
 
@@ -158,6 +161,6 @@ You've successfully automated Nginx installation using Azure custom data scripts
 > - Research cloud-init directives for more advanced configuration options
 > - Experiment with multiple custom data scripts for different services
 
-## Done 🎉
+## Done! 🎉
 
 You have successfully automated the installation of Nginx using a custom data script and edited the default web page to display custom content.

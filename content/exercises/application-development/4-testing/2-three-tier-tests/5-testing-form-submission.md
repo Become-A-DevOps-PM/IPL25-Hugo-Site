@@ -24,12 +24,12 @@ Test the complete subscription flow end-to-end by submitting form data through t
 
 > **Before starting, ensure you have:**
 >
-> - Completed the business layer and data layer testing exercises
-> - Working `conftest.py` with `app` fixture (in-memory SQLite) and `client` fixture
-> - `POST /subscribe/confirm` route that accepts `email` and `name` form data
-> - `SubscriptionService` with validation, normalization, duplicate checking, and save logic
-> - `Subscriber` model with `email` (unique), `name`, and `subscribed_at` columns
-> - `TestingConfig` with `WTF_CSRF_ENABLED = False`
+> - ✓ Completed the business layer and data layer testing exercises
+> - ✓ Working `conftest.py` with `app` fixture (in-memory SQLite) and `client` fixture
+> - ✓ `POST /subscribe/confirm` route that accepts `email` and `name` form data
+> - ✓ `SubscriptionService` with validation, normalization, duplicate checking, and save logic
+> - ✓ `Subscriber` model with `email` (unique), `name`, and `subscribed_at` columns
+> - ✓ `TestingConfig` with `WTF_CSRF_ENABLED = False`
 
 ## Exercise Steps
 
@@ -330,6 +330,6 @@ You've successfully tested the complete subscription flow end-to-end:
 > - Add performance benchmarks for the subscription flow
 > - Research snapshot testing for HTML responses
 
-## Done!
+## Done! 🎉
 
-You've completed the three-tier test suite. Your tests cover business logic, data operations, and the complete integration flow.
+You've completed the three-tier test suite. Your tests cover business logic, data operations, and the complete integration flow. You now have the skills to write integration tests that verify your entire application stack works together correctly.

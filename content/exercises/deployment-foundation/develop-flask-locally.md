@@ -328,6 +328,15 @@ You've successfully set up a local Flask development environment which:
 
 > **Key takeaway:** Virtual environments keep project dependencies separate and reproducible. Always activate the environment before working on your project, and always use `requirements.txt` to track dependencies.
 
+## Going Deeper (Optional)
+
+> **Want to explore more?**
+>
+> - Try adding a `/messages` route that stores and displays all submitted messages in a list
+> - Research how Flask's `render_template()` works with separate HTML template files instead of inline strings
+> - Experiment with environment variables to configure the port and debug mode
+> - Explore how `flask run` differs from `python app.py` for starting your application
+
 ## Done! 🎉
 
 Great work! You now have a working Flask application running locally. This same application can later be deployed to a server using Gunicorn for production use.

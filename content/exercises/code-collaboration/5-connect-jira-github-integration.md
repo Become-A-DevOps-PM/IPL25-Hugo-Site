@@ -369,6 +369,6 @@ You've successfully connected Jira to GitHub which:
 > - Configure automation rules in Jira to move issues when PRs are merged
 > - Explore the Teamwork Graph connector for additional team insights
 
-## Done!
+## Done! 🎉
 
 You've connected Jira to GitHub. Your development workflow now has full visibility: user stories in Jira are automatically linked to the branches, commits, and pull requests that implement them. This integration is used by professional software teams to maintain traceability and keep project managers informed of development progress without requiring manual status updates.

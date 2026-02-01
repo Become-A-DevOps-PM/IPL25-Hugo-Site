@@ -100,7 +100,7 @@ Copy your updated application files to the Azure VM. This includes the modified 
 
 Connect to the VM, activate the virtual environment, and install the updated dependencies. The server needs the PostgreSQL driver to connect to Azure PostgreSQL.
 
-> **Note:** The virtual environment was already created in the basic deployment exercise. If you're using the same VM, it should already exist.
+> ℹ **Note:** The virtual environment was already created in the basic deployment exercise. If you're using the same VM, it should already exist.
 
 1. **Connect** to your VM:
 
@@ -158,7 +158,7 @@ Start Gunicorn with the DATABASE_URL environment variable pointing to your Azure
    DATABASE_URL='postgresql://flaskadmin:DevOps2025!@flask-db-unique.postgres.database.azure.com:5432/contactform' gunicorn --workers 2 --bind 0.0.0.0:5001 app:app
    ```
 
-   > **Note:** Replace `DevOps2025!` with your actual password and `flask-db-unique` with your server name.
+   > ⚠ **Note:** Replace `DevOps2025!` with your actual password and `flask-db-unique` with your server name.
 
 2. **Observe** the startup output:
 
@@ -276,4 +276,4 @@ You've successfully deployed the database-enabled application which:
 
 ## Done! 🎉
 
-Great work! Your application is now deployed with a production database. However, the current setup requires manually starting Gunicorn and typing the connection string each time. The next exercise addresses this by configuring a proper system service.
+Great work! Your application is now deployed with a production database. The current setup requires manually starting Gunicorn and typing the connection string each time. A natural next step would be configuring a proper system service to handle this automatically.

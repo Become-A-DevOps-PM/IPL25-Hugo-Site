@@ -24,9 +24,9 @@ Build a validation service in the business layer to validate and normalize subsc
 
 > **Before starting, ensure you have:**
 >
-> - Completed the subscription form and thank you page implementation
-> - Flask application running with `flask run`
-> - Understanding of Python classes and regular expressions
+> - ✓ Completed the subscription form and thank you page implementation
+> - ✓ Flask application running with `flask run`
+> - ✓ Understanding of Python classes and regular expressions
 
 ## Exercise Steps
 
@@ -92,19 +92,19 @@ The business layer sits between presentation and data layers. It handles validat
            return True, ""
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The service class encapsulates business logic that would otherwise clutter your routes. The `validate_email` method returns a tuple - a common Python pattern for returning both a success flag and additional information. This allows the caller to check validity and get the error message in one call.
 >
 > The regex pattern `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$` validates basic email format: characters before @, domain name, and a TLD of at least 2 characters.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting to check for empty strings after stripping whitespace
 > - Using overly strict regex that rejects valid emails (like ones with + signs)
 > - Not returning consistent types from validation methods
 >
-> **Quick check:** File created at `app/business/services/subscription_service.py`
+> ✓ **Quick check:** File created at `app/business/services/subscription_service.py`
 
 ### **Step 2:** Add Business Rules Methods
 
@@ -178,7 +178,7 @@ Beyond validation, the business layer handles data transformation and business r
            }
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > Normalization ensures data consistency. Users might enter `"  JOHN@EXAMPLE.COM  "` but we store `"john@example.com"`. This prevents duplicate entries with different casing and makes searching reliable.
 >
@@ -186,13 +186,13 @@ Beyond validation, the business layer handles data transformation and business r
 >
 > The `str | None` type hint (Python 3.10+) indicates the parameter can be either a string or None.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting that `name` can be `None` (not just empty string)
 > - Not using timezone-aware datetime (always use `timezone.utc`)
 > - Normalizing before validating (validate the original input)
 >
-> **Quick check:** Service class has four methods: `validate_email`, `normalize_email`, `normalize_name`, `process_subscription`
+> ✓ **Quick check:** Service class has four methods: `validate_email`, `normalize_email`, `normalize_name`, `process_subscription`
 
 ### **Step 3:** Update the Route to Use the Service
 
@@ -244,7 +244,7 @@ Now we connect the business layer to the presentation layer. The route will use 
        return render_template("thank_you.html", email=data["email"], name=data["name"])
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The route now delegates validation to the business layer instead of handling it directly. This separation means:
 >
@@ -253,13 +253,13 @@ Now we connect the business layer to the presentation layer. The route will use 
 >
 > When validation fails, we re-render the form with three pieces of information: the error message, and the original email and name values. This preserves user input so they don't have to retype everything.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting to pass `email` and `name` back to the template on error (loses user input)
 > - Using `request.form.get("email")` without a default returns `None`, which can cause issues
 > - Creating the service inside the route is fine for now; dependency injection comes later
 >
-> **Quick check:** Route imports the service and uses it for validation
+> ✓ **Quick check:** Route imports the service and uses it for validation
 
 ### **Step 4:** Add Error Display to the Form
 
@@ -339,19 +339,19 @@ The form template needs to display error messages when validation fails and pres
    }
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `{% if error %}` block uses Jinja2 conditional rendering - the error banner only appears when an error exists. The `{{ email or '' }}` syntax provides a default empty string if `email` is undefined, preventing template errors.
 >
 > Error styling uses red colors (#ef4444, #dc2626) which are universally recognized as indicating problems. The error banner appears above the form so users see it immediately.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting the `or ''` fallback causes errors when variables are undefined
 > - Placing the error banner inside the form can cause layout issues
 > - Not preserving both email and name values frustrates users
 >
-> **Quick check:** Template shows error banner conditionally and preserves input values
+> ✓ **Quick check:** Template shows error banner conditionally and preserves input values
 
 ### **Step 5:** Test Your Implementation
 
@@ -388,7 +388,7 @@ Verify the complete validation flow works correctly. We'll test both invalid and
 6. **Check terminal output:**
    - Verify terminal shows: `New subscription: test@example.com (Jane)`
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Empty email shows "Email is required" error
 > - Invalid format shows "Invalid email format" error
@@ -397,15 +397,15 @@ Verify the complete validation flow works correctly. We'll test both invalid and
 > - Name is trimmed or defaults to "Subscriber"
 > - Terminal shows processed (normalized) data
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
-> - [ ] `subscription_service.py` created in `app/business/services/`
-> - [ ] Service has `validate_email`, `normalize_email`, `normalize_name`, `process_subscription` methods
-> - [ ] Route imports and uses `SubscriptionService`
-> - [ ] Form displays error banner when validation fails
-> - [ ] Form preserves input values on error
-> - [ ] Email input shows error styling when validation fails
-> - [ ] Valid submissions show normalized data on thank you page
+> - ☐ `subscription_service.py` created in `app/business/services/`
+> - ☐ Service has `validate_email`, `normalize_email`, `normalize_name`, `process_subscription` methods
+> - ☐ Route imports and uses `SubscriptionService`
+> - ☐ Form displays error banner when validation fails
+> - ☐ Form preserves input values on error
+> - ☐ Email input shows error styling when validation fails
+> - ☐ Valid submissions show normalized data on thank you page
 
 ## Common Issues
 
@@ -425,10 +425,10 @@ Verify the complete validation flow works correctly. We'll test both invalid and
 
 You've successfully implemented the business layer which:
 
-- Validates email format with clear error messages
-- Normalizes data for consistency (lowercase, trimmed)
-- Separates business logic from presentation concerns
-- Provides user-friendly error feedback
+- ✓ Validates email format with clear error messages
+- ✓ Normalizes data for consistency (lowercase, trimmed)
+- ✓ Separates business logic from presentation concerns
+- ✓ Provides user-friendly error feedback
 
 > **Key takeaway:** The business layer handles "what the business cares about" - valid emails, consistent data formats, business rules. It doesn't know about HTTP requests (presentation) or databases (data). This separation makes each layer focused, testable, and maintainable. When you need to change validation rules, you change one place: the service.
 
@@ -440,3 +440,7 @@ You've successfully implemented the business layer which:
 > - Implement a generic `ValidationResult` class instead of tuples
 > - Add unit tests for the `SubscriptionService` class
 > - Research Python's `dataclasses` for structured return types
+
+## Done! 🎉
+
+Great job! You've learned how to build a validation service in the business layer and connect it to the presentation layer. This separation of concerns pattern is fundamental to maintainable applications and will serve as the foundation for all future business logic in your project.

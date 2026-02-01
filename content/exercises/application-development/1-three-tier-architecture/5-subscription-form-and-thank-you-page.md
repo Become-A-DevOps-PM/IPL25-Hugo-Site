@@ -24,9 +24,9 @@ Build a subscription form on a dedicated page and handle form submissions with a
 
 > **Before starting, ensure you have:**
 >
-> - Completed the previous exercises (landing page with hero section)
-> - Flask application running with `flask run`
-> - Understanding of Flask routes and Jinja2 templates
+> - ✓ Completed the previous exercises (landing page with hero section)
+> - ✓ Flask application running with `flask run`
+> - ✓ Understanding of Flask routes and Jinja2 templates
 
 ## Exercise Steps
 
@@ -61,16 +61,16 @@ The landing page currently has a "Subscribe Now" button that opens a modal. Now 
 
 5. **Remove** the JavaScript block at the bottom (the `{% block scripts %}` section with modal functionality)
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `url_for()` function generates URLs dynamically based on the route function name. Using `url_for('public.subscribe')` instead of hardcoding `/subscribe` makes your code more maintainable - if you ever change the URL pattern, you only need to update the route definition.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting to remove the modal JavaScript will cause errors since the modal elements no longer exist
 > - Using `href="/subscribe"` instead of `url_for()` works but is less maintainable
 >
-> **Quick check:** The button should now be an `<a>` tag, and the modal code should be removed
+> ✓ **Quick check:** The button should now be an `<a>` tag, and the modal code should be removed
 
 ### **Step 2:** Create the Subscribe Route
 
@@ -97,11 +97,11 @@ Before we can navigate to the subscription page, we need to create the route tha
        return render_template("subscribe.html")
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > By default, Flask routes only respond to GET requests. GET requests are used to retrieve pages - the user is asking to "get" the subscription form. Later, we'll add a POST route to handle form submissions. This separation follows HTTP semantics: GET for retrieving, POST for submitting.
 >
-> **Quick check:** The route is defined but will fail until we create the template in the next step
+> ✓ **Quick check:** The route is defined but will fail until we create the template in the next step
 
 ### **Step 3:** Build the Subscription Form Template
 
@@ -243,17 +243,17 @@ Now we create the form that users will fill out. HTML forms collect user input a
    {% endblock %}
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The form's `action` attribute specifies where to send the data, and `method="POST"` indicates we're submitting data. The `name` attribute on inputs is crucial - it becomes the key used to access the data on the server (`request.form.get("email")`). The `required` attribute provides browser-side validation.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting the `name` attribute means the data won't be sent to the server
 > - Using `method="GET"` exposes form data in the URL (not suitable for sensitive data)
 > - The `for` attribute on labels must match the `id` on inputs for accessibility
 >
-> **Quick check:** Visit `/subscribe` - you should see the styled form (submission won't work yet)
+> ✓ **Quick check:** Visit `/subscribe` - you should see the styled form (submission won't work yet)
 
 ### **Step 4:** Add the Form Submission Handler
 
@@ -278,19 +278,19 @@ Now we need a route to receive the form data when the user clicks "Subscribe". T
        return render_template("thank_you.html", email=email, name=name)
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `methods=["POST"]` parameter restricts this route to only accept POST requests. The `request.form` object contains all submitted form data as a dictionary-like object. Using `.get()` with a default value (`"Subscriber"`) handles cases where the optional name field is empty.
 >
 > Printing to the terminal is a simple verification technique during development. In the presentation layer, we're not persisting data - that's the data layer's responsibility. This print statement proves our form handling works before we add complexity.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting `methods=["POST"]` results in a "Method Not Allowed" error
 > - Using `request.args` instead of `request.form` only works for URL parameters
 > - Not providing a default value for optional fields can cause issues downstream
 >
-> **Quick check:** Route exists but will fail until we create the thank you template
+> ✓ **Quick check:** Route exists but will fail until we create the thank you template
 
 ### **Step 5:** Create the Thank You Page
 
@@ -388,18 +388,18 @@ The thank you page confirms the subscription and echoes back the submitted data.
    {% endblock %}
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The variables `{{ name }}` and `{{ email }}` are Jinja2 template expressions. These are replaced with the actual values passed from the route's `render_template()` call. This is how we pass data from Python to HTML - the route function provides the data, and the template displays it.
 >
 > Echoing the submitted data back to the user serves two purposes: it confirms receipt and allows the user to verify the information is correct. This is a common UX pattern for form submissions.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Variable names in the template must exactly match the keyword arguments in `render_template()`
 > - Forgetting to pass a variable results in an undefined error or empty output
 >
-> **Quick check:** Template created with proper variable placeholders
+> ✓ **Quick check:** Template created with proper variable placeholders
 
 ### **Step 6:** Test Your Implementation
 
@@ -433,7 +433,7 @@ Verify the complete subscription flow works end-to-end. We'll test the happy pat
    - Enter only an email
    - Submit and verify it shows "Thank You, Subscriber!"
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Landing page "Subscribe Now" links to `/subscribe`
 > - Form displays with proper styling
@@ -441,15 +441,15 @@ Verify the complete subscription flow works end-to-end. We'll test the happy pat
 > - Thank you page shows the submitted email and name
 > - Terminal displays the subscription data
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
-> - [ ] `index.html` updated with link instead of button
-> - [ ] Modal code removed from `index.html`
-> - [ ] `/subscribe` route returns the form page
-> - [ ] `/subscribe/confirm` POST route handles submission
-> - [ ] `subscribe.html` template created with form
-> - [ ] `thank_you.html` template created with confirmation
-> - [ ] Terminal shows submitted data
+> - ☐ `index.html` updated with link instead of button
+> - ☐ Modal code removed from `index.html`
+> - ☐ `/subscribe` route returns the form page
+> - ☐ `/subscribe/confirm` POST route handles submission
+> - ☐ `subscribe.html` template created with form
+> - ☐ `thank_you.html` template created with confirmation
+> - ☐ Terminal shows submitted data
 
 ## Common Issues
 
@@ -469,10 +469,10 @@ Verify the complete subscription flow works end-to-end. We'll test the happy pat
 
 You've successfully completed the presentation layer which:
 
-- Collects user input through an HTML form
-- Handles form submissions in Flask routes
-- Provides user feedback with a confirmation page
-- Demonstrates the request-response cycle without persistence
+- ✓ Collects user input through an HTML form
+- ✓ Handles form submissions in Flask routes
+- ✓ Provides user feedback with a confirmation page
+- ✓ Demonstrates the request-response cycle without persistence
 
 > **Key takeaway:** The presentation layer handles everything the user sees and interacts with. Forms collect data, routes process requests, and templates display responses. Notice we haven't validated the email format or saved anything to a database - those responsibilities belong to the business and data layers respectively.
 
@@ -484,3 +484,7 @@ You've successfully completed the presentation layer which:
 > - Add more form fields (e.g., subscription preferences)
 > - Style the form with different states (focus, error, success)
 > - Research CSRF protection for form security
+
+## Done! 🎉
+
+Great job! You've learned how to build HTML forms, handle POST requests in Flask, and provide user feedback with confirmation pages. This completes the presentation layer of the three-tier architecture and prepares you for adding business logic and data persistence in upcoming exercises.

@@ -308,6 +308,6 @@ You have successfully set up a testing foundation for the News Flash application
 > - Research coverage reporting with `pytest-cov` to see which code paths your tests exercise
 > - Try running tests in parallel with `pytest-xdist` to speed up large test suites
 
-## Done!
+## Done! 🎉
 
-You have set up a testing foundation for the News Flash application with reusable fixtures and your first passing tests.
+Great job! You have set up a testing foundation for the News Flash application with reusable fixtures and your first passing tests.

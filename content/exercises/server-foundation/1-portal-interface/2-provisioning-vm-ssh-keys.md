@@ -1,13 +1,16 @@
 +++
-title = "2. Provisioning a VM with SSH Keys and Exploring Linux"
+title = "Provisioning a VM with SSH Keys and Exploring Linux"
 program = "IPL"
 cohort = "25"
 courses = ["SNS"]
+description = "Provision an Ubuntu virtual machine with SSH key authentication and explore Linux filesystem navigation and bash scripting."
 weight = 2
 date = 2024-11-25
 lastmod = 2025-11-24
 draft = false
 +++
+
+# Provisioning a VM with SSH Keys and Exploring Linux
 
 ## Goal
 
@@ -26,7 +29,7 @@ Provision an Ubuntu virtual machine with secure SSH key authentication and explo
 >
 > - ✓ An active Azure account with an available subscription
 > - ✓ A terminal application (Git Bash on Windows, Terminal on Mac/Linux)
-> - ✓ Completed Exercise 1 or familiarity with Azure Portal navigation
+> - ✓ Familiarity with Azure Portal navigation
 
 ## Exercise Steps
 
@@ -230,6 +233,6 @@ You've successfully provisioned an Ubuntu VM with SSH key authentication and exp
 > - Modify the bash script to also enable Nginx to start on boot with `systemctl enable nginx`
 > - Try connecting from a different device using the same key pair
 
-## Done 🎉
+## Done! 🎉
 
 You have successfully provisioned a VM using Azure's Generate Key Pair feature, connected securely using SSH, and explored the Linux filesystem and basic commands.

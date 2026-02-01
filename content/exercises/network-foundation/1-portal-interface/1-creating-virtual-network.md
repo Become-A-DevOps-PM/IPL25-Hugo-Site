@@ -1,5 +1,6 @@
 +++
 title = "Creating a Virtual Network"
+description = "Build a secure Azure Virtual Network with three VMs demonstrating network segmentation, security groups, and the principle of least privilege."
 program = "IPL"
 cohort = "25"
 courses = ["SNS"]
@@ -7,6 +8,8 @@ weight = 1
 date = 2024-12-02
 draft = false
 +++
+
+# Creating a Virtual Network
 
 ## Goal
 

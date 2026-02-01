@@ -24,9 +24,9 @@ Build a repository class to encapsulate database operations and integrate all th
 
 > **Before starting, ensure you have:**
 >
-> - Completed database setup and Subscriber model
-> - Database migrations applied (`flask db upgrade`)
-> - Flask shell can create and query Subscribers
+> - ✓ Completed database setup and Subscriber model
+> - ✓ Database migrations applied (`flask db upgrade`)
+> - ✓ Flask shell can create and query Subscribers
 
 ## Exercise Steps
 
@@ -125,7 +125,7 @@ The repository pattern encapsulates all database operations for a specific model
    __all__ = ["SubscriberRepository"]
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **Why Repository Pattern?**
 >
@@ -144,14 +144,14 @@ The repository pattern encapsulates all database operations for a specific model
 >
 > The repository calls `db.session.commit()` to persist changes. In more complex applications, you might use a Unit of Work pattern to manage transactions across multiple repositories.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting to call `db.session.commit()` means changes aren't saved
 > - Not handling case sensitivity in email lookups causes duplicates
 > - Putting business logic in repositories (validation belongs in services)
 > - Not catching `IntegrityError` when unique constraints fail
 >
-> **Quick check:** Repository file created with `find_by_email`, `exists`, and `create` methods
+> ✓ **Quick check:** Repository file created with `find_by_email`, `exists`, and `create` methods
 
 ### **Step 2:** Update the Subscription Service
 
@@ -313,7 +313,7 @@ Now we connect the business layer to the data layer. The service will use the re
            }
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **Dependency Injection:**
 >
@@ -334,14 +334,14 @@ Now we connect the business layer to the data layer. The service will use the re
 >
 > The service owns the business rules (validation, duplicate check) while the repository handles persistence.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Checking duplicates before normalizing causes case-sensitive issues
 > - Not returning errors from `subscribe()` leaves users confused
 > - Calling `process_subscription()` instead of `subscribe()` skips persistence
 > - Creating repository inside methods instead of `__init__` breaks injection
 >
-> **Quick check:** Service imports repository, has `__init__` with injection, and `subscribe()` method
+> ✓ **Quick check:** Service imports repository, has `__init__` with injection, and `subscribe()` method
 
 ### **Step 3:** Update the Route for Full Integration
 
@@ -411,7 +411,7 @@ The route now uses the service's `subscribe()` method which handles the complete
        )
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **Simplified Route:**
 >
@@ -431,13 +431,13 @@ The route now uses the service's `subscribe()` method which handles the complete
 >
 > The route doesn't know about the database. The service doesn't know about HTTP. The repository doesn't know about business rules. This separation makes each layer focused and testable.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Bypassing the service to call repository directly breaks layering
 > - Forgetting to handle the error case leaves users on a broken page
 > - Not normalizing values for the thank you page shows raw user input
 >
-> **Quick check:** Route calls `service.subscribe()` and handles both success and error cases
+> ✓ **Quick check:** Route calls `service.subscribe()` and handles both success and error cases
 
 ### **Step 4:** Test Your Implementation
 
@@ -489,7 +489,7 @@ Verify the complete three-layer integration works by testing the subscription fl
    sqlite3 instance/news_flash.db "SELECT id, email, name FROM subscribers;"
    ```
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Form submission saves to database
 > - Thank you page shows normalized email and name
@@ -498,16 +498,16 @@ Verify the complete three-layer integration works by testing the subscription fl
 > - Database contains correct, normalized data
 > - Timestamps are automatically set
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
-> - [ ] `subscriber_repository.py` created in `app/data/repositories/`
-> - [ ] Repository exposed in `app/data/repositories/__init__.py`
-> - [ ] Service updated with repository injection and `subscribe()` method
-> - [ ] Route uses `service.subscribe()` for full flow
-> - [ ] Valid submissions persist to database
-> - [ ] Duplicate emails show error message
-> - [ ] Email normalized (lowercase, trimmed) in database
-> - [ ] Name normalized or defaults to "Subscriber"
+> - ☐ `subscriber_repository.py` created in `app/data/repositories/`
+> - ☐ Repository exposed in `app/data/repositories/__init__.py`
+> - ☐ Service updated with repository injection and `subscribe()` method
+> - ☐ Route uses `service.subscribe()` for full flow
+> - ☐ Valid submissions persist to database
+> - ☐ Duplicate emails show error message
+> - ☐ Email normalized (lowercase, trimmed) in database
+> - ☐ Name normalized or defaults to "Subscriber"
 
 ## Common Issues
 
@@ -536,10 +536,10 @@ Verify the complete three-layer integration works by testing the subscription fl
 
 You've successfully completed the three-tier architecture integration which:
 
-- Encapsulates database operations in the repository
-- Connects business layer to data layer with dependency injection
-- Enables duplicate detection through the repository
-- Persists subscriptions to the database
+- ✓ Encapsulates database operations in the repository
+- ✓ Connects business layer to data layer with dependency injection
+- ✓ Enables duplicate detection through the repository
+- ✓ Persists subscriptions to the database
 
 > **Key takeaway:** The three-tier architecture separates concerns cleanly: routes handle HTTP, services handle business logic, repositories handle persistence. Each layer depends only on the layer below it, making the code testable, maintainable, and flexible. You can now change the database (SQLite to PostgreSQL) by only modifying the data layer - the business and presentation layers remain unchanged.
 
@@ -552,6 +552,6 @@ You've successfully completed the three-tier architecture integration which:
 > - Add unit tests for the service using a mock repository
 > - Research the Unit of Work pattern for transaction management
 
-## Congratulations!
+## Done! 🎉
 
 You've built a complete three-tier Flask application with proper separation of concerns. The News Flash subscription system now validates input, enforces business rules, and persists data to a database - all through cleanly separated layers. This architecture pattern scales from small applications to enterprise systems.

@@ -24,9 +24,9 @@ Write route tests that verify HTTP status codes, page content, and form elements
 
 > **Before starting, ensure you have:**
 >
-> - A working `tests/conftest.py` with `app` and `client` fixtures
-> - pytest installed and smoke tests passing
-> - Flask application running with public routes (`/`, `/subscribe`, `/subscribe/confirm`)
+> - ✓ A working `tests/conftest.py` with `app` and `client` fixtures
+> - ✓ pytest installed and smoke tests passing
+> - ✓ Flask application running with public routes (`/`, `/subscribe`, `/subscribe/confirm`)
 
 ## Exercise Steps
 
@@ -73,16 +73,16 @@ The most fundamental route test checks whether pages load at all. HTTP status co
            assert response.status_code == 404
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > Test classes group related tests together. pytest discovers classes starting with `Test` and methods starting with `test_`. Fixtures like `client` are passed as method parameters, exactly as they are for standalone functions. Grouping tests by feature makes the output easier to scan when your test suite grows.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting the `self` parameter in class methods causes a `TypeError`
 > - Class names must start with `Test` or pytest will not discover them
 >
-> **Quick check:** Run `python -m pytest tests/test_routes.py -v` and confirm all three tests pass
+> ✓ **Quick check:** Run `python -m pytest tests/test_routes.py -v` and confirm all three tests pass
 
 ### **Step 2:** Test Page Content
 
@@ -117,16 +117,16 @@ Status codes confirm that a route responds, but they do not tell us what was ren
            assert 'name="email"' in html
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `response.data` attribute returns the response body as bytes. Calling `.decode()` converts it to a Python string so we can use standard string operations like `in` for assertions. We check for expected text, HTML attributes, and element names. These tests verify that the template renders correctly without needing a browser.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting `.decode()` means comparing a string against bytes, which always fails
 > - String matching is case-sensitive: `"subscribe"` does not match `"Subscribe"`
 >
-> **Quick check:** All three content tests should pass
+> ✓ **Quick check:** All three content tests should pass
 
 ### **Step 3:** Test Form Display
 
@@ -168,16 +168,16 @@ The subscription form is a critical part of the user interface. If the form tag 
            assert 'method="POST"' in html or 'method="post"' in html
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > Testing form elements verifies the HTML structure, not business logic. If someone accidentally removes the form tag or changes the action URL, these tests catch it before users encounter the problem. The `test_form_has_submit_button` test uses `or` to accept multiple valid implementations: a literal `type="submit"` attribute or button text containing "Submit" or "Subscribe".
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - HTML attribute quoting varies: templates may use single quotes, double quotes, or no quotes. Test for the pattern your templates actually produce.
 > - Testing for exact HTML strings is brittle. Prefer testing for key attributes (`name=`, `method=`, `action=`) rather than entire element strings.
 >
-> **Quick check:** All four form tests should pass
+> ✓ **Quick check:** All four form tests should pass
 
 ### **Step 4:** Organize with Test Classes
 
@@ -209,11 +209,11 @@ With three test classes in place, the file is well organized. Each class groups 
    tests/test_routes.py::TestSubscribeForm::test_form_method_is_post PASSED
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `::ClassName::method_name` format in the output makes it easy to identify which group a test belongs to. When a test fails, this hierarchical naming tells you immediately whether it is a routing problem, a content problem, or a form structure problem. pytest discovers both standalone functions and class methods, so you can mix both styles in the same project.
 >
-> **Quick check:** Output shows 10 tests organized under three class headings
+> ✓ **Quick check:** Output shows 10 tests organized under three class headings
 
 ### **Step 5:** Run and Verify
 
@@ -235,7 +235,7 @@ Run the complete test suite across all test files to see the total test count gr
 
    The `--tb=short` flag shows a shorter traceback for any failures, making it easier to diagnose problems.
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - All public routes return correct status codes
 > - Page content assertions pass
@@ -243,13 +243,13 @@ Run the complete test suite across all test files to see the total test count gr
 > - Test output is organized by class
 > - Total test count includes both test files
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
-> - [ ] `tests/test_routes.py` created with three test classes
-> - [ ] `TestPublicRoutes` verifies status codes for `/`, `/subscribe`, and a 404 route
-> - [ ] `TestPageContent` checks for page text and HTML elements
-> - [ ] `TestSubscribeForm` validates form structure and configuration
-> - [ ] All tests pass with `python -m pytest tests/ -v`
+> - ☐ `tests/test_routes.py` created with three test classes
+> - ☐ `TestPublicRoutes` verifies status codes for `/`, `/subscribe`, and a 404 route
+> - ☐ `TestPageContent` checks for page text and HTML elements
+> - ☐ `TestSubscribeForm` validates form structure and configuration
+> - ☐ All tests pass with `python -m pytest tests/ -v`
 
 ## Common Issues
 
@@ -269,10 +269,10 @@ Run the complete test suite across all test files to see the total test count gr
 
 You've successfully built a comprehensive route and template test suite which:
 
-- Tested HTTP status codes for all public routes
-- Verified page content and structure through string assertions
-- Checked form elements and their configuration
-- Organized tests into logical classes for readable output
+- ✓ Tested HTTP status codes for all public routes
+- ✓ Verified page content and structure through string assertions
+- ✓ Checked form elements and their configuration
+- ✓ Organized tests into logical classes for readable output
 
 > **Key takeaway:** Route tests verify the presentation layer works correctly. They catch broken templates, missing pages, and form configuration errors. Using test classes groups related assertions so that when a test fails, the class name immediately tells you what category of problem to investigate.
 
@@ -285,6 +285,6 @@ You've successfully built a comprehensive route and template test suite which:
 > - Test that CSS and JavaScript files load with correct status codes
 > - Research Selenium or Playwright for browser-level testing that executes JavaScript
 
-## Done!
+## Done! 🎉
 
 You've built a comprehensive set of route and template tests that verify the presentation layer works correctly.

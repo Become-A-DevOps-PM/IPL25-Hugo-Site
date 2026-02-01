@@ -1,13 +1,16 @@
 +++
-title = "1. Provisioning a VM via Azure Portal"
+title = "Provisioning a VM via Azure Portal"
 program = "IPL"
 cohort = "25"
 courses = ["SNS"]
+description = "Create your first Virtual Machine in Azure using the portal interface to understand how cloud resources are provisioned and managed."
 weight = 1
 date = 2024-11-25
 lastmod = 2025-11-24
 draft = false
 +++
+
+# Provisioning a VM via Azure Portal
 
 ## Goal
 
@@ -234,6 +237,6 @@ You've successfully provisioned a Virtual Machine in Azure using the portal whic
 > - Research the difference between SSH key and password authentication
 > - Investigate Network Security Groups and their rules
 
-## Done 🎉
+## Done! 🎉
 
 You have successfully provisioned a Virtual Machine in Azure using the portal and connected to it using Azure Cloud Shell. You also verified its operation by installing and testing the web server Nginx.

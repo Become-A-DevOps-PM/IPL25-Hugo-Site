@@ -3,10 +3,13 @@ title = "Creating a Virtual Network with Enhanced Security"
 program = "IPL"
 cohort = "25"
 courses = ["SNS"]
+description = "Build a secure virtual network infrastructure using Azure VNets with Application Security Groups and Network Security Groups to control traffic between servers."
 weight = 2
 date = 2024-12-02
 draft = false
 +++
+
+# Creating a Virtual Network with Enhanced Security
 
 ## Goal
 
@@ -509,6 +512,6 @@ You've successfully implemented a defense-in-depth network security architecture
 > - Add User Defined Routes to force traffic through a network virtual appliance
 > - Implement VNet peering to connect multiple virtual networks securely
 
-## Done!
+## Done! 🎉
 
 Excellent work! You've learned how to design and implement secure network architectures in Azure using multiple layers of security controls. This foundation will help you build production-grade infrastructure that follows cloud security best practices. Understanding these networking and security primitives is essential for any cloud infrastructure project.

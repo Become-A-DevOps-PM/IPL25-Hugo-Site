@@ -24,9 +24,9 @@ Build an admin dashboard to view newsletter subscribers by creating a new Flask 
 
 > **Before starting, ensure you have:**
 >
-> - Completed the three-tier architecture exercises (repository pattern and full integration)
-> - Flask application running with subscriber persistence
-> - Database migrations applied (`flask db upgrade`)
+> - ✓ Completed the three-tier architecture exercises (repository pattern and full integration)
+> - ✓ Flask application running with subscriber persistence
+> - ✓ Database migrations applied (`flask db upgrade`)
 
 ## Exercise Steps
 
@@ -413,6 +413,6 @@ You've successfully built an admin dashboard which:
 > - Add a search or filter feature for finding specific subscribers
 > - Add subscriber deletion with a confirmation dialog
 
-## Done!
+## Done! 🎉
 
 You've created an admin dashboard to view newsletter subscribers. The admin area is currently accessible to everyone — authentication and route protection will secure it.

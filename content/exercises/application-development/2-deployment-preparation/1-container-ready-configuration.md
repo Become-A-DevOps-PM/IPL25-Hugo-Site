@@ -24,9 +24,9 @@ Prepare the News Flash application for container deployment by updating configur
 
 > **Before starting, ensure you have:**
 >
-> - Completed the three-tier architecture exercises
-> - Flask application running with subscriber persistence
-> - Docker installed on your development machine
+> - ✓ Completed the three-tier architecture exercises
+> - ✓ Flask application running with subscriber persistence
+> - ✓ Docker installed on your development machine
 
 ## Exercise Steps
 
@@ -100,19 +100,19 @@ The 12-Factor App methodology states that configuration should come from the env
    }
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The 12-Factor App is a methodology for building software-as-a-service applications. Factor III (Config) demands strict separation of config from code. The same Docker image runs anywhere — only the environment variables change. `DATABASE_URL` points to SQLite locally and Azure SQL in production. `SECRET_KEY` has a development fallback but **must** be set to a strong random value in production.
 >
 > The `config_by_name` dictionary maps environment names to configuration classes. Your `create_app()` factory reads the `FLASK_ENV` environment variable and looks up the matching class: `config_by_name[env_name]`. This pattern eliminates if/else chains and makes adding new environments trivial.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Hardcoding database credentials in `config.py` — use environment variables instead
 > - Forgetting that `ProductionConfig.SECRET_KEY` defaults to empty string — always set it in production
 > - Using the same `SECRET_KEY` in development and production compromises session security
 >
-> **Quick check:** `config.py` updated with `ProductionConfig` reading from environment variables and `config_by_name` dictionary
+> ✓ **Quick check:** `config.py` updated with `ProductionConfig` reading from environment variables and `config_by_name` dictionary
 
 3. **Create** a file named `.env.example` in the project root to document all supported environment variables:
 
@@ -124,7 +124,7 @@ The 12-Factor App methodology states that configuration should come from the env
    DATABASE_URL=sqlite:///instance/news_flash.db
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `.env.example` file is not loaded by the application — it serves as documentation for anyone setting up the project. It lists every environment variable the application supports and provides safe example values. Never commit a real `.env` file with production secrets to version control.
 >
@@ -157,13 +157,13 @@ Running Flask's built-in development server in production is not safe or perform
    pip install -r requirements.txt
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **Gunicorn** (Green Unicorn) is a Python WSGI HTTP server. It replaces Flask's built-in Werkzeug development server, which is single-threaded and not designed for production traffic. Gunicorn runs multiple worker processes, each handling requests independently — this is how Python web applications scale.
 >
 > **pyodbc** provides ODBC (Open Database Connectivity) bindings for Python. Azure SQL Database uses the Microsoft ODBC Driver, and SQLAlchemy connects through pyodbc. You do not need pyodbc for local development with SQLite — it is only used when `DATABASE_URL` points to an Azure SQL instance.
 >
-> **Quick check:** `requirements.txt` includes `gunicorn` and `pyodbc`
+> ✓ **Quick check:** `requirements.txt` includes `gunicorn` and `pyodbc`
 
 ### **Step 3:** Create the Gunicorn Entry Point
 
@@ -189,19 +189,19 @@ In development, `flask run` discovers your application factory automatically. In
    app = create_app()
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The command `gunicorn wsgi:app` tells Gunicorn: "import the variable `app` from the module `wsgi.py`." Gunicorn then uses this WSGI application object to handle incoming HTTP requests. The `create_app()` call reads `FLASK_ENV` to select the right configuration class, so the same `wsgi.py` file works in every environment.
 >
 > **Why not point Gunicorn at `app:create_app()`?** While Gunicorn supports factory patterns with `--factory`, the explicit `wsgi.py` approach is simpler, more portable, and works identically across WSGI servers (Gunicorn, uWSGI, Waitress).
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Placing `wsgi.py` inside the `app/` directory — it must be in the project root alongside `app/`
 > - Forgetting to set `FLASK_ENV` when running Gunicorn — defaults to development config
 > - Running `flask run` in production — it is single-threaded and shows debug information
 >
-> **Quick check:** `wsgi.py` created in the project root with `create_app()` call
+> ✓ **Quick check:** `wsgi.py` created in the project root with `create_app()` call
 
 ### **Step 4:** Create the Dockerfile
 
@@ -254,7 +254,7 @@ Docker packages your application and all its dependencies into a container image
    migrations/
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **Layer caching** is the most important Docker optimization to understand. Each instruction in a Dockerfile creates a layer. Docker caches layers and only rebuilds from the first changed layer onward. By placing `COPY requirements.txt` and `pip install` before `COPY . .`, dependency installation is cached separately from code changes. Since dependencies change rarely but code changes frequently, this saves minutes on every build.
 >
@@ -264,14 +264,14 @@ Docker packages your application and all its dependencies into a container image
 >
 > **`.dockerignore`** excludes files from the Docker build context. This makes builds faster (less data sent to the Docker daemon) and images smaller (no development artifacts). The `instance/` directory contains the local SQLite database, which should never be baked into the image — the production container uses Azure SQL instead.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Placing `COPY . .` before `pip install` defeats layer caching — every code change reinstalls all dependencies
 > - Forgetting `.dockerignore` copies `.venv/` (hundreds of megabytes) into the image
 > - Not exposing port 5000 means the container runs but is unreachable
 > - Using `python:3.11` instead of `python:3.11-slim` adds hundreds of megabytes of unnecessary build tools
 >
-> **Quick check:** `Dockerfile` and `.dockerignore` created in the project root
+> ✓ **Quick check:** `Dockerfile` and `.dockerignore` created in the project root
 
 ### **Step 5:** Test the Container Build
 
@@ -312,7 +312,7 @@ Time to verify that everything works together. You will build the Docker image, 
 
 > **Note:** The actual Azure deployment (Container Apps environment, Azure SQL provisioning) is handled by separate deployment exercises. This exercise prepares the application code only.
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Docker image builds without errors
 > - Container starts with Gunicorn (2 workers shown in logs)
@@ -320,15 +320,15 @@ Time to verify that everything works together. You will build the Docker image, 
 > - Different `FLASK_ENV` values select different configurations
 > - `.dockerignore` excludes development files
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
-> - [ ] `config.py` updated with environment-driven settings and `config_by_name`
-> - [ ] `.env.example` documents all supported environment variables
-> - [ ] `gunicorn` and `pyodbc` added to `requirements.txt`
-> - [ ] `wsgi.py` created as the Gunicorn entry point
-> - [ ] `Dockerfile` builds successfully with ODBC Driver and layer caching
-> - [ ] `.dockerignore` excludes development artifacts
-> - [ ] Container runs and serves the application via Gunicorn
+> - ☐ `config.py` updated with environment-driven settings and `config_by_name`
+> - ☐ `.env.example` documents all supported environment variables
+> - ☐ `gunicorn` and `pyodbc` added to `requirements.txt`
+> - ☐ `wsgi.py` created as the Gunicorn entry point
+> - ☐ `Dockerfile` builds successfully with ODBC Driver and layer caching
+> - ☐ `.dockerignore` excludes development artifacts
+> - ☐ Container runs and serves the application via Gunicorn
 
 ## Common Issues
 
@@ -348,10 +348,10 @@ Time to verify that everything works together. You will build the Docker image, 
 
 You've successfully prepared the News Flash application for container deployment which:
 
-- Updated configuration for environment-driven settings following the 12-Factor App methodology
-- Added Gunicorn as the production WSGI server with an explicit entry point
-- Created a Dockerfile with ODBC Driver for Azure SQL Database connectivity
-- Optimized Docker builds with layer caching and `.dockerignore`
+- ✓ Updated configuration for environment-driven settings following the 12-Factor App methodology
+- ✓ Added Gunicorn as the production WSGI server with an explicit entry point
+- ✓ Created a Dockerfile with ODBC Driver for Azure SQL Database connectivity
+- ✓ Optimized Docker builds with layer caching and `.dockerignore`
 
 > **Key takeaway:** The same code runs anywhere — only environment variables change. Development uses SQLite and `flask run`. Production uses Azure SQL and Gunicorn. Docker packages everything into a deployable container image that works identically in every environment.
 
@@ -364,6 +364,6 @@ You've successfully prepared the News Flash application for container deployment
 > - Explore Docker Compose for local development with PostgreSQL instead of SQLite
 > - Learn about Azure Container Apps environment variables and secrets management
 
-## Done!
+## Done! 🎉
 
 Your application is now container-ready. The Dockerfile packages everything needed to deploy to Azure Container Apps, while the environment-driven configuration ensures the same code works in development and production.

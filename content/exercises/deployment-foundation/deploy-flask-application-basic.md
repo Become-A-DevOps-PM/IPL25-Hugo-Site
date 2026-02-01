@@ -13,14 +13,14 @@ weight = 2
 
 Deploy a minimal Flask contact form application to your Azure VM using a Python virtual environment, and verify it responds to HTTP requests.
 
-> **Note:** This exercise demonstrates a simplified deployment for learning purposes. Production deployments would include nginx as a reverse proxy, HTTPS with SSL certificates, a systemd service for process management, and the application organized in `/opt/` with proper permissions.
-
 > **What you'll learn:**
 >
 > - How to transfer application files to a remote server using SCP
 > - How to create a Python virtual environment on a server
 > - How to install dependencies from a requirements file
 > - How to run a Flask application with Gunicorn
+
+> ℹ **Note:** This exercise demonstrates a simplified deployment for learning purposes. Production deployments would include nginx as a reverse proxy, HTTPS with SSL certificates, a systemd service for process management, and the application organized in `/opt/` with proper permissions.
 
 ## Prerequisites
 

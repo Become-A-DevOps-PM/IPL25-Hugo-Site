@@ -96,7 +96,7 @@ The GitHub CLI can create a repository and push your code in a single command. T
 
    You should see output like:
 
-   ```
+   ```text
    ✓ Created repository yourusername/hello-flask on GitHub
    ✓ Added remote https://github.com/yourusername/hello-flask.git
    ✓ Pushed commits to https://github.com/yourusername/hello-flask.git
@@ -189,7 +189,7 @@ Practice the full workflow by making a local change, committing it, and pushing 
 
    You should see output indicating the push succeeded:
 
-   ```
+   ```text
    Enumerating objects: 4, done.
    Counting objects: 100% (4/4), done.
    Delta compression using up to 8 threads
@@ -216,39 +216,6 @@ Practice the full workflow by making a local change, committing it, and pushing 
 > This is the core Git workflow you'll use for every change going forward.
 >
 > ✓ **Quick check:** README appears on your GitHub repository page
-
-## Alternative Methods
-
-The GitHub CLI (`gh`) is the recommended approach, but there are other ways to connect a repository to GitHub.
-
-### VS Code with GitHub Extension
-
-If you're using VS Code with the GitHub extension:
-
-1. Open the Source Control panel (Ctrl+Shift+G or Cmd+Shift+G)
-2. Click "Publish to GitHub"
-3. Choose public or private
-4. VS Code creates the repository and pushes automatically
-
-### Firebase Studio (Project IDX)
-
-Firebase Studio includes Git integration in its Source Control panel. Use the integrated terminal to run the `gh repo create` command as shown in the main instructions. Alternatively, create the repository on github.com first, then connect it manually.
-
-### Manual Approach
-
-If you prefer to create the repository on GitHub's website:
-
-1. Go to [github.com/new](https://github.com/new)
-2. Create an empty repository (don't initialize with README)
-3. Copy the repository URL
-4. Add the remote and push:
-
-   ```bash
-   git remote add origin https://github.com/USERNAME/hello-flask.git
-   git push -u origin main
-   ```
-
-The `-u` flag sets up tracking so future `git push` commands know where to push.
 
 ## Common Issues
 
@@ -287,6 +254,37 @@ You've successfully connected your local repository to GitHub which:
 > - Explore GitHub features like Issues, Pull Requests, and Actions
 > - Research branching strategies for working on features without affecting the main code
 > - Set up SSH authentication for passwordless pushing: [GitHub SSH docs](https://docs.github.com/en/authentication/connecting-to-github-with-ssh)
+
+### Alternative Methods for Connecting to GitHub
+
+The GitHub CLI (`gh`) is the recommended approach, but there are other ways to connect a repository to GitHub.
+
+**VS Code with GitHub Extension:**
+
+1. Open the Source Control panel (Ctrl+Shift+G or Cmd+Shift+G)
+2. Click "Publish to GitHub"
+3. Choose public or private
+4. VS Code creates the repository and pushes automatically
+
+**Firebase Studio (Project IDX):**
+
+Firebase Studio includes Git integration in its Source Control panel. Use the integrated terminal to run the `gh repo create` command as shown in the main instructions. Alternatively, create the repository on github.com first, then connect it manually.
+
+**Manual Approach:**
+
+If you prefer to create the repository on GitHub's website:
+
+1. Go to [github.com/new](https://github.com/new)
+2. Create an empty repository (don't initialize with README)
+3. Copy the repository URL
+4. Add the remote and push:
+
+   ```bash
+   git remote add origin https://github.com/USERNAME/hello-flask.git
+   git push -u origin main
+   ```
+
+The `-u` flag sets up tracking so future `git push` commands know where to push.
 
 ## Done! 🎉
 

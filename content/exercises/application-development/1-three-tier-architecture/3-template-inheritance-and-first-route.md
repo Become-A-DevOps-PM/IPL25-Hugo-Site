@@ -23,13 +23,13 @@ Build a landing page using Jinja2 template inheritance and Flask Blueprints to c
 
 > **Before starting, ensure you have:**
 >
-> - A Flask application with the factory pattern and configuration
-> - Flask application running with `flask run`
-> - Basic understanding of HTML and CSS
+> - ✓ A Flask application with the factory pattern and configuration
+> - ✓ Flask application running with `flask run`
+> - ✓ Basic understanding of HTML and CSS
 
-## Before You Begin
+## Exercise Steps
 
-> **Start each session by activating your environment:**
+> ℹ **Start each session by activating your environment:**
 >
 > ```bash
 > cd application
@@ -37,8 +37,6 @@ Build a landing page using Jinja2 template inheritance and Flask Blueprints to c
 > ```
 >
 > You'll know it's active when you see `(.venv)` in your terminal prompt.
-
-## Exercise Steps
 
 ### Overview
 
@@ -293,7 +291,7 @@ Template inheritance is one of Jinja2's most powerful features. Instead of dupli
    </html>
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > This base template introduces several important concepts:
 >
@@ -310,13 +308,13 @@ Template inheritance is one of Jinja2's most powerful features. Instead of dupli
 > - `.header__container` is an element within the block
 > - `.btn--primary` is a modifier variant
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting `{% endblock %}` causes a template syntax error
 > - Block names are case-sensitive: `Content` is different from `content`
 > - Missing the `<!DOCTYPE html>` declaration can cause rendering issues
 >
-> **Quick check:** File created at `app/presentation/templates/base.html`
+> ✓ **Quick check:** File created at `app/presentation/templates/base.html`
 
 ### **Step 2:** Create the Public Routes Blueprint
 
@@ -348,7 +346,7 @@ Flask Blueprints organize routes into logical groups. Instead of defining all ro
        return render_template("index.html")
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > A Blueprint is a way to organize related routes. Think of it as a mini-application that can be registered with the main Flask app. The key components are:
 >
@@ -368,13 +366,13 @@ Flask Blueprints organize routes into logical groups. Instead of defining all ro
 > - `admin` for administrative functions
 > - `api` for JSON endpoints
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Using `@app.route` instead of `@bp.route` when working with blueprints
 > - Forgetting to import `render_template` results in `NameError`
 > - Template not found errors often mean wrong template folder configuration
 >
-> **Quick check:** File created at `app/presentation/routes/public.py` with no syntax errors
+> ✓ **Quick check:** File created at `app/presentation/routes/public.py` with no syntax errors
 
 ### **Step 3:** Create the Index Template
 
@@ -401,7 +399,7 @@ Now create the child template that extends the base template. This demonstrates 
    {% endblock %}
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > This simple template demonstrates the power of inheritance:
 >
@@ -419,7 +417,7 @@ Now create the child template that extends the base template. This demonstrates 
 >
 > **Why this matters:** Real applications have dozens or hundreds of pages. Without template inheritance, changing the navigation would require editing every single file. With inheritance, you change the base template once.
 >
-> **Quick check:** File created at `app/presentation/templates/index.html`
+> ✓ **Quick check:** File created at `app/presentation/templates/index.html`
 
 ### **Step 4:** Register the Blueprint
 
@@ -465,7 +463,7 @@ The blueprint exists, but Flask does not know about it yet. You must register th
        return app
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > Blueprint registration happens inside `create_app()` for important reasons:
 >
@@ -477,13 +475,13 @@ The blueprint exists, but Flask does not know about it yet. You must register th
 >
 > **The path matters:** Notice the import path `.presentation.routes.public`. This matches our three-tier folder structure and makes the architecture visible in the code.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Importing blueprints at the top level causes circular import errors
 > - Forgetting `register_blueprint()` means routes will not work (404 errors)
 > - Wrong import path results in `ModuleNotFoundError`
 >
-> **Quick check:** Application starts without import errors
+> ✓ **Quick check:** Application starts without import errors
 
 ### **Step 5:** Test Your Implementation
 
@@ -512,7 +510,7 @@ Time to verify that template inheritance and blueprint registration work correct
    - Click "Home" - should stay on the same page
    - Click "About" - link exists but page not implemented yet
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Page loads without errors at http://localhost:5000
 > - Header shows "News Flash" with lightning bolt icon (&#9889;)
@@ -521,13 +519,13 @@ Time to verify that template inheritance and blueprint registration work correct
 > - Footer displays copyright with current year
 > - Page has blue gradient header and light gray footer
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
-> - [ ] `base.html` created with all four blocks (title, content, extra_css, scripts)
-> - [ ] `public.py` blueprint created with index route
-> - [ ] `index.html` extends base.html correctly
-> - [ ] Blueprint registered in `app/__init__.py`
-> - [ ] Page renders with header, content, and footer
+> - ☐ `base.html` created with all four blocks (title, content, extra_css, scripts)
+> - ☐ `public.py` blueprint created with index route
+> - ☐ `index.html` extends base.html correctly
+> - ☐ Blueprint registered in `app/__init__.py`
+> - ☐ Page renders with header, content, and footer
 
 ## Common Issues
 
@@ -547,11 +545,11 @@ Time to verify that template inheritance and blueprint registration work correct
 
 ## Summary
 
-You have successfully implemented template inheritance and Flask Blueprints which:
+You've successfully implemented template inheritance and Flask Blueprints which:
 
-- Enables consistent page layouts through a single base template
-- Follows the DRY principle by eliminating duplicate HTML
-- Organizes routes logically using the Blueprint pattern
+- ✓ Enables consistent page layouts through a single base template
+- ✓ Follows the DRY principle by eliminating duplicate HTML
+- ✓ Organizes routes logically using the Blueprint pattern
 
 > **Key takeaway:** Template inheritance and Blueprints are foundational patterns for maintainable Flask applications. Template inheritance lets you change site-wide elements (header, footer, styles) in one place, while Blueprints keep your routes organized as your application grows. You will use these patterns in every Flask project.
 
@@ -563,3 +561,7 @@ You have successfully implemented template inheritance and Flask Blueprints whic
 > - Create an `about.html` template that extends `base.html` and add a route for it
 > - Experiment with CSS variables - change `--color-primary` and watch the entire color scheme update
 > - Research the `super()` function in Jinja2 to extend blocks instead of replacing them
+
+## Done! 🎉
+
+Great job! You've learned how to use Jinja2 template inheritance and Flask Blueprints to build maintainable web pages. This foundation will help you build every future page in your application without duplicating layout code.

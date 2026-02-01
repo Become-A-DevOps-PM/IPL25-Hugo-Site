@@ -24,11 +24,11 @@ Build the News Flash Docker image, push it to Azure Container Registry, deploy i
 
 > **Before starting, ensure you have:**
 >
-> - Azure infrastructure provisioned (resource group, ACR, Container Apps Environment, Azure SQL)
-> - nginx container deployed and accessible via HTTPS
-> - `.azure-config` file with all resource names
-> - `.database-url` file with the Azure SQL connection string
-> - Docker running on your development machine
+> - ✓ Azure infrastructure provisioned (resource group, ACR, Container Apps Environment, Azure SQL)
+> - ✓ nginx container deployed and accessible via HTTPS
+> - ✓ `.azure-config` file with all resource names
+> - ✓ `.database-url` file with the Azure SQL connection string
+> - ✓ Docker running on your development machine
 
 ## Exercise Steps
 
@@ -83,7 +83,7 @@ The Dockerfile created in the container-ready exercise packages the application 
 
    You should see `news-flash` in the output.
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `az acr login` command configures Docker's credential helper to authenticate with your private registry. Without this step, `docker push` would be rejected with an authentication error.
 >
@@ -91,13 +91,13 @@ The Dockerfile created in the container-ready exercise packages the application 
 >
 > The build happens locally on your machine using the Dockerfile in the project root. Docker reads the Dockerfile, executes each instruction (install ODBC driver, copy requirements, install dependencies, copy application code), and produces a container image. The push uploads this image to ACR where Container Apps can access it.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting `az acr login` before pushing — Docker cannot authenticate with ACR without it
 > - Building without the ACR prefix — `docker build -t news-flash .` creates a local-only image that cannot be pushed
 > - Running `docker push` before the build completes — the tagged image must exist locally first
 >
-> **Quick check:** `az acr repository list --name $ACR_NAME` shows `news-flash`
+> ✓ **Quick check:** `az acr repository list --name $ACR_NAME` shows `news-flash`
 
 ### **Step 2:** Update Container App with News Flash Image
 
@@ -142,7 +142,7 @@ The Container App currently runs nginx. Now you will update it to pull and run y
 
 5. **Open** the URL in your browser — you will likely see an error page. This is expected because the database connection is not configured yet.
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `az containerapp update` command replaces the running container image. Container Apps pulls the new image from ACR using the provided credentials, stops the old container (nginx), and starts a new container with the Flask application.
 >
@@ -150,13 +150,13 @@ The Container App currently runs nginx. Now you will update it to pull and run y
 >
 > The `--registry-server`, `--registry-username`, and `--registry-password` flags configure ACR authentication. Container Apps stores these credentials and uses them whenever it needs to pull the image — including during restarts and scaling events.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Using `--target-port 80` (the nginx port) instead of `--target-port 5000` — Flask/Gunicorn listens on 5000
 > - Forgetting the registry credentials — Container Apps cannot pull from a private registry without authentication
 > - Panicking at the error page — the application needs environment variables before it can connect to the database
 >
-> **Quick check:** `az containerapp show --name $CA_NAME --resource-group $RESOURCE_GROUP --query "properties.template.containers[0].image"` shows your ACR image
+> ✓ **Quick check:** `az containerapp show --name $CA_NAME --resource-group $RESOURCE_GROUP --query "properties.template.containers[0].image"` shows your ACR image
 
 ### **Step 3:** Configure Environment Variables
 
@@ -194,7 +194,7 @@ The application needs three environment variables to run in production: `FLASK_E
 
 5. **Wait** for the container to restart (Container Apps automatically restarts when environment variables change), then **refresh** the application URL in your browser. The landing page should now load without errors.
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > This step implements Factor III of the 12-Factor App methodology: configuration is stored in the environment, not in code. The same Docker image runs in development (with `FLASK_ENV=development` and a SQLite `DATABASE_URL`) and in production (with `FLASK_ENV=production` and an Azure SQL `DATABASE_URL`). The image never changes — only the environment variables change.
 >
@@ -202,14 +202,14 @@ The application needs three environment variables to run in production: `FLASK_E
 >
 > Container Apps stores environment variables as part of the container configuration. They are encrypted at rest and injected into the container at startup. When you update environment variables, Container Apps creates a new revision and restarts the container with the new values.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting to set `FLASK_ENV=production` — the application defaults to development config with SQLite
 > - Baking `DATABASE_URL` into the Docker image — this is a security risk and prevents environment portability
 > - Using a weak or predictable `SECRET_KEY` in production — always use `openssl rand -hex 32` or equivalent
 > - Not waiting for the restart — the old container may still be running for a few seconds after the update
 >
-> **Quick check:** The application landing page loads without database errors
+> ✓ **Quick check:** The application landing page loads without database errors
 
 ### **Step 4:** Run Database Migrations
 
@@ -241,7 +241,7 @@ The application code is running and connected to Azure SQL, but the database has
 
 4. **Confirm** data persisted by checking the subscription count or revisiting the admin page (if available)
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > `az containerapp exec` opens a shell session inside the running container, similar to `docker exec`. The `--command "flask" -- db upgrade` runs the Flask CLI command `flask db upgrade` which applies all pending Alembic migrations.
 >
@@ -249,13 +249,13 @@ The application code is running and connected to Azure SQL, but the database has
 >
 > In a production pipeline, migrations typically run as a one-time step after each deployment. If a migration fails, the database transaction is rolled back automatically, leaving the database in its previous state.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Running migrations before setting `DATABASE_URL` — the command fails because it cannot connect to the database
 > - Forgetting the `--` separator before `db upgrade` — the CLI parser may misinterpret the arguments
 > - Not testing the application after migration — always verify that the schema changes work correctly
 >
-> **Quick check:** The subscribe form works end-to-end (submit → thank you page)
+> ✓ **Quick check:** The subscribe form works end-to-end (submit → thank you page)
 
 ### **Step 5:** Create Deployment Script
 
@@ -369,7 +369,7 @@ Manually running four steps every time you deploy is error-prone. A deployment s
 
 4. **Verify** the application works by visiting the URL printed at the end of the script output
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `set -euo pipefail` flags make the script fail fast on errors:
 >
@@ -383,15 +383,15 @@ Manually running four steps every time you deploy is error-prone. A deployment s
 >
 > The `--output none` flag on `az containerapp update` suppresses the verbose JSON output, keeping the deployment log readable.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Running the script from the wrong directory — the `SCRIPT_DIR` calculation handles this, but `.azure-config` must be in the project root
 > - Not making the script executable — `chmod +x` is required before running with `./deploy/deploy.sh`
 > - The `sleep 15` may not be long enough on a cold start — if migrations fail, increase the delay and try again
 >
-> **Quick check:** `./deploy/deploy.sh` completes without errors and prints the application URL
+> ✓ **Quick check:** `./deploy/deploy.sh` completes without errors and prints the application URL
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Docker image built and pushed to ACR
 > - Container App running the News Flash image (not nginx)
@@ -399,15 +399,15 @@ Manually running four steps every time you deploy is error-prone. A deployment s
 > - Subscribe form works end-to-end (submit → thank you page)
 > - Deployment script automates the full process
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
-> - [ ] Docker image appears in ACR repository list
-> - [ ] Container App shows the Flask application image (not `nginx:alpine`)
-> - [ ] Environment variables set: `FLASK_ENV`, `SECRET_KEY`, `DATABASE_URL`
-> - [ ] Database migrations applied successfully
-> - [ ] Subscribe form submits and shows thank you page
-> - [ ] `deploy/deploy.sh` created and executable
-> - [ ] Running `deploy/deploy.sh` deploys the application end-to-end
+> - ☐ Docker image appears in ACR repository list
+> - ☐ Container App shows the Flask application image (not `nginx:alpine`)
+> - ☐ Environment variables set: `FLASK_ENV`, `SECRET_KEY`, `DATABASE_URL`
+> - ☐ Database migrations applied successfully
+> - ☐ Subscribe form submits and shows thank you page
+> - ☐ `deploy/deploy.sh` created and executable
+> - ☐ Running `deploy/deploy.sh` deploys the application end-to-end
 
 ## Common Issues
 
@@ -429,11 +429,11 @@ Manually running four steps every time you deploy is error-prone. A deployment s
 
 You've successfully deployed the News Flash application to Azure Container Apps:
 
-- Built and pushed the Docker image to Azure Container Registry
-- Updated the Container App from nginx to the Flask application
-- Configured environment variables following the 12-Factor App methodology
-- Ran database migrations inside the running container
-- Created a deployment script to automate the entire process
+- ✓ Built and pushed the Docker image to Azure Container Registry
+- ✓ Updated the Container App from nginx to the Flask application
+- ✓ Configured environment variables following the 12-Factor App methodology
+- ✓ Ran database migrations inside the running container
+- ✓ Created a deployment script to automate the entire process
 
 > **Key takeaway:** Deployment is a sequence of well-defined steps: build, push, update, configure, migrate. Automating these steps in a script ensures consistency and prevents human error. The 12-Factor App principle of environment-driven configuration means the same Docker image works in every environment — only the environment variables change.
 
@@ -446,6 +446,6 @@ You've successfully deployed the News Flash application to Azure Container Apps:
 > - Explore Azure Container Registry tasks for building images in the cloud (no local Docker needed)
 > - Investigate Container Apps secrets for sensitive environment variables instead of plain `--set-env-vars`
 
-## Done!
+## Done! 🎉
 
 Your News Flash application is live on Azure. The deployment script makes future deployments repeatable — change your code, run the script, and the updated application is live within minutes.

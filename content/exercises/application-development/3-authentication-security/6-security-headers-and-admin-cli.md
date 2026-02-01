@@ -374,6 +374,6 @@ You've successfully hardened your News Flash application which:
 > - Add logging for security events (failed logins, admin creation attempts)
 > - Research Flask-Talisman for comprehensive security header management
 
-## Done!
+## Done! 🎉
 
 You have completed the Authentication and Security exercise series. Your News Flash application now has user authentication, protected admin routes, security headers, custom error pages, and CLI tooling for admin management.

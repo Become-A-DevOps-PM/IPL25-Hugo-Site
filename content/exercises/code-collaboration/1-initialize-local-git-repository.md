@@ -45,6 +45,7 @@ You should see output like `git version 2.x.x`. If not, install Git from [git-sc
 3. **Initialize the Repository**
 4. **Explore with git status**
 5. **Stage and Commit Your Files**
+6. **Practice Making a Change**
 
 ### **Step 1:** Understand Version Control Basics
 
@@ -63,7 +64,7 @@ Git is a distributed version control system, meaning every developer has a compl
 >
 > Before files become part of a commit, they go through the **staging area** (also called the index). This intermediate step lets you choose exactly which changes to include in each commit.
 >
-> ```
+> ```text
 > Working Directory → Staging Area → Repository
 >       (edit)          (add)        (commit)
 > ```
@@ -144,7 +145,7 @@ Now turn your project directory into a Git repository. This creates a hidden `.g
 
    You should see output like:
 
-   ```
+   ```text
    Initialized empty Git repository in /path/to/hello-flask/.git/
    ```
 
@@ -181,7 +182,7 @@ The `git status` command is your window into the current state of the repository
 
    You should see output similar to:
 
-   ```
+   ```text
    On branch main
 
    No commits yet
@@ -235,7 +236,7 @@ Now create your first commit by staging files and then committing them with a de
 
    You should now see:
 
-   ```
+   ```text
    On branch main
 
    No commits yet
@@ -257,7 +258,7 @@ Now create your first commit by staging files and then committing them with a de
 
    You should see output like:
 
-   ```
+   ```text
    [main (root-commit) abc1234] Initial commit: Hello Flask application
     3 files changed, 25 insertions(+)
     create mode 100644 .gitignore
@@ -273,7 +274,7 @@ Now create your first commit by staging files and then committing them with a de
 
    You should see your commit:
 
-   ```
+   ```text
    abc1234 Initial commit: Hello Flask application
    ```
 
@@ -300,9 +301,9 @@ Now create your first commit by staging files and then committing them with a de
 >
 > ✓ **Quick check:** Running `git log --oneline` shows your commit
 
-## Practice: Make a Change and Commit Again
+### **Step 6:** Practice Making a Change
 
-Reinforce what you've learned by making a small change and committing it.
+Reinforce what you've learned by making a small change and committing it. This practice step walks you through the full edit-add-commit cycle a second time to build muscle memory.
 
 1. **Open** `app.py` in your editor
 
@@ -324,7 +325,7 @@ Reinforce what you've learned by making a small change and committing it.
 
    You should see:
 
-   ```
+   ```text
    On branch main
    Changes not staged for commit:
      (use "git add <file>..." to update what will be committed)
@@ -349,12 +350,12 @@ Reinforce what you've learned by making a small change and committing it.
 
    You should now see two commits:
 
-   ```
+   ```text
    def5678 Update greeting message
    abc1234 Initial commit: Hello Flask application
    ```
 
-> ✓ **Practice complete:** You've successfully made a change, staged it, and committed it
+> ✓ **Quick check:** Running `git log --oneline` shows two commits in your history
 
 ## Common Issues
 
@@ -396,4 +397,4 @@ You've successfully initialized a Git repository and created commits which:
 
 ## Done! 🎉
 
-You've mastered the fundamentals of local Git version control. Your project now has a complete history of changes, and you can confidently track future modifications. The next step is connecting your local repository to GitHub so you can back up your code and collaborate with others.
+You've mastered the fundamentals of local Git version control. Your project now has a complete history of changes, and you can confidently track future modifications.

@@ -25,11 +25,11 @@ Add session-based authentication to the application using Flask-Login, a login f
 
 > **Before starting, ensure you have:**
 >
-> - Completed the User Model exercise with `set_password()` and `check_password()` methods
-> - Completed the Authentication Service exercise with `AuthService.authenticate()`, `create_user()`, and `get_user_by_id()`
-> - Completed the Admin Blueprint exercise with `admin_bp` registered
-> - Flask application running with database migrations applied
-> - `app/business/services/auth_service.py` exists and is tested
+> - ✓ Completed the User Model exercise with `set_password()` and `check_password()` methods
+> - ✓ Completed the Authentication Service exercise with `AuthService.authenticate()`, `create_user()`, and `get_user_by_id()`
+> - ✓ Completed the Admin Blueprint exercise with `admin_bp` registered
+> - ✓ Flask application running with database migrations applied
+> - ✓ `app/business/services/auth_service.py` exists and is tested
 
 ## Exercise Steps
 
@@ -630,6 +630,6 @@ You've added a complete session-based login system which:
 > - Add login attempt rate limiting to prevent brute-force attacks
 > - Research JWT tokens as an alternative to cookie-based sessions
 
-## Done!
+## Done! 🎉
 
 You've added a complete login system with session management. Users can now log in and out, and the navigation reflects their authentication state.

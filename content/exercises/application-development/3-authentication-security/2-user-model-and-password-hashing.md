@@ -24,10 +24,10 @@ Create a User model with secure password storage using Werkzeug's PBKDF2 hashing
 
 > **Before starting, ensure you have:**
 >
-> - Flask application running with `flask run`
-> - Flask-Migrate set up with an existing `migrations/` directory
-> - Subscriber model working in `app/data/models/subscriber.py`
-> - Understanding of SQLAlchemy models and database migrations
+> - ✓ Flask application running with `flask run`
+> - ✓ Flask-Migrate set up with an existing `migrations/` directory
+> - ✓ Subscriber model working in `app/data/models/subscriber.py`
+> - ✓ Understanding of SQLAlchemy models and database migrations
 
 ## Exercise Steps
 
@@ -95,7 +95,7 @@ The User model encapsulates all password operations so the rest of the applicati
            return check_password_hash(self.password_hash, password)
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **PBKDF2** (Password-Based Key Derivation Function 2) adds a random salt and runs the hash through thousands of iterations. This provides three layers of protection:
 >
@@ -105,13 +105,13 @@ The User model encapsulates all password operations so the rest of the applicati
 >
 > The `password_hash` column stores the algorithm, salt, and hash together in a single string. Werkzeug handles parsing this string automatically when verifying passwords.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Storing passwords in plain text or using reversible encryption
 > - Using fast hash algorithms like MD5 or SHA256 without salt and iterations
 > - Comparing password hashes with `==` instead of using `check_password_hash()` (timing attacks)
 >
-> **Quick check:** The User model has `set_password()` and `check_password()` methods but no plain text password field
+> ✓ **Quick check:** The User model has `set_password()` and `check_password()` methods but no plain text password field
 
 ### **Step 2:** Update Model Imports
 
@@ -140,12 +140,12 @@ Flask-Migrate needs to discover the User model to generate a migration. This req
 
    This import is needed for Flask-Migrate to detect the User model and create the migration. Without it, `flask db migrate` will report "No changes detected."
 
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting to import User in `__init__.py` causes Flask-Migrate to generate an empty migration
 > - Not updating `__all__` makes the model harder to discover for other developers
 >
-> **Quick check:** Both `Subscriber` and `User` appear in `app/data/models/__init__.py`
+> ✓ **Quick check:** Both `Subscriber` and `User` appear in `app/data/models/__init__.py`
 
 ### **Step 3:** Run Database Migration
 
@@ -167,7 +167,7 @@ Generate and apply a migration to create the `users` table in the database.
 
    This executes the migration and creates the `users` table in the database.
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > Flask-Migrate uses Alembic under the hood to version database schema changes. The workflow is:
 >
@@ -177,7 +177,7 @@ Generate and apply a migration to create the `users` table in the database.
 >
 > Each migration is a versioned Python file. This ensures database changes are tracked in version control and reproducible across all environments (development, staging, production).
 >
-> **Quick check:** Run `ls migrations/versions/` to confirm the new migration file exists
+> ✓ **Quick check:** Run `ls migrations/versions/` to confirm the new migration file exists
 
 ### **Step 4:** Test in Flask Shell
 
@@ -215,13 +215,13 @@ Verify that password hashing works correctly by creating a test user in the inte
    print(user.is_active)  # True
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > Notice that `set_password()` stores a long hash string, not the original password. Even if someone gains access to the database, they cannot reverse the hash to recover the original password.
 >
 > The `check_password()` method extracts the salt from the stored hash, applies the same hashing process to the candidate password, and compares the results using a constant-time comparison function that prevents timing attacks.
 >
-> **Quick check:** `check_password("password123")` returns `True` and `check_password("wrongpassword")` returns `False`
+> ✓ **Quick check:** `check_password("password123")` returns `True` and `check_password("wrongpassword")` returns `False`
 
 ### **Step 5:** Verify and Explore
 
@@ -263,7 +263,7 @@ Confirm the database schema is correct and explore the security properties of th
    sqlite3 instance/news_flash.db "DELETE FROM users;"
    ```
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Migration runs without errors
 > - User table has columns: `id`, `username`, `password_hash`, `is_active`
@@ -290,10 +290,10 @@ Confirm the database schema is correct and explore the security properties of th
 
 You've created a User model with secure password storage:
 
-- Created a User model with PBKDF2 password hashing via Werkzeug
-- Used `set_password()` and `check_password()` to encapsulate all password operations
-- Generated and applied a database migration for the users table
-- Verified password hashing, verification, and unique constraints
+- ✓ Created a User model with PBKDF2 password hashing via Werkzeug
+- ✓ Used `set_password()` and `check_password()` to encapsulate all password operations
+- ✓ Generated and applied a database migration for the users table
+- ✓ Verified password hashing, verification, and unique constraints
 
 > **Key takeaway:** Never store passwords in plain text. Werkzeug's hashing functions handle salting, iteration, and secure comparison automatically. The User model encapsulates all password operations so the rest of the application never touches raw passwords.
 
@@ -306,6 +306,6 @@ You've created a User model with secure password storage:
 > - Add `created_at` and `last_login` timestamp columns
 > - Explore password complexity requirements and validation
 
-## Done!
+## Done! 🎉
 
 You've created a User model with secure password storage using Werkzeug's PBKDF2 hashing.

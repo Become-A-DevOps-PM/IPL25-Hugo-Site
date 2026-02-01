@@ -3,11 +3,14 @@ title = "4. Creating a Resource Group Using AZ CLI"
 program = "IPL"
 cohort = "25"
 courses = ["SNS"]
+description = "Create and manage an Azure resource group using Azure CLI commands in Cloud Shell."
 weight = 4
 date = 2024-11-25
 lastmod = 2025-11-24
 draft = false
 +++
+
+# Creating a Resource Group Using AZ CLI
 
 ## Goal
 
@@ -121,6 +124,6 @@ You've successfully created and managed a resource group using Azure CLI which:
 > - Explore `az group list` with different output formats (json, yaml, tsv)
 > - Use `az configure` to set default values for location and resource group
 
-## Done 🎉
+## Done! 🎉
 
 You have successfully created and managed a resource group using Azure CLI, gaining hands-on experience with command-line operations in Azure.

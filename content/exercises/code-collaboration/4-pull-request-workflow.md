@@ -474,6 +474,6 @@ You've successfully completed the pull request workflow which:
 > - Set up a **PR template** in your repository (`.github/pull_request_template.md`)
 > - Practice requesting specific **reviewers** when working with a team
 
-## Done!
+## Done! 🎉
 
 You've mastered the pull request workflow. This cycle - create branch, make changes, push, create PR, review, merge, clean up - is what you'll repeat for every feature you build. The review step transforms solo coding into collaborative development, even when you're the only reviewer.

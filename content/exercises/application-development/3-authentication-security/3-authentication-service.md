@@ -24,10 +24,10 @@ Create an authentication service in the business layer that handles user credent
 
 > **Before starting, ensure you have:**
 >
-> - Completed the User Model exercise with password hashing
-> - User model at `app/data/models/user.py` with `set_password()`, `check_password()`, and `is_active`
-> - Flask application running with database migrations applied
-> - `app/business/services/__init__.py` exists
+> - ✓ Completed the User Model exercise with password hashing
+> - ✓ User model at `app/data/models/user.py` with `set_password()`, `check_password()`, and `is_active`
+> - ✓ Flask application running with database migrations applied
+> - ✓ `app/business/services/__init__.py` exists
 
 ## Exercise Steps
 
@@ -368,6 +368,6 @@ You've successfully created an authentication service which:
 > - Add logging for authentication attempts (successful and failed)
 > - Research token-based authentication as an alternative to session-based login
 
-## Done!
+## Done! 🎉
 
 You've created an authentication service that handles user management in the business layer. This service provides the `authenticate()`, `create_user()`, and `get_user_by_id()` methods needed for session-based login.

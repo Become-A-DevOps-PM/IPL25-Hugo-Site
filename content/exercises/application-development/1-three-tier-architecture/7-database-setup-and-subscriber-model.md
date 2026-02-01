@@ -24,9 +24,9 @@ Build the data layer foundation by configuring SQLAlchemy, creating database mig
 
 > **Before starting, ensure you have:**
 >
-> - Completed the business layer validation service
-> - Flask application running with `flask run`
-> - Understanding of Python classes and decorators
+> - ✓ Completed the business layer validation service
+> - ✓ Flask application running with `flask run`
+> - ✓ Understanding of Python classes and decorators
 
 ## Exercise Steps
 
@@ -62,7 +62,7 @@ Flask-SQLAlchemy provides a Flask-friendly wrapper around SQLAlchemy, the most p
    pip install -r requirements.txt
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **Flask-SQLAlchemy** simplifies SQLAlchemy integration with Flask by handling:
 >
@@ -76,12 +76,12 @@ Flask-SQLAlchemy provides a Flask-friendly wrapper around SQLAlchemy, the most p
 > - `flask db migrate` - Generate migration from model changes
 > - `flask db upgrade` - Apply migrations to database
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting to activate your virtual environment before `pip install`
 > - Not specifying version constraints can lead to incompatible versions
 >
-> **Quick check:** Run `pip list | grep -i flask` to verify both packages are installed
+> ✓ **Quick check:** Run `pip list | grep -i flask` to verify both packages are installed
 
 ### **Step 2:** Configure SQLAlchemy
 
@@ -150,7 +150,7 @@ The application needs to know where to store data and how to connect to the data
    }
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **SQLALCHEMY_DATABASE_URI** follows a standard format: `dialect://username:password@host:port/database`
 >
@@ -162,13 +162,13 @@ The application needs to know where to store data and how to connect to the data
 >
 > The testing config uses an in-memory database for fast, isolated tests.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Using `sqlite://news_flash.db` (two slashes) creates an invalid URI
 > - Hardcoding production database URLs exposes credentials in version control
 > - Forgetting `SQLALCHEMY_TRACK_MODIFICATIONS` causes deprecation warnings
 >
-> **Quick check:** Config class has both `SQLALCHEMY_DATABASE_URI` and `SQLALCHEMY_TRACK_MODIFICATIONS`
+> ✓ **Quick check:** Config class has both `SQLALCHEMY_DATABASE_URI` and `SQLALCHEMY_TRACK_MODIFICATIONS`
 
 ### **Step 3:** Initialize Extensions in Application Factory
 
@@ -239,7 +239,7 @@ The application factory pattern requires extensions to be created at module leve
        return app
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The **two-phase initialization** pattern (`db = SQLAlchemy()` then `db.init_app(app)`) is essential for Flask extensions:
 >
@@ -254,13 +254,13 @@ The application factory pattern requires extensions to be created at module leve
 >
 > The `migrate.init_app(app, db)` connects Flask-Migrate to both the app and the SQLAlchemy instance.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Creating extensions inside `create_app` breaks model imports
 > - Forgetting to pass `db` to `migrate.init_app()` prevents migrations from working
 > - Initializing extensions before loading config uses wrong settings
 >
-> **Quick check:** Both `db` and `migrate` are created at module level and initialized in `create_app`
+> ✓ **Quick check:** Both `db` and `migrate` are created at module level and initialized in `create_app`
 
 ### **Step 4:** Create the Subscriber Model
 
@@ -341,7 +341,7 @@ Models define the structure of your database tables. The Subscriber model maps P
        # Register blueprints
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **SQLAlchemy Column Types:**
 >
@@ -359,14 +359,14 @@ Models define the structure of your database tables. The Subscriber model maps P
 >
 > The `__tablename__` explicitly sets the table name; without it, SQLAlchemy would derive it from the class name.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Importing `db` before `db.init_app()` causes application context errors
 > - Using `datetime.now()` without `timezone.utc` creates naive datetimes
 > - Forgetting `index=True` on email makes duplicate checks slow
 > - Not exposing models in `__init__.py` makes imports verbose
 >
-> **Quick check:** Model file created with all four columns defined
+> ✓ **Quick check:** Model file created with all four columns defined
 
 ### **Step 5:** Run Database Migrations
 
@@ -412,7 +412,7 @@ Flask-Migrate manages database schema changes through migrations. We'll initiali
 
    You should see the table schema with all columns.
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > **Migration Workflow:**
 >
@@ -429,14 +429,14 @@ Flask-Migrate manages database schema changes through migrations. We'll initiali
 >
 > The `instance/` folder is Flask's default location for instance-specific files like SQLite databases. It's typically gitignored.
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Running `migrate` before `init` fails with "No such directory"
 > - Forgetting to `upgrade` after `migrate` means tables aren't created
 > - Editing migration files incorrectly can corrupt the database
 > - Not importing models before migration results in empty migrations
 >
-> **Quick check:** `migrations/` directory exists and `sqlite3` shows the table schema
+> ✓ **Quick check:** `migrations/` directory exists and `sqlite3` shows the table schema
 
 ### **Step 6:** Test Your Implementation
 
@@ -486,7 +486,7 @@ Verify the database layer works by using Flask's interactive shell to create and
    sqlite3 instance/news_flash.db "SELECT * FROM subscribers;"
    ```
 
-> **Success indicators:**
+> ✓ **Success indicators:**
 >
 > - Flask shell starts without errors
 > - `Subscriber` can be imported from `app.data.models`
@@ -495,7 +495,7 @@ Verify the database layer works by using Flask's interactive shell to create and
 > - sqlite3 shows the row with all columns populated
 > - `subscribed_at` has a timestamp (set automatically)
 >
-> **Final verification checklist:**
+> ✓ **Final verification checklist:**
 >
 > - [ ] `flask-sqlalchemy` and `flask-migrate` in requirements.txt
 > - [ ] `SQLALCHEMY_DATABASE_URI` configured in config.py
@@ -526,10 +526,10 @@ Verify the database layer works by using Flask's interactive shell to create and
 
 You've successfully set up the data layer foundation which:
 
-- Configures SQLAlchemy for database access
-- Uses Flask-Migrate for schema versioning
-- Defines a Subscriber model with proper constraints
-- Creates the database through migrations
+- ✓ Configures SQLAlchemy for database access
+- ✓ Uses Flask-Migrate for schema versioning
+- ✓ Defines a Subscriber model with proper constraints
+- ✓ Creates the database through migrations
 
 > **Key takeaway:** The data layer handles persistence - storing and retrieving data from the database. By using SQLAlchemy models, you work with Python objects instead of raw SQL. Migrations ensure database changes are versioned and reproducible across environments. The model defines "what data looks like" while the repository (next exercise) defines "how to access it."
 
@@ -541,3 +541,7 @@ You've successfully set up the data layer foundation which:
 > - Explore SQLAlchemy relationships for connected models
 > - Try `flask db history` to see migration history
 > - Research database indexing strategies for performance
+
+## Done! 🎉
+
+Great job! You've learned how to set up a database layer with SQLAlchemy and Flask-Migrate, and can now define models that map Python objects to database tables. This foundation enables persistent data storage and versioned schema management for your application.

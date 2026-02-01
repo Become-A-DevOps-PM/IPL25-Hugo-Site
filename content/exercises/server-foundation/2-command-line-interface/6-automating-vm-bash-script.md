@@ -3,11 +3,14 @@ title = "6. Automating VM Creation, Nginx Installation, and Port Configuration U
 program = "IPL"
 cohort = "25"
 courses = ["SNS"]
+description = "Create a Bash script that automates Azure VM provisioning with Nginx installation and HTTP port configuration in a single command."
 weight = 6
 date = 2024-11-25
 lastmod = 2025-11-24
 draft = false
 +++
+
+# Automating VM Creation, Nginx Installation, and Port Configuration Using a Bash Script
 
 ## Goal
 
@@ -23,9 +26,9 @@ Create a Bash script that provides a "one-click" solution for deploying an Azure
 
 > **Before starting, ensure you have:**
 >
-> - Completed the previous exercises in the server foundation track
-> - Azure CLI installed and configured with your subscription
-> - A code editor (VS Code recommended) for creating script files
+> - ✓ Completed the previous exercises in the server foundation track
+> - ✓ Azure CLI installed and configured with your subscription
+> - ✓ A code editor (VS Code recommended) for creating script files
 
 ## Exercise Steps
 
@@ -49,7 +52,7 @@ Custom data files allow you to run scripts automatically when a VM boots for the
    apt install nginx -y
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The custom data script runs during VM provisioning with root privileges. It:
 >
@@ -106,7 +109,7 @@ The automation script combines all the individual Azure CLI commands you've lear
    chmod +x provision_vm.sh
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The script demonstrates several important automation patterns:
 >
@@ -115,7 +118,7 @@ The automation script combines all the individual Azure CLI commands you've lear
 > - **The `@` prefix** tells Azure CLI to read the custom data from a file
 > - **Command substitution** (`$()`) captures the output of one command for use in another
 >
-> **Common Mistakes**
+> ⚠ **Common Mistakes**
 >
 > - Forgetting to make the script executable with `chmod +x`
 > - Not having the custom data file in the same directory as the script
@@ -131,7 +134,7 @@ Running the script will execute all Azure CLI commands in sequence, creating you
    ./provision_vm.sh
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The script will:
 >
@@ -140,7 +143,7 @@ Running the script will execute all Azure CLI commands in sequence, creating you
 > - Open port 80 for HTTP traffic
 > - Output the public IP address of the VM
 >
-> **Quick check:** Open a browser and navigate to `http://<VM_Public_IP>`. You should see the default Nginx page.
+> ✓ **Quick check:** Open a browser and navigate to `http://<VM_Public_IP>`. You should see the default Nginx page.
 
 ### **Step 4:** Clean Up Resources (Optional)
 
@@ -152,7 +155,7 @@ Cleaning up resources prevents unnecessary charges and ensures a tidy Azure envi
    az group delete --name MyOneClickGroup --no-wait --yes
    ```
 
-> **Concept Deep Dive**
+> ℹ **Concept Deep Dive**
 >
 > The `--no-wait` flag returns control immediately while deletion continues in the background. The `--yes` flag skips the confirmation prompt, making this suitable for automated cleanup scripts.
 >
@@ -172,9 +175,9 @@ Cleaning up resources prevents unnecessary charges and ensures a tidy Azure envi
 
 You've successfully created a one-click automation solution which:
 
-- Provisions all Azure resources with a single command
-- Automatically installs and configures Nginx using cloud-init
-- Demonstrates the power of combining Azure CLI commands into reusable scripts
+- ✓ Provisions all Azure resources with a single command
+- ✓ Automatically installs and configures Nginx using cloud-init
+- ✓ Demonstrates the power of combining Azure CLI commands into reusable scripts
 
 > **Key takeaway:** Bash scripts transform manual, error-prone processes into repeatable, shareable automation. This is the foundation of Infrastructure as Code (IaC) and is essential for professional DevOps workflows.
 
@@ -187,6 +190,6 @@ You've successfully created a one-click automation solution which:
 > - Add a custom HTML page to Nginx by extending the custom data script
 > - Create a corresponding cleanup script that deletes resources when you're done
 
-## Done 🎉
+## Done! 🎉
 
 You have successfully created a "one-click" solution to deploy an Azure VM, configure Nginx, and enable HTTP traffic using Bash scripting and custom data. This automation approach will serve as the foundation for more advanced Infrastructure as Code techniques in upcoming exercises.
