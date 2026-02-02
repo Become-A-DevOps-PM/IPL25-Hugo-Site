@@ -26,7 +26,7 @@ Prepare the News Flash application for container deployment by updating configur
 >
 > - ✓ Completed the three-tier architecture exercises
 > - ✓ Flask application running with subscriber persistence
-> - ✓ Docker installed on your development machine
+> - ✓ Docker installed on your development machine (recommended but optional)
 
 ## Exercise Steps
 
@@ -38,103 +38,20 @@ Prepare the News Flash application for container deployment by updating configur
 4. **Create the Dockerfile**
 5. **Test the Container Build**
 
-### **Step 1:** Update Configuration for Environment-Driven Settings
+### **Step 1:** Verify Configuration is Container-Ready
 
-The 12-Factor App methodology states that configuration should come from the environment, not be hardcoded in source code. This principle allows the same application code to run locally with SQLite during development and connect to Azure SQL Database in production. The only thing that changes between environments is the set of environment variables.
+Your `app/config.py` already follows the 12-Factor App methodology — configuration comes from environment variables, not hardcoded values. This means the same application code runs locally with SQLite during development and connects to Azure SQL Database in production. The only thing that changes between environments is the set of environment variables.
 
-1. **Open** the file `app/config.py`
-
-2. **Replace** the contents with the updated configuration:
-
-   > `app/config.py`
+1. **Open** the file `app/config.py` and verify these two lines exist in the base `Config` class:
 
    ```python
-   """
-   Application configuration for different environments.
-
-   Follows the 12-Factor App methodology: configuration comes from
-   environment variables, not hardcoded values. The same code runs
-   in development (SQLite) and production (Azure SQL).
-   """
-
-   import os
-   from dataclasses import dataclass
-
-   BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-
-   @dataclass
-   class Config:
-       """Base configuration shared by all environments."""
-       SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key")
-       SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
-
-
-   @dataclass
-   class DevelopmentConfig(Config):
-       """Local development with SQLite."""
-       DEBUG: bool = True
-       SQLALCHEMY_DATABASE_URI: str = f"sqlite:///{os.path.join(BASE_DIR, 'instance', 'news_flash.db')}"
-
-
-   @dataclass
-   class TestingConfig(Config):
-       """Automated testing with in-memory SQLite."""
-       TESTING: bool = True
-       SQLALCHEMY_DATABASE_URI: str = "sqlite:///:memory:"
-       WTF_CSRF_ENABLED: bool = False
-
-
-   @dataclass
-   class ProductionConfig(Config):
-       """Production deployment - all settings from environment."""
-       DEBUG: bool = False
-       SQLALCHEMY_DATABASE_URI: str = os.environ.get("DATABASE_URL", "")
-       SECRET_KEY: str = os.environ.get("SECRET_KEY", "")
-
-
-   config_by_name = {
-       "development": DevelopmentConfig,
-       "testing": TestingConfig,
-       "production": ProductionConfig,
-   }
+   SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key")
+   SQLALCHEMY_DATABASE_URI: str = os.environ.get("DATABASE_URL", "sqlite:///news_flash.db")
    ```
 
-> ℹ **Concept Deep Dive**
->
-> The 12-Factor App is a methodology for building software-as-a-service applications. Factor III (Config) demands strict separation of config from code. The same Docker image runs anywhere — only the environment variables change. `DATABASE_URL` points to SQLite locally and Azure SQL in production. `SECRET_KEY` has a development fallback but **must** be set to a strong random value in production.
->
-> The `config_by_name` dictionary maps environment names to configuration classes. Your `create_app()` factory reads the `FLASK_ENV` environment variable and looks up the matching class: `config_by_name[env_name]`. This pattern eliminates if/else chains and makes adding new environments trivial.
->
-> ⚠ **Common Mistakes**
->
-> - Hardcoding database credentials in `config.py` — use environment variables instead
-> - Forgetting that `ProductionConfig.SECRET_KEY` defaults to empty string — always set it in production
-> - Using the same `SECRET_KEY` in development and production compromises session security
->
-> ✓ **Quick check:** `config.py` updated with `ProductionConfig` reading from environment variables and `config_by_name` dictionary
+   These are the lines that make your application container-ready. In production, setting `DATABASE_URL` and `SECRET_KEY` as environment variables is all it takes to switch from SQLite to Azure SQL Database.
 
-3. **Create** a file named `.env.example` in the project root to document all supported environment variables:
-
-   > `.env.example`
-
-   ```text
-   FLASK_ENV=development
-   SECRET_KEY=dev-secret-key-change-in-production
-   DATABASE_URL=sqlite:///instance/news_flash.db
-   ```
-
-> ℹ **Concept Deep Dive**
->
-> The `.env.example` file is not loaded by the application — it serves as documentation for anyone setting up the project. It lists every environment variable the application supports and provides safe example values. Never commit a real `.env` file with production secrets to version control.
->
-> For Azure SQL Database, the connection string format is:
->
-> ```text
-> mssql+pyodbc://user:pass@server/db?driver=ODBC+Driver+18+for+SQL+Server
-> ```
->
-> SQLAlchemy abstracts the database driver — your application code does not change, only the `DATABASE_URL` value changes between environments.
+> ✓ **Quick check:** `config.py` reads `DATABASE_URL` and `SECRET_KEY` from environment variables with development defaults. No changes needed if you completed the three-tier architecture exercises.
 
 ### **Step 2:** Update Requirements for Production
 
@@ -227,11 +144,11 @@ Docker packages your application and all its dependencies into a container image
    WORKDIR /app
 
    # Copy requirements first for layer caching
-   COPY requirements.txt .
+   COPY application/requirements.txt .
    RUN pip install --no-cache-dir -r requirements.txt
 
    # Copy application code
-   COPY . .
+   COPY application/ .
 
    EXPOSE 5000
 
@@ -239,9 +156,9 @@ Docker packages your application and all its dependencies into a container image
    CMD ["bash", "entrypoint.sh"]
    ```
 
-2. **Create** a new file named `entrypoint.sh` in the project root. This script runs database migrations before starting the application — a common production pattern that ensures the database schema is always up to date when a new version deploys:
+2. **Create** a new file named `entrypoint.sh` inside the `application/` directory (alongside `wsgi.py`). This script runs database migrations before starting the application — a common production pattern that ensures the database schema is always up to date when a new version deploys:
 
-   > `entrypoint.sh`
+   > `application/entrypoint.sh`
 
    ```bash
    #!/bin/bash
@@ -257,7 +174,7 @@ Docker packages your application and all its dependencies into a container image
 3. **Make** the script executable:
 
    ```bash
-   chmod +x entrypoint.sh
+   chmod +x application/entrypoint.sh
    ```
 
 4. **Create** a new file named `.dockerignore` in the project root:
@@ -265,12 +182,12 @@ Docker packages your application and all its dependencies into a container image
    > `.dockerignore`
 
    ```text
-   .venv/
-   instance/
-   __pycache__/
-   *.pyc
-   .env
-   *.db
+   application/.venv/
+   application/instance/
+   **/__pycache__/
+   **/*.pyc
+   **/.env
+   **/*.db
    .git/
    .gitignore
    ```
@@ -296,7 +213,9 @@ Docker packages your application and all its dependencies into a container image
 >
 > ✓ **Quick check:** `Dockerfile` and `.dockerignore` created in the project root
 
-### **Step 5:** Test the Container Build
+### **Step 5:** Test the Container Build (Optional)
+
+> **Note:** This step requires Docker Engine installed on your development machine. If Docker is not available, skip this step — your container will be built on Azure by `az acr build` in a later exercise. Steps 1-4 are the essential deliverables.
 
 Time to verify that everything works together. You will build the Docker image, run the container, and confirm the application starts with Gunicorn.
 
@@ -335,24 +254,30 @@ Time to verify that everything works together. You will build the Docker image, 
 
 > **Note:** The actual Azure deployment (Container Apps environment, Azure SQL provisioning) is handled by separate deployment exercises. This exercise prepares the application code only.
 
-> ✓ **Success indicators:**
+> ✓ **Success indicators (Steps 1-4 — required):**
+>
+> - `config.py` uses environment variables for all configuration
+> - `wsgi.py` provides Gunicorn entry point
+> - `Dockerfile` uses layer caching and ODBC Driver
+> - `entrypoint.sh` runs migrations before starting Gunicorn
+> - `.dockerignore` excludes development files
+>
+> ✓ **Success indicators (Step 5 — optional, requires Docker):**
 >
 > - Docker image builds without errors
 > - Container starts with Gunicorn (2 workers shown in logs)
 > - Application responds at <http://localhost:5000>
 > - Different `FLASK_ENV` values select different configurations
-> - `.dockerignore` excludes development files
 >
 > ✓ **Final verification checklist:**
 >
-> - ☐ `config.py` updated with environment-driven settings and `config_by_name`
-> - ☐ `.env.example` documents all supported environment variables
+> - ☐ `config.py` verified — reads `DATABASE_URL` and `SECRET_KEY` from environment variables
 > - ☐ `gunicorn` and `pyodbc` added to `requirements.txt`
 > - ☐ `wsgi.py` created as the Gunicorn entry point
-> - ☐ `Dockerfile` builds successfully with ODBC Driver and layer caching
+> - ☐ `Dockerfile` created with ODBC Driver and layer caching
 > - ☐ `entrypoint.sh` created to run migrations at startup
 > - ☐ `.dockerignore` excludes development artifacts (but keeps `migrations/`)
-> - ☐ Container runs and serves the application via Gunicorn
+> - ☐ Container builds and runs via Gunicorn (optional — requires Docker)
 
 ## Common Issues
 

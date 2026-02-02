@@ -3,7 +3,7 @@ title = "Provision Azure Infrastructure"
 program = "IPL"
 cohort = "25"
 courses = ["ASD"]
-description = "Create Azure resource group, container registry, Container Apps environment, and SQL database for the News Flash application"
+description = "Create Azure resource group, container registry, Container Apps environment, Azure SQL database, and configure environment variables"
 weight = 2
 +++
 
@@ -11,14 +11,15 @@ weight = 2
 
 ## Goal
 
-Create the Azure infrastructure needed to host the News Flash application: a resource group, container registry, Container Apps environment, and Azure SQL database. Verify everything works by deploying an nginx container before introducing application complexity.
+Create the Azure infrastructure needed to host the News Flash application: a resource group, container registry, Container Apps environment, and Azure SQL database. Configure environment variables on the Container App so it is ready to receive the application image from the CI/CD pipeline.
 
 > **What you'll learn:**
 >
 > - How to provision Azure resources using the Azure CLI
 > - When to use Container Apps vs other Azure compute services
 > - How Azure Container Registry stores private Docker images
-> - Best practices for verifying infrastructure before deploying application code
+> - How to configure environment variables following the 12-Factor App methodology
+> - Best practices for organizing Azure resources with configuration files
 
 ## Prerequisites
 
@@ -26,17 +27,17 @@ Create the Azure infrastructure needed to host the News Flash application: a res
 >
 > - ✓ Container-ready application with Dockerfile, wsgi.py, and production config
 > - ✓ Azure CLI installed and authenticated (`az login`)
-> - ✓ Docker installed on your development machine
 > - ✓ An active Azure subscription
+> - ✓ GitHub repository for your application
 
 ## Exercise Steps
 
 ### Overview
 
 1. **Create Resource Group and Container Registry**
-2. **Create Container Apps Environment**
-3. **Deploy nginx to Verify Infrastructure**
-4. **Provision Azure SQL Database**
+2. **Create Container Apps Environment and Container App**
+3. **Provision Azure SQL Database**
+4. **Configure Environment Variables**
 5. **Verify Resources and Create Cleanup Script**
 
 ### **Step 1:** Create Resource Group and Container Registry
@@ -108,9 +109,9 @@ Every Azure deployment starts with a resource group — a logical container that
 >
 > ✓ **Quick check:** `az acr show --name $ACR_NAME --resource-group rg-news-flash` returns registry details without errors
 
-### **Step 2:** Create Container Apps Environment
+### **Step 2:** Create Container Apps Environment and Container App
 
-The Container Apps Environment is the hosting platform where your containers run. It provides shared networking, logging (via Log Analytics), and managed infrastructure. Think of it as the "server room" that Azure manages for you — you deploy containers into it without worrying about VMs, operating systems, or patching.
+The Container Apps Environment is the hosting platform where your containers run. It provides shared networking, logging (via Log Analytics), and managed infrastructure. You will create the environment, deploy an nginx placeholder container, and register ACR credentials so the CI/CD pipeline can update the image later.
 
 1. **Source** your configuration file:
 
@@ -129,7 +130,38 @@ The Container Apps Environment is the hosting platform where your containers run
 
    This command takes a couple of minutes because Azure provisions a Log Analytics workspace and networking infrastructure behind the scenes.
 
-3. **Append** the environment and app names to your configuration file:
+3. **Create** a Container App running an nginx placeholder:
+
+   ```bash
+   az containerapp create \
+     --name ca-news-flash \
+     --resource-group $RESOURCE_GROUP \
+     --environment cae-news-flash \
+     --image nginx:alpine \
+     --target-port 80 \
+     --ingress external \
+     --min-replicas 1 \
+     --max-replicas 1
+   ```
+
+   > **Note:** This nginx placeholder will be replaced by the CI/CD pipeline in the next exercise. It starts the Container App with a known-good image so the infrastructure is ready to receive your application.
+
+4. **Register** ACR credentials on the Container App so it can pull images from your private registry:
+
+   ```bash
+   ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer -o tsv)
+   ACR_USERNAME=$(az acr credential show --name $ACR_NAME --query username -o tsv)
+   ACR_PASSWORD=$(az acr credential show --name $ACR_NAME --query "passwords[0].value" -o tsv)
+
+   az containerapp registry set \
+     --name ca-news-flash \
+     --resource-group $RESOURCE_GROUP \
+     --server $ACR_LOGIN_SERVER \
+     --username $ACR_USERNAME \
+     --password $ACR_PASSWORD
+   ```
+
+5. **Append** the environment and app names to your configuration file:
 
    ```bash
    cat >> .azure-config << EOF
@@ -146,68 +178,22 @@ The Container Apps Environment is the hosting platform where your containers run
 > - **Log Analytics integration** — all container logs are collected automatically
 > - **Managed infrastructure** — Azure handles scaling, load balancing, and TLS certificates
 >
-> You can run multiple Container Apps in the same environment. They share the networking and logging infrastructure but run as independent containers with separate scaling rules.
+> **External ingress** exposes the Container App to the internet via Azure's managed HTTPS endpoint. Azure automatically provisions a TLS certificate and terminates HTTPS at the edge — you do not need to configure SSL certificates, nginx reverse proxy, or load balancers. The URL follows the pattern `<app-name>.<random-hash>.<region>.azurecontainerapps.io`.
+>
+> The **ACR credentials** are registered once during provisioning. Container Apps stores them and reuses them for all future image pulls — including during restarts, scaling events, and CI/CD deployments. This means the GitHub Actions workflow only needs to run `az containerapp update --image ...` without managing registry authentication.
+>
+> The `--min-replicas 1 --max-replicas 1` flags ensure exactly one container instance runs at all times. Container Apps can scale to zero by default (saving costs when idle), but for this project you want the container always available.
 >
 > ⚠ **Common Mistakes**
 >
 > - Creating the environment in a different location than the resource group — keep everything in `swedencentral`
-> - Not waiting for the command to complete — it provisions infrastructure and takes a couple of minutes
->
-> ✓ **Quick check:** `az containerapp env show --name cae-news-flash --resource-group rg-news-flash` returns environment details
-
-### **Step 3:** Deploy nginx to Verify Infrastructure
-
-Before deploying your application, verify that the infrastructure works by deploying a simple nginx container. This proves that the Container Apps Environment, networking, and ingress are all configured correctly. If nginx works, you know the infrastructure is solid and any future issues are application-specific.
-
-1. **Source** your configuration file:
-
-   ```bash
-   source .azure-config
-   ```
-
-2. **Create** a Container App running nginx:
-
-   ```bash
-   az containerapp create \
-     --name $CA_NAME \
-     --resource-group $RESOURCE_GROUP \
-     --environment $CAE_NAME \
-     --image nginx:alpine \
-     --target-port 80 \
-     --ingress external \
-     --min-replicas 1 \
-     --max-replicas 1
-   ```
-
-3. **Get** the application URL:
-
-   ```bash
-   az containerapp show \
-     --name $CA_NAME \
-     --resource-group $RESOURCE_GROUP \
-     --query "properties.configuration.ingress.fqdn" \
-     -o tsv
-   ```
-
-4. **Open** `https://<fqdn>` in your browser — you should see the "Welcome to nginx!" page
-
-> ℹ **Concept Deep Dive**
->
-> **External ingress** exposes the Container App to the internet via Azure's managed HTTPS endpoint. Azure automatically provisions a TLS certificate and terminates HTTPS at the edge — you do not need to configure SSL certificates, nginx reverse proxy, or load balancers. The URL follows the pattern `<app-name>.<random-hash>.<region>.azurecontainerapps.io`.
->
-> The `--min-replicas 1 --max-replicas 1` flags ensure exactly one container instance runs at all times. Container Apps can scale to zero by default (saving costs when idle), but for verification you want the container always available.
->
-> This "deploy nginx first" strategy is a common infrastructure verification pattern. It isolates infrastructure problems from application problems — if nginx does not work, the issue is with Azure configuration, not your code.
->
-> ⚠ **Common Mistakes**
->
+> - Not waiting for the environment creation to complete — it provisions infrastructure and takes a couple of minutes
 > - Forgetting `--ingress external` — without it, the Container App has no public URL
-> - Using `http://` instead of `https://` — Container Apps only serves HTTPS
-> - Not seeing the nginx page — wait a minute for the container to start, then refresh
+> - Forgetting to register ACR credentials — the CI/CD pipeline cannot pull images without them
 >
-> ✓ **Quick check:** Browser shows "Welcome to nginx!" at the HTTPS URL
+> ✓ **Quick check:** `az containerapp show --name ca-news-flash --resource-group rg-news-flash --query "properties.configuration.registries[0].server"` returns your ACR login server
 
-### **Step 4:** Provision Azure SQL Database
+### **Step 3:** Provision Azure SQL Database
 
 The application needs a database to persist subscriber data. Azure SQL Database is a managed relational database service — Azure handles backups, patching, and availability. The Basic tier costs approximately $5/month, which is suitable for a learning environment.
 
@@ -314,6 +300,87 @@ The application needs a database to persist subscriber data. Azure SQL Database 
 >
 > ✓ **Quick check:** `az sql db show --name newsflash --server $SQL_SERVER --resource-group rg-news-flash` returns database details
 
+### **Step 4:** Configure Environment Variables
+
+The application needs three environment variables to run in production: `FLASK_ENV` to select the production configuration class, `SECRET_KEY` for session encryption, and `DATABASE_URL` to connect to Azure SQL. Setting these during provisioning means they persist across image updates — the CI/CD pipeline does not need to manage environment variables.
+
+1. **Source** your configuration file:
+
+   ```bash
+   source .azure-config
+   ```
+
+2. **Read** the database connection string:
+
+   ```bash
+   DATABASE_URL=$(cat .database-url)
+   ```
+
+3. **Generate** a secure secret key and save it for reuse:
+
+   ```bash
+   if [ -f .secret-key ]; then
+     SECRET_KEY=$(cat .secret-key)
+     echo "Reusing existing SECRET_KEY"
+   else
+     SECRET_KEY=$(openssl rand -hex 32)
+     echo "$SECRET_KEY" > .secret-key
+     chmod 600 .secret-key
+     echo "Generated new SECRET_KEY (saved to .secret-key)"
+   fi
+   ```
+
+   > **Why save the key?** If `SECRET_KEY` changes between deployments, all existing user sessions are invalidated. Saving it to a file ensures consistency across deployments. The `.secret-key` file should be in `.gitignore`.
+
+4. **Add** `.secret-key` to your `.gitignore`:
+
+   ```bash
+   echo ".secret-key" >> .gitignore
+   ```
+
+5. **Set** the environment variables on the Container App:
+
+   ```bash
+   az containerapp update \
+     --name $CA_NAME \
+     --resource-group $RESOURCE_GROUP \
+     --set-env-vars \
+       "FLASK_ENV=production" \
+       "SECRET_KEY=$SECRET_KEY" \
+       "DATABASE_URL=$DATABASE_URL"
+   ```
+
+6. **Verify** the environment variables are configured:
+
+   ```bash
+   az containerapp show \
+     --name $CA_NAME \
+     --resource-group $RESOURCE_GROUP \
+     --query "properties.template.containers[0].env[].name" \
+     -o tsv
+   ```
+
+   You should see `FLASK_ENV`, `SECRET_KEY`, and `DATABASE_URL` in the output.
+
+> ℹ **Concept Deep Dive**
+>
+> This step implements Factor III of the **12-Factor App** methodology: configuration is stored in the environment, not in code. The same Docker image runs in development (with `FLASK_ENV=development` and a SQLite `DATABASE_URL`) and in production (with `FLASK_ENV=production` and an Azure SQL `DATABASE_URL`). The image never changes — only the environment variables change.
+>
+> **Environment variables persist across image updates.** When the CI/CD pipeline runs `az containerapp update --image ...`, it changes the container image but the environment variables remain. This means you configure them once during provisioning, and every future deployment inherits the same configuration. The workflow does not need to know about `DATABASE_URL` or `SECRET_KEY`.
+>
+> `SECRET_KEY` is used by Flask to sign session cookies and CSRF tokens. It must be a strong random value in production. If it changes, all existing user sessions are invalidated (users must log in again).
+>
+> Container Apps stores environment variables as part of the container configuration. They are encrypted at rest and injected into the container at startup. When you update environment variables, Container Apps creates a new revision and restarts the container with the new values.
+>
+> ⚠ **Common Mistakes**
+>
+> - Forgetting to set `FLASK_ENV=production` — the application defaults to development config with SQLite
+> - Baking `DATABASE_URL` into the Docker image — this is a security risk and prevents environment portability
+> - Using a weak or predictable `SECRET_KEY` in production — always use `openssl rand -hex 32` or equivalent
+> - Setting env vars in the CI/CD workflow instead of during provisioning — they persist across image updates, so set them once
+>
+> ✓ **Quick check:** `az containerapp show` lists all three environment variable names
+
 ### **Step 5:** Verify Resources and Create Cleanup Script
 
 Before moving on, verify that all resources are provisioned correctly and create a cleanup script for when you are done with the project. Azure resources cost money — even at the Basic tier, forgetting to delete resources adds up over time.
@@ -370,13 +437,13 @@ Before moving on, verify that all resources are provisioned correctly and create
    fi
    ```
 
-5. **Make** the script executable:
+4. **Make** the script executable:
 
    ```bash
    chmod +x deploy/delete.sh
    ```
 
-6. **Verify** the final state of `.azure-config` contains all resource names:
+5. **Verify** the final state of `.azure-config` contains all resource names:
 
    ```bash
    cat .azure-config
@@ -415,23 +482,26 @@ Before moving on, verify that all resources are provisioned correctly and create
 > - Resource group `rg-news-flash` exists in `swedencentral`
 > - Container registry responds to `az acr show` commands
 > - Container Apps Environment is provisioned
-> - nginx Container App shows "Welcome to nginx!" in browser
+> - Container App created with nginx placeholder and ACR credentials registered
 > - Azure SQL Database is accessible
+> - Environment variables configured (`FLASK_ENV`, `SECRET_KEY`, `DATABASE_URL`)
 > - `.azure-config` contains all resource names
 > - `.database-url` contains the connection string
 > - `deploy/delete.sh` exists and is executable
 >
 > ✓ **Final verification checklist:**
 >
-> - [ ] Resource group created in `swedencentral`
-> - [ ] Container registry created with admin access enabled
-> - [ ] Container Apps Environment provisioned
-> - [ ] nginx container deployed and accessible via HTTPS
-> - [ ] Azure SQL Server and database created with firewall rules
-> - [ ] Connection string saved to `.database-url`
-> - [ ] All resource names saved to `.azure-config`
-> - [ ] Both config files added to `.gitignore`
-> - [ ] Cleanup script created at `deploy/delete.sh`
+> - ☐ Resource group created in `swedencentral`
+> - ☐ Container registry created with admin access enabled
+> - ☐ Container Apps Environment provisioned
+> - ☐ Container App created with nginx placeholder
+> - ☐ ACR credentials registered on the Container App
+> - ☐ Azure SQL Server and database created with firewall rules
+> - ☐ Connection string saved to `.database-url`
+> - ☐ Environment variables configured on Container App
+> - ☐ All resource names saved to `.azure-config`
+> - ☐ All config files added to `.gitignore` (`.azure-config`, `.database-url`, `.secret-key`)
+> - ☐ Cleanup script created at `deploy/delete.sh`
 
 ## Common Issues
 
@@ -455,12 +525,13 @@ You've successfully provisioned the Azure infrastructure for the News Flash appl
 
 - ✓ Created a resource group to organize all project resources
 - ✓ Provisioned a private container registry for Docker images
-- ✓ Set up a Container Apps Environment as the hosting platform
-- ✓ Verified infrastructure by deploying an nginx container
+- ✓ Set up a Container Apps Environment with an nginx placeholder
+- ✓ Registered ACR credentials so the CI/CD pipeline can pull images
 - ✓ Provisioned Azure SQL Database with firewall rules for connectivity
+- ✓ Configured environment variables following the 12-Factor App methodology
 - ✓ Created a cleanup script to manage costs
 
-> **Key takeaway:** Always verify infrastructure with a simple deployment (like nginx) before introducing application complexity. This isolates infrastructure issues from application issues and saves significant debugging time. When nginx works, you know the network, ingress, and Container Apps Environment are correctly configured.
+> **Key takeaway:** Infrastructure provisioning is a one-time setup. Environment variables and ACR credentials persist across image updates, so the CI/CD pipeline only needs to build and deploy — it does not manage configuration. Setting everything up during provisioning keeps the deployment workflow simple and the configuration consistent.
 
 ## Going Deeper (Optional)
 
@@ -470,7 +541,187 @@ You've successfully provisioned the Azure infrastructure for the News Flash appl
 > - Explore Azure SQL firewall rules and virtual network service endpoints for production security
 > - Investigate Azure Monitor and Log Analytics for container log analysis
 > - Compare Container Apps with other Azure compute options (App Service, AKS, Container Instances)
+> - Learn about Container Apps secrets for sensitive environment variables instead of plain `--set-env-vars`
 
 ## Done! 🎉
 
-Your Azure infrastructure is ready. The resource group, container registry, Container Apps Environment, and SQL database are all provisioned and verified. The nginx container proves everything works — now it is time to deploy the actual application.
+Your Azure infrastructure is ready. The resource group, container registry, Container Apps Environment, SQL database, and environment variables are all provisioned and configured. The CI/CD pipeline will handle deploying your application image in the next exercise.
+
+## TL;DR — Single Provision Script
+
+If you understand the concepts above and want to provision everything in one run, create this script:
+
+```text
+repo-root/
+├── application/
+├── infrastructure/
+│   └── provision.sh
+├── Dockerfile
+```
+
+> `infrastructure/provision.sh`
+
+```bash
+#!/bin/bash
+# Provision all Azure infrastructure for the News Flash application
+set -e
+
+# ── Variables ────────────────────────────────────────────────────────
+RESOURCE_GROUP="rg-news-flash"
+LOCATION="swedencentral"
+CAE_NAME="cae-news-flash"
+CA_NAME="ca-news-flash"
+SQL_ADMIN_USER="sqladmin"
+DB_NAME="newsflash"
+
+# Generated values (unique per run)
+ACR_NAME="acrnewsflash$(openssl rand -hex 4)"
+SQL_SERVER="sql-news-flash-$(openssl rand -hex 4)"
+SQL_PASSWORD="$(openssl rand -base64 16)Aa1!"
+SECRET_KEY=$(openssl rand -hex 32)
+
+echo "=== News Flash — Azure Provisioning ==="
+echo "ACR Name:   $ACR_NAME"
+echo "SQL Server: $SQL_SERVER"
+echo ""
+
+# ── Resource Group ───────────────────────────────────────────────────
+echo "Creating resource group..."
+az group create --name $RESOURCE_GROUP --location $LOCATION
+
+# ── Container Registry ──────────────────────────────────────────────
+echo "Creating container registry..."
+az acr create \
+  --name $ACR_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --sku Basic \
+  --admin-enabled true
+
+# ── Container Apps Environment ───────────────────────────────────────
+echo "Creating Container Apps Environment (this takes a couple of minutes)..."
+az containerapp env create \
+  --name $CAE_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION
+
+# ── Container App (nginx placeholder) ────────────────────────────────
+echo "Creating Container App with nginx placeholder..."
+az containerapp create \
+  --name $CA_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --environment $CAE_NAME \
+  --image nginx:alpine \
+  --target-port 80 \
+  --ingress external \
+  --min-replicas 1 \
+  --max-replicas 1
+
+# ── Register ACR Credentials on Container App ───────────────────────
+echo "Registering ACR credentials..."
+ACR_LOGIN_SERVER=$(az acr show --name $ACR_NAME --query loginServer -o tsv)
+ACR_USERNAME=$(az acr credential show --name $ACR_NAME --query username -o tsv)
+ACR_PASSWORD=$(az acr credential show --name $ACR_NAME --query "passwords[0].value" -o tsv)
+
+az containerapp registry set \
+  --name $CA_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --server $ACR_LOGIN_SERVER \
+  --username $ACR_USERNAME \
+  --password $ACR_PASSWORD
+
+# ── SQL Server ───────────────────────────────────────────────────────
+echo "Creating SQL Server..."
+az sql server create \
+  --name $SQL_SERVER \
+  --resource-group $RESOURCE_GROUP \
+  --location $LOCATION \
+  --admin-user $SQL_ADMIN_USER \
+  --admin-password "$SQL_PASSWORD"
+
+# ── SQL Server Firewall Rules ───────────────────────────────────────
+echo "Configuring firewall rules..."
+az sql server firewall-rule create \
+  --server $SQL_SERVER \
+  --resource-group $RESOURCE_GROUP \
+  --name AllowAzureServices \
+  --start-ip-address 0.0.0.0 \
+  --end-ip-address 0.0.0.0
+
+az sql server firewall-rule create \
+  --server $SQL_SERVER \
+  --resource-group $RESOURCE_GROUP \
+  --name AllowAll \
+  --start-ip-address 0.0.0.0 \
+  --end-ip-address 255.255.255.255
+
+# ── SQL Database ─────────────────────────────────────────────────────
+echo "Creating SQL Database..."
+az sql db create \
+  --name $DB_NAME \
+  --server $SQL_SERVER \
+  --resource-group $RESOURCE_GROUP \
+  --edition Basic \
+  --capacity 5
+
+# ── Connection String ────────────────────────────────────────────────
+DATABASE_URL="mssql+pyodbc://${SQL_ADMIN_USER}:${SQL_PASSWORD}@${SQL_SERVER}.database.windows.net/${DB_NAME}?driver=ODBC+Driver+18+for+SQL+Server"
+
+# ── Secret Key ───────────────────────────────────────────────────────
+echo "Generated SECRET_KEY for Flask session encryption."
+
+# ── Set Environment Variables on Container App ──────────────────────
+echo "Configuring environment variables..."
+az containerapp update \
+  --name $CA_NAME \
+  --resource-group $RESOURCE_GROUP \
+  --set-env-vars \
+    "FLASK_ENV=production" \
+    "SECRET_KEY=$SECRET_KEY" \
+    "DATABASE_URL=$DATABASE_URL"
+
+# ── Save Configuration ──────────────────────────────────────────────
+cat > .azure-config << EOF
+RESOURCE_GROUP="$RESOURCE_GROUP"
+ACR_NAME="$ACR_NAME"
+LOCATION="$LOCATION"
+CAE_NAME="$CAE_NAME"
+CA_NAME="$CA_NAME"
+SQL_SERVER="$SQL_SERVER"
+SQL_PASSWORD="$SQL_PASSWORD"
+EOF
+
+echo "$DATABASE_URL" > .database-url
+chmod 600 .database-url
+
+echo "$SECRET_KEY" > .secret-key
+chmod 600 .secret-key
+
+# ── Git Ignore ───────────────────────────────────────────────────────
+echo "Updating .gitignore..."
+for entry in .azure-config .database-url .secret-key; do
+  grep -qxF "$entry" .gitignore 2>/dev/null || echo "$entry" >> .gitignore
+done
+
+# ── Summary ──────────────────────────────────────────────────────────
+echo ""
+echo "=== Provisioning Complete ==="
+echo "Resource Group: $RESOURCE_GROUP"
+echo "ACR Name:       $ACR_NAME"
+echo "ACR Login:      $ACR_LOGIN_SERVER"
+echo "Container App:  $CA_NAME"
+echo "SQL Server:     $SQL_SERVER.database.windows.net"
+echo "Database:       $DB_NAME"
+echo ""
+echo "Config saved to: .azure-config, .database-url, .secret-key"
+echo "Added to .gitignore: .azure-config .database-url .secret-key"
+```
+
+Make the script executable and run it:
+
+```bash
+mkdir -p infrastructure
+chmod +x infrastructure/provision.sh
+./infrastructure/provision.sh
+```
+
+The script runs all commands from Steps 1–4 in sequence. Each `az` command blocks until the operation completes, so no `sleep` or polling is needed. All generated values (ACR name, SQL server name, password, secret key) are saved to `.azure-config` at the end for use by the delete script and CI/CD pipeline.

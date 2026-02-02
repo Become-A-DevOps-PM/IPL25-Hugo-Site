@@ -55,8 +55,6 @@ Flask-Login manages user sessions -- it tracks who is logged in across requests 
    WTForms==3.2.1
    ```
 
-   Flask-WTF and WTForms may already be installed if the optional WTForms exercise was completed. Adding them again is harmless -- pip skips already-installed packages.
-
 2. **Install** the new dependencies:
 
    ```bash
@@ -70,8 +68,6 @@ Flask-Login manages user sessions -- it tracks who is logged in across requests 
    ```python
    SECRET_KEY: str = os.environ.get("SECRET_KEY", "dev-secret-key")
    ```
-
-   If you completed the WTForms exercise, `SECRET_KEY` is already in your `Config` class and no change is needed.
 
 4. **Update** `app/__init__.py` to set up Flask-Login. This is the most important step -- Flask-Login must be initialized in the application factory and connected to the User model through the `user_loader` callback.
 
@@ -217,8 +213,6 @@ The login form uses WTForms for field definitions and Flask-WTF for automatic CS
    mkdir -p app/presentation/forms
    touch app/presentation/forms/__init__.py
    ```
-
-   If you completed the WTForms exercise, these already exist.
 
 2. **Create** a new file named `login.py`:
 
@@ -425,7 +419,7 @@ The login template renders the form with CSRF protection and per-field error mes
 
    **Replace** the existing `<nav>` section with the code above. The Admin link that was previously visible to everyone is now only shown to authenticated users.
 
-4. **Add** flash message support to `base.html` if not already present. If you completed the WTForms exercise, this block already exists. If not, **add** the following inside `<main>`, before `{% block content %}`:
+4. **Add** flash message support to `base.html` if not already present. **Add** the following inside `<main>`, before `{% block content %}`:
 
    > `app/presentation/templates/base.html`
 
