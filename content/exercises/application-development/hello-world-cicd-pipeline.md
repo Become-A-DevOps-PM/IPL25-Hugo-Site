@@ -142,6 +142,12 @@ The GitHub CLI (`gh`) lets you create a repository and push code without leaving
    git commit -m "Initial commit: Hello World Flask app"
    ```
 
+   > ℹ **Windows users:** Some Git for Windows installations default to `master` instead of `main` as the initial branch name. This exercise and the GitHub Actions workflow expect `main`. Check your branch name with `git branch` and rename it if needed:
+   >
+   > ```bash
+   > git branch -m master main
+   > ```
+
 2. **Create** a public GitHub repository and push:
 
    ```bash
@@ -170,6 +176,15 @@ The GitHub CLI (`gh`) lets you create a repository and push code without leaving
 ### **Step 3:** Provision Azure Infrastructure
 
 You need four Azure resources: a resource group (logical container), a container registry (stores Docker images), a Container Apps environment (hosting platform), and a container app (runs your application). All resources use a consistent `hello-cicd` naming convention.
+
+> ℹ **First time using Azure?** New subscriptions (especially Azure for Students) may not have all required resource providers registered. Run these commands once before proceeding — the `--wait` flag ensures registration completes before you continue:
+>
+> ```bash
+> az provider register --namespace Microsoft.ContainerRegistry --wait
+> az provider register --namespace Microsoft.App --wait
+> az provider register --namespace Microsoft.OperationalInsights --wait
+> az provider register --namespace Microsoft.ManagedIdentity --wait
+> ```
 
 1. **Set** a unique suffix for your container registry name (ACR names must be globally unique):
 
@@ -222,6 +237,13 @@ You need four Azure resources: a resource group (logical container), a container
    cat .azure-config
    source .azure-config
    ```
+
+   > ℹ **Windows users:** Git Bash may save the config file with Windows-style line endings (CRLF), which adds invisible `\r` characters to each variable value. This causes Azure CLI commands to fail with confusing errors. Clean the file before sourcing:
+   >
+   > ```bash
+   > sed -i 's/\r$//' .azure-config
+   > source .azure-config
+   > ```
 
 > ℹ **Concept Deep Dive**
 >
@@ -378,6 +400,12 @@ Now that the manual deployment works, automate it with a GitHub Actions workflow
      --resource-group $RESOURCE_GROUP \
      --location $LOCATION
    ```
+
+   > ℹ **Windows users:** Git Bash automatically converts strings starting with `/` into Windows file paths (e.g., `/subscriptions/...` becomes `C:/Program Files/Git/subscriptions/...`). This silently breaks Azure resource IDs. Disable this behavior before continuing:
+   >
+   > ```bash
+   > export MSYS_NO_PATHCONV=1
+   > ```
 
 3. **Get** the identity details and assign roles:
 
