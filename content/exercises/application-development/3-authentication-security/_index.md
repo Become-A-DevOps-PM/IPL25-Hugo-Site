@@ -23,6 +23,7 @@ This exercise series adds a complete authentication and admin system:
 | **Flask-Login** | Session-based login and logout |
 | **Protected Routes** | Restrict admin access to logged-in users |
 | **Security Headers** | OWASP-recommended hardening + CLI tools |
+| **Production Deploy** | Deploy authentication with admin seeding to Azure |
 
 ## Exercise Progression
 
@@ -32,6 +33,7 @@ The exercises build incrementally:
 2. **Add user infrastructure** — User model and authentication service
 3. **Enable login** — Flask-Login with session management
 4. **Lock it down** — Protect routes, add security headers
+5. **Ship it** — Deploy authentication to production with admin seeding
 
 ## Prerequisites
 

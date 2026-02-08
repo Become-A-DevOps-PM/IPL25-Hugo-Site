@@ -130,8 +130,7 @@ CLI (Command-Line Interface) commands let you manage the application from the te
            user = AuthService.create_user(username, password)
            click.echo(f"Admin user '{user.username}' created successfully.")
        except DuplicateUsernameError:
-           click.echo(f"Error: Username '{username}' already exists.", err=True)
-           raise SystemExit(1)
+           click.echo(f"Admin user '{username}' already exists — skipping.")
    ```
 
 3. **Open** `app/__init__.py`
@@ -156,7 +155,7 @@ CLI (Command-Line Interface) commands let you manage the application from the te
 >
 > The password handling demonstrates defense in depth: if the password is not provided on the command line, `click.prompt()` asks interactively with `hide_input=True` (characters are not displayed) and `confirmation_prompt=True` (the user must type the password twice). This prevents typos in admin passwords.
 >
-> `raise SystemExit(1)` exits with a non-zero status code, which signals failure to shell scripts and CI/CD pipelines.
+> The duplicate username handler is intentionally **idempotent** — it prints a message and exits successfully (exit code 0) instead of raising an error. This design is critical for production deployment, where the `create-admin` command runs automatically at every container startup. If the admin already exists, the command succeeds silently and the container continues to start. If it raised an error, every container restart after the first would fail.
 >
 > ⚠ **Common Mistakes**
 >
@@ -294,13 +293,15 @@ Verify the CLI command works for all scenarios (success, duplicate, short passwo
 
    The command will prompt you to enter and confirm the password interactively.
 
-3. **Test duplicate username:**
+3. **Test duplicate username (idempotent):**
 
    ```bash
    flask create-admin admin -p AnotherPass1
    ```
 
-   Expected output: `Error: Username 'admin' already exists.`
+   Expected output: `Admin user 'admin' already exists — skipping.`
+
+   The command exits successfully (exit code 0). This idempotent behavior is essential for production, where the command runs at every container startup.
 
 4. **Test short password:**
 
@@ -323,7 +324,7 @@ Verify the CLI command works for all scenarios (success, duplicate, short passwo
 > - HSTS is NOT present in development mode
 > - CLI creates admin users successfully with both inline and interactive passwords
 > - CLI rejects passwords shorter than 8 characters
-> - CLI rejects duplicate usernames with a clear error message
+> - CLI handles duplicate usernames gracefully (idempotent — exits successfully with a message)
 > - Custom 404 page renders with consistent site styling and navigation
 > - Admin user created via CLI can log in through the web interface
 >
@@ -335,7 +336,7 @@ Verify the CLI command works for all scenarios (success, duplicate, short passwo
 > - [ ] `errors/404.html` and `errors/500.html` templates created
 > - [ ] Error handlers registered inside `create_app()`
 > - [ ] Security headers visible in browser developer tools or curl output
-> - [ ] CLI handles success, duplicate, and validation cases correctly
+> - [ ] CLI handles success (creates user), duplicate (skips gracefully), and validation (rejects short passwords) correctly
 > - [ ] Custom 404 page displays when visiting a non-existent URL
 
 ## Common Issues
@@ -376,4 +377,4 @@ You've successfully hardened your News Flash application which:
 
 ## Done! 🎉
 
-You have completed the Authentication and Security exercise series. Your News Flash application now has user authentication, protected admin routes, security headers, custom error pages, and CLI tooling for admin management.
+Your News Flash application now has user authentication, protected admin routes, security headers, custom error pages, and an idempotent CLI command for admin management. The `create-admin` command is designed to run safely at every container startup — the foundation for deploying authentication to production.

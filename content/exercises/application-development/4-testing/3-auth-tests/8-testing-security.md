@@ -133,7 +133,7 @@ CSRF (Cross-Site Request Forgery) protection prevents malicious websites from su
 
 ### **Step 3:** Test CLI Command
 
-The `create-admin` CLI command creates administrator accounts from the terminal. These tests verify that the command creates users successfully, rejects duplicate usernames, and enforces the minimum password length.
+The `create-admin` CLI command creates administrator accounts from the terminal. These tests verify that the command creates users successfully, handles duplicate usernames idempotently, and enforces the minimum password length.
 
 1. **Add** the following test class to the same file:
 
@@ -149,12 +149,12 @@ The `create-admin` CLI command creates administrator accounts from the terminal.
            assert "created successfully" in result.output
            assert result.exit_code == 0
 
-       def test_duplicate_username_error(self, runner):
-           """CLI rejects duplicate username."""
+       def test_duplicate_username_idempotent(self, runner):
+           """CLI handles existing username gracefully (idempotent)."""
            runner.invoke(args=["create-admin", "admin", "-p", "SecurePass1"])
            result = runner.invoke(args=["create-admin", "admin", "-p", "AnotherPass"])
            assert "already exists" in result.output
-           assert result.exit_code == 1
+           assert result.exit_code == 0
 
        def test_short_password_rejected(self, runner):
            """CLI rejects password shorter than 8 characters."""
@@ -167,14 +167,14 @@ The `create-admin` CLI command creates administrator accounts from the terminal.
 >
 > The `runner` fixture (from `conftest.py`) is Flask's CLI test runner. It wraps Flask's `app.test_cli_runner()` method, which creates a runner that can invoke CLI commands without actually running them in a shell. `runner.invoke()` captures both the output text and the exit code, making assertions straightforward.
 >
-> Exit codes follow Unix conventions: `0` means success, any non-zero value means failure. The tests verify both the human-readable output (for user experience) and the exit code (for scripting and CI/CD integration). A CLI command that fails silently -- printing an error but returning exit code 0 -- would break automated workflows.
+> Exit codes follow Unix conventions: `0` means success, any non-zero value means failure. The `create-admin` command is designed to be **idempotent** — it exits with code 0 even when the username already exists. This is intentional: in production, the command runs at every container startup via `entrypoint.sh`. If the admin already exists, the command prints a message and exits successfully so the container continues to start. Only genuine errors (like a password that is too short) cause a non-zero exit code.
 >
 > ⚠ **Common Mistakes**
 >
 > - Forgetting to register the command with `app.cli.add_command()` in `create_app()`, causing a "No such command" error
 > - Testing password validation without checking the exit code -- the command might print a warning but still exit successfully
 >
-> ✓ **Quick check:** Three test methods covering successful creation, duplicate rejection, and password validation
+> ✓ **Quick check:** Three test methods covering successful creation, idempotent duplicate handling, and password validation
 
 ### **Step 4:** Test Error Pages
 
