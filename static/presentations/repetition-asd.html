@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Repetition — Agil Mjukvaruutveckling och Driftsättning - IPL25</title>
+
+    <!-- Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-50TPJY0FZH"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-50TPJY0FZH');
+    </script>
+
+    <!-- Reveal.js Core CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.css">
+
+    <!-- Swedish Tech Slides CSS -->
+    <link rel="stylesheet" href="swedish-tech-slides.css">
+
+    <style>
+        /* Two-column layout for comparison slides */
+        .two-col {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        .two-col .col {
+            flex: 1;
+        }
+        .two-col .col h3 {
+            font-size: 2em;
+            color: var(--tech-cyan);
+            margin-bottom: 15px;
+            text-transform: none;
+        }
+        .two-col .info-box {
+            background: rgba(254, 204, 0, 0.1);
+            border-left: 4px solid var(--swedish-yellow);
+            padding: var(--space-md);
+            margin-bottom: 15px;
+        }
+        .two-col .info-box p {
+            font-size: 1.5em;
+            margin: 0;
+        }
+
+        /* Smaller info-box text for dense slides */
+        .dense .info-box p {
+            font-size: 1.6em;
+        }
+
+        /* Section divider */
+        .section-divider {
+            position: relative;
+            height: 100vh;
+            display: flex !important;
+            flex-direction: column;
+            justify-content: center;
+            padding: var(--space-xl);
+        }
+        .section-divider .section-number {
+            font-size: 12em;
+            color: var(--swedish-blue);
+            opacity: 0.3;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: -30px;
+        }
+        .section-divider .section-title {
+            font-size: 4.5em;
+            color: var(--white);
+            font-weight: 800;
+            text-transform: uppercase;
+            border-left: 6px solid var(--swedish-yellow);
+            padding-left: 30px;
+        }
+        .section-divider .section-subtitle {
+            font-size: 2em;
+            color: var(--tech-cyan);
+            padding-left: 36px;
+            margin-top: 15px;
+        }
+
+        /* Diagram-style box */
+        .diagram-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        .diagram-flow .flow-box {
+            background: rgba(0, 106, 167, 0.3);
+            border: 2px solid var(--swedish-blue-light);
+            border-radius: 10px;
+            padding: 15px 25px;
+            text-align: center;
+            min-width: 180px;
+        }
+        .diagram-flow .flow-box.active {
+            background: rgba(254, 204, 0, 0.15);
+            border-color: var(--swedish-yellow);
+        }
+        .diagram-flow .flow-box p {
+            font-size: 1.3em;
+            margin: 0;
+            font-weight: 600;
+        }
+        .diagram-flow .flow-box .flow-sub {
+            font-size: 0.9em;
+            color: var(--muted-text);
+            font-weight: 400;
+        }
+        .diagram-flow .flow-arrow {
+            font-size: 2em;
+            color: var(--tech-cyan);
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- ==========================================
+                 SLIDE 1: HERO
+                 ========================================== -->
+            <section class="hero-slide" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+
+                <div class="course-badge">
+                    <span>IPL25 — ASD</span>
+                </div>
+
+                <h1 class="main-title">
+                    REPETITION<br>
+                    AGIL MJUKVARU-<br>
+                    UTVECKLING OCH<br>
+                    DRIFTSÄTTNING
+                </h1>
+
+                <p class="subtitle">Inför inlämningsuppgiften</p>
+                <p class="course-info">25 YHP • VT 2026</p>
+
+                <div class="bottom-accent"></div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 2: THE BIG PICTURE
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Den stora bilden</h2>
+
+                <div class="diagram-flow fragment">
+                    <div class="flow-box">
+                        <p>Utvecklingsmiljö</p>
+                        <p class="flow-sub">Inner Loop</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box active">
+                        <p>CI/CD Pipeline</p>
+                        <p class="flow-sub">GitHub Actions</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <p>Driftmiljö</p>
+                        <p class="flow-sub">Azure Container Apps</p>
+                    </div>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Vänster:</span> Utvecklarna arbetar lokalt — kodar, testar, committar. Git, VS Code, Jira.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Mitten:</span> Automatisk pipeline som bygger, testar och driftsätter vid varje push till GitHub.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Höger:</span> Driftmiljön där applikationen körs — Container Apps, Azure SQL, konfiguration.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SECTION: UPPGIFT 1
+                 ========================================== -->
+            <section class="section-divider" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+                <div class="section-number">01</div>
+                <div class="section-title">Utvecklingsprocess<br>& Arbetsmetodik</div>
+                <div class="section-subtitle">Uppgift 1 i inlämningen</div>
+                <div class="bottom-accent"></div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 3: INNER LOOP
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Den inre utvecklingsloopen</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">VS Code</span> — Utvecklarens dagliga verktyg. Kodredigering, terminalåtkomst, Git-integration, debugger.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Git</span> — Versionshantering och samarbetsverktyg. Varje commit är en snapshot av koden.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">GitHub</span> — Central plattform för kod. Pull Requests för kodgranskning. Startpunkt för CI/CD.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Jira</span> — Backlog-hantering, sprintplanering, uppföljning. Kopplar arbetsuppgifter till kod.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Dessa verktyg <span class="highlight">samverkar</span> — en Jira-uppgift leder till en branch, commits, en PR, kodgranskning och merge.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 4: PRODUCT BACKLOG
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Produktbackloggen</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Gränssnittet</span> mellan utvecklingsarbetet och resten av organisationen.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Källor till förändringar: <span class="highlight">nya idéer</span>, supportärenden, <span class="highlight">buggar</span>, teknisk skuld, marknadsföringsbehov från produktägaren.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Vårt fokus: hur förändringar hamnar i en <span class="highlight">strukturerad backlog</span> med arbetsuppgifter som kan genomföras inom en sprint.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Från backlog → <span class="highlight">Sprint Backlog</span> → genomförande → demo → leverans. En uppgift åt gången, från idé till "done".</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 5: SPRINT PLANNING & STORY POINTS
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Sprintplanering & Story Points</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Planning Poker</span> — uppskattar inte tid, utan <span class="highlight">komplexitet</span> i en uppgift.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Över tid lär sig gruppen hur mycket <span class="highlight">komplexitet</span> de klarar per sprint — detta kallas <span class="highlight">velocity</span>.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Story points är <span class="highlight">relativa inom gruppen</span> — de kan inte jämföras mellan olika team.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>I början: dålig precision. Efter några sprintar: <span class="highlight">allt bättre uppskattningar</span>.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Processen handlar lika mycket om <span class="highlight">kommunikation</span> — seniora och juniora utvecklare diskuterar var komplexiteten ligger.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 6: GIT AS COLLABORATION & RECORD
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Git — Mer än versionshantering</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Versionshantering:</span> Spåra alla ändringar, gå tillbaka, jämföra versioner.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Samarbetsverktyg:</span> Feature branches, Pull Requests, kodgranskning — flera utvecklare, samma kodbas.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Git log som journal:</span> En komplett historik över utvecklingsarbetet — värdefullt för både utvecklare och AI-agenter.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Spårbarhet:</span> Git-hashen i produktion identifierar exakt vilken version av koden som körs.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 7: PR & CODE REVIEW
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Pull Requests & Kodgranskning</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Pull Request</span> — en förfrågan om att slå samman ny kod. Inte bara merge, utan ett tillfälle för <span class="highlight">kvalitetssäkring</span>.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Kodgranskning</span> fångar buggar, förbättrar kodkvalitet och sprider kunskap i teamet.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Demo varje sprint</span> — visa vad som leverats, samla feedback, anpassa nästa sprint.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Jira + GitHub-integration ger <span class="highlight">full spårbarhet</span> från uppgift till kod till driftsatt funktion.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SECTION: UPPGIFT 2
+                 ========================================== -->
+            <section class="section-divider" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+                <div class="section-number">02</div>
+                <div class="section-title">Software Design<br>Description</div>
+                <div class="section-subtitle">Uppgift 2 i inlämningen</div>
+                <div class="bottom-accent"></div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 8: EVERYTHING AS CODE
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Everything as Code</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Applikationskoden</span> — Python/Flask i Git. Själva produkten.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Dockerfile</span> — Beskriver hur applikationen paketeras med Gunicorn som WSGI-server.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">CI/CD-pipeline</span> — GitHub Actions YAML definierar hela leveranskedjan som kod.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Infrastruktur</span> — Driftmiljön beskriven som kod (Bicep/ARM). Reproducerbar och versionshanterad.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Allt i Git = <span class="highlight">spårbart, granskningsbart, reproducerbart</span>. Avgörande ur projektledarperspektiv.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 9: THREE-TIER ARCHITECTURE
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Trelagrersarkitektur</h2>
+
+                <div class="diagram-flow fragment">
+                    <div class="flow-box">
+                        <p>Presentation</p>
+                        <p class="flow-sub">Routes, Templates</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box active">
+                        <p>Affärslogik</p>
+                        <p class="flow-sub">Services</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <p>Datalager</p>
+                        <p class="flow-sub">Repository, SQLAlchemy</p>
+                    </div>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Separation of Concerns</span> — varje lager har ett tydligt ansvar. Ändra ett lager utan att påverka de andra.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Samarbete:</span> Olika utvecklare kan fokusera på olika lager — presentation, affärslogik eller data.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Vertical Slice:</span> En ny feature kan implementeras genom att skära igenom alla tre lager — oberoende av andra features.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Underhållbarhet:</span> Enklare att testa, felsöka och vidareutveckla varje del för sig.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 10: MVC & REPOSITORY PATTERN
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Designmönster i applikationen</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">MVC</span> (Model-View-Controller) i presentationslagret — Routes hanterar requests, Templates visar data, Models definierar struktur.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Repository Pattern</span> i datalagret — abstraherar databasåtkomst ovanpå SQLAlchemy. Gör det enklare att byta databas.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Application Factory</span> — Flask-appen skapas via en funktion, inte globalt. Möjliggör olika konfigurationer för dev/test/prod.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Blueprints</span> — Organiserar Flask-routes i logiska moduler. Varje feature-område har sin egen Blueprint.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 11: CONFIGURATION
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Konfiguration</h2>
+
+                <div class="fragment info-box">
+                    <p>Konfiguration är ett av de mest <span class="highlight">felbenägna områdena</span> inom utveckling.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Konfigurationsklass</span> i Python — centraliserad, typsäker hantering av miljövariabler. Inga utspridda hårdkodade värden.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">12-Factor App:</span> Konfiguration via miljövariabler — samma build, olika beteende i dev vs. produktion.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Lokalt: <span class="highlight">SQLite</span> databas. Produktion: <span class="highlight">Azure SQL</span>. Skillnaden styrs av en enda miljövariabel.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Hemligheter (credentials) lagras som <span class="highlight">secrets i Azure</span> — aldrig i koden, aldrig i Git.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 12: SECURITY
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Säkerhet & Hemligheter</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Credentials hanteras med omsorg</span> — databaslösenord, API-nycklar och liknande ska aldrig finnas i kod eller Git.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Azure Container Apps tar emot hemligheter som <span class="highlight">krypterade miljövariabler</span> — säkert lagrade i plattformen.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">OIDC (OpenID Connect)</span> — GitHub och Azure litar på varandra utan lösenord. Federerad identitet i CI/CD-pipelinen.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Varför OIDC? Inga lagrade credentials som kan <span class="highlight">läcka eller roteras</span>. Kortlivade tokens istället för permanenta lösenord.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 13: DOCKER & CONTAINERIZATION
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Docker & Containerisering</h2>
+
+                <div class="diagram-flow fragment">
+                    <div class="flow-box">
+                        <p>Dockerfile</p>
+                        <p class="flow-sub">I Git-repot</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box active">
+                        <p>Docker Image</p>
+                        <p class="flow-sub">I Azure ACR</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <p>Container</p>
+                        <p class="flow-sub">I Container Apps</p>
+                    </div>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Dockerfile</span> — receptet. Definierar exakt vad som ska finnas i containern (OS, Python, beroenden, appkod).</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Docker Image</span> — det färdiga paketet. Byggs en gång, lagras i Azure Container Registry.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Container</span> — den körande instansen av imagen. Isolerad, portabel, identisk oavsett var den körs.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Allt styrs av kod: <span class="highlight">Dockerfile i Git</span> → du vet exakt vad som körs i produktion.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 14: CI/CD PIPELINE
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">CI/CD-pipeline</h2>
+
+                <div class="diagram-flow fragment">
+                    <div class="flow-box">
+                        <p>GitHub</p>
+                        <p class="flow-sub">Push/Merge</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <p>Build</p>
+                        <p class="flow-sub">Docker Image</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box active">
+                        <p>ACR</p>
+                        <p class="flow-sub">Registry</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <p>Container Apps</p>
+                        <p class="flow-sub">Deploy</p>
+                    </div>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">GitHub Actions</span> — pipelinen definieras i en YAML-fil. Automatiskt vid push till main.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">OIDC-federation</span> loggar in i Azure utan lösenord. Bygger Docker-imagen och pushar till ACR.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Azure Container Apps</span> uppdateras med den nya imagen — ny version körs inom sekunder.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Hela kedjan är <span class="highlight">automatiserad och reproducerbar</span>. En push = en leverans till produktion.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 15: BUILD ONCE, DEPLOY MANY
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Build Once, Deploy Many</h2>
+
+                <div class="fragment info-box">
+                    <p>En av de viktigaste principerna i <span class="highlight">12-Factor App</span>: bygg artefakten en enda gång.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Samma Docker-image deployeras genom: <span class="highlight">System Test → Integration Test → UAT → Stage → Produktion</span>.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Det som skiljer miljöerna åt är <span class="highlight">konfiguration</span> — miljövariabler pekar till olika databaser, API:er och resurser.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Fördelen: du vet att exakt samma kod som testats i stage är det som <span class="highlight">körs i produktion</span>.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 16: DEV VS PRODUCTION
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Lokal utveckling vs. Produktion</h2>
+
+                <div class="two-col">
+                    <div class="col">
+                        <h3>Lokal utveckling</h3>
+                        <div class="fragment info-box">
+                            <p>Flask dev server</p>
+                        </div>
+                        <div class="fragment info-box">
+                            <p>SQLite databas</p>
+                        </div>
+                        <div class="fragment info-box">
+                            <p>Debug-läge på</p>
+                        </div>
+                        <div class="fragment info-box">
+                            <p>Direkt på laptop</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <h3>Produktion (Azure)</h3>
+                        <div class="fragment info-box">
+                            <p>Gunicorn WSGI</p>
+                        </div>
+                        <div class="fragment info-box">
+                            <p>Azure SQL Database</p>
+                        </div>
+                        <div class="fragment info-box">
+                            <p>Debug-läge av</p>
+                        </div>
+                        <div class="fragment info-box">
+                            <p>Docker Container</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SECTION: BROADER PERSPECTIVES
+                 ========================================== -->
+            <section class="section-divider" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+                <div class="section-number">03</div>
+                <div class="section-title">Bredare<br>perspektiv</div>
+                <div class="section-subtitle">Projektledning, mognad och AI</div>
+                <div class="bottom-accent"></div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 17: STARTING A PROJECT
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Starta ett utvecklingsprojekt</h2>
+
+                <div class="fragment info-box">
+                    <p>Börja med att förstå <span class="highlight">uppgiften</span> — men fastna inte. Gå snabbt vidare till <span class="highlight">tech stack</span>-beslut.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Tech stack: språk, ramverk, containerisering, databas, klient, nätverk, verktyg. <span class="highlight">Formen påverkar tanken.</span></p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Börja med <span class="highlight">en senior utvecklare eller arkitekt</span> som kan definiera en grov arkitektur. Anställ sedan fler.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Lagom teamstorlek: <span class="highlight">~6 personer</span>. Ratio utvecklare/testare: <span class="highlight">3:1</span>.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 18: TECH STACK CHOICES
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Val av tech stack</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Befintlig kompetens</span> — vad kan teamet redan? Snabbare start, lägre risk.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Målgrupp och plattform</span> — webbapplikation, mobilapp, hårdvara? Styr val av ramverk och klient.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Community och ekosystem</span> — populära teknologier ger mer dokumentation, fler lösningar, enklare rekrytering.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Utvecklarnas intresse</span> — motivation att lära sig nya teknologier kan vara en faktor vid valet.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Glöm inte <span class="highlight">verktyg och infrastruktur</span> — tillgång till internet, säkerhet på datorer, utvecklarlicenser.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 19: MATURITY LEVELS
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Mognadsnivåer</h2>
+
+                <div class="diagram-flow fragment">
+                    <div class="flow-box">
+                        <p>Walking Skeleton</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box active">
+                        <p>MVP</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-box">
+                        <p>MMP</p>
+                    </div>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Walking Skeleton</span> — minimal end-to-end-arkitektur. Bevisar att alla delar hänger ihop.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">MVP</span> (Minimum Viable Product) — minsta möjliga produkt som levererar värde och samlar feedback.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">MMP</span> (Minimum Marketable Product) — redo för marknaden. Kräver användarinstruktioner, support, driftdokumentation.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 20: REFACTORING & TECHNICAL DEBT
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Refaktorering & Teknisk skuld</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Refaktorering</span> — göra om befintlig kod på ett arkitekturellt bättre sätt, utan att ändra funktionaliteten.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Mogna organisationer: <span class="highlight">~30% refaktorering</span>, ~70% nya features. En medveten balans.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Fokus på <span class="highlight">kvalitativa attribut:</span> underhållbarhet, säkerhet, prestanda — saker som inte syns som features.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Teknisk skuld ackumuleras om refaktorering ignoreras — och blir <span class="highlight">allt dyrare att hantera</span> över tid.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 21: TESTING & AUTOMATION
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Testning & automatisering</h2>
+
+                <div class="fragment info-box">
+                    <p>CI/CD kräver <span class="highlight">automatiserade tester</span> — tusentals testfall på sekunder, inte dagar.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Snabb feedback-loop: små ändringar, <span class="highlight">snabb testning</span>, direkt leverans. Fel isoleras enkelt.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Testmiljöer längs vägen: <span class="highlight">System Test → Integration Test → UAT → Stage → Produktion</span>.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Kort <span class="highlight">time-to-market</span> — deploy flera gånger om dagen istället för några gånger per år.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 22: DIAGRAMS & ARCHITECTURE VIEWS
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Arkitekturdiagram</h2>
+
+                <div class="fragment info-box">
+                    <p>Diagram är <span class="highlight">avgörande</span> för att kommunicera arkitektur — både inom teamet och till intressenter.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Var tydlig med <span class="highlight">perspektivet</span>: visar du request-flödet (runtime) eller beroendestrukturen (compile-time)?</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Request-flöde:</span> Klient → Presentation → Affärslogik → Data → Databas. Visar hur ett anrop rör sig.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Beroendeperspektiv:</span> Vilka lager som känner till vilka. Presentation beror på Affärslogik som beror på Data.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 23: PROJECT HANDOVER
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Projekt → Förvaltning</h2>
+
+                <div class="fragment info-box">
+                    <p>Ett projekt har en <span class="highlight">början och ett slut</span> — men omvärlden har det inte. Någon ärver alltid resultatet.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Ratio: <span class="highlight">~1/3 projekt, ~2/3 förvaltning</span>. Det mesta av applikationens liv sker efter projektets slut.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Överlämning till förvaltning bör starta <span class="highlight">tidigt</span> — för att bygga förståelse och acceptans hos mottagarna.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Tekniska lösningar <span class="highlight">påverkar organisationen</span> — utan förankring riskerar mottagarna att vägra ta emot systemet.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 24: AI IN DEVELOPMENT
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">AI i utvecklingsarbetet</h2>
+
+                <div class="fragment info-box">
+                    <p>Den inre loopen <span class="highlight">augmenteras av AI-kodagenter</span>. Utvecklare har nu AI-kollegor som genererar kod extremt snabbt.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Tidigare: automation = CI/CD + infrastruktur. Nu: <span class="highlight">även utvecklingsarbetet accelereras</span> med AI.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Sprint velocity ökar dramatiskt — <span class="highlight">projektledaren måste anpassa</span> planering och förväntningar.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Det som förblir kritiskt: <span class="highlight">arkitekturförståelse</span> och <span class="highlight">säkerhetstänkande</span>. Utvecklare måste förstå konsekvenserna.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 25: CLOUD PROVIDERS
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Molnplattformar</h2>
+
+                <div class="fragment info-box">
+                    <p>Vi har använt <span class="highlight">Azure</span> — men det är bara en av många. De tre stora: <span class="highlight">Azure, AWS, Google Cloud</span>.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Koncepten är <span class="highlight">överförbara</span> — Container Apps, CI/CD, managed databases finns hos alla leverantörer.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Mindre alternativ: <span class="highlight">Cloudflare, Netlify, Vercel</span> — kan vara intressanta för specifika användningsfall.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>PaaS (Platform as a Service) — vi använder Container Apps och Azure SQL. Plattformen sköter <span class="highlight">infrastrukturen åt oss</span>.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SECTION: ASSIGNMENT OVERVIEW
+                 ========================================== -->
+            <section class="section-divider" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+                <div class="section-number">04</div>
+                <div class="section-title">Inlämnings-<br>uppgiften</div>
+                <div class="section-subtitle">Struktur och förväntningar</div>
+                <div class="bottom-accent"></div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 26: ASSIGNMENT PART 1
+                 ========================================== -->
+            <section class="bullet-slide dense" data-background-color="#0A0E27">
+                <h2 class="slide-header">Uppgift 1 — Process & Metodik</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">1. Introduktion</span> — Syfte, projektets omfattning, målgrupp.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">2. Inre utvecklingsloopen</span> — Jira och backlog, Git och GitHub, VS Code, koppling Jira–GitHub.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">3. Arbetsmetodik</span> — Sprintplanering, story points, user stories, PRs, kodgranskning, demo.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">4. Reflektion</span> — Utmaningar, lärdomar, AI som verktyg.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">5. Slutsats</span> — Vad har du lärt dig? Vilka färdigheter tar du med dig som IT-projektledare?</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 27: ASSIGNMENT PART 2
+                 ========================================== -->
+            <section class="bullet-slide dense" data-background-color="#0A0E27">
+                <h2 class="slide-header">Uppgift 2 — Software Design</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">1. Introduktion</span> — Syfte, omfattning, teknologistack.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">2. Arkitektur</span> — Trelagrers med diagram. Blueprints, Application Factory. Kodexempel från ett lager.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">3. Databashantering</span> — SQLAlchemy-modeller, migreringar, SQLite vs Azure SQL.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">4. Everything as Code</span> — Applikation, Dockerfile, CI/CD (YAML), miljökonfiguration.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">5. CI/CD & Driftsättning</span> — Hela kedjan: GitHub → Docker → ACR → Container Apps. OIDC. YAML-exempel.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 28: WRITING TIPS
+                 ========================================== -->
+            <section class="bullet-slide" data-background-color="#0A0E27">
+                <h2 class="slide-header">Tips för skrivandet</h2>
+
+                <div class="fragment info-box">
+                    <p><span class="highlight">Texten ska vara din egen</span> — AI får användas för att förstå, men inte för att skriva texten.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Visa att du förstår <span class="highlight">varför</span> — inte bara vilka verktyg ni använt, utan varför de samverkar.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Inkludera <span class="highlight">diagram</span> (arkitektur) och <span class="highlight">kodexempel</span> med förklaringar.</p>
+                </div>
+
+                <div class="fragment info-box">
+                    <p>Uppgift 1: <span class="highlight">2–4 sidor</span>. Uppgift 2: <span class="highlight">3–5 sidor</span>. Lämna in som en PDF via Google Classroom.</p>
+                </div>
+            </section>
+
+            <!-- ==========================================
+                 SLIDE 29: CLOSING
+                 ========================================== -->
+            <section class="closing-slide" data-background-color="#0A0E27">
+                <div class="geometric-bg"></div>
+                <div class="corner-accent"></div>
+
+                <div class="centered-content">
+                    <div class="big-symbol">?</div>
+                    <p class="big-text">Frågor</p>
+                </div>
+
+                <div class="bottom-accent"></div>
+            </section>
+
+        </div>
+    </div>
+
+    <!-- Reveal.js Core JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/5.0.4/reveal.min.js"></script>
+
+    <script>
+        Reveal.initialize({
+            hash: true,
+            controls: true,
+            progress: true,
+            center: false,
+            transition: 'slide',
+            backgroundTransition: 'fade',
+            slideNumber: 'c/t',
+            history: true,
+            width: 1920,
+            height: 1080,
+            margin: 0.04,
+            minScale: 0.2,
+            maxScale: 1.0
+        });
+    </script>
+</body>
+</html>
