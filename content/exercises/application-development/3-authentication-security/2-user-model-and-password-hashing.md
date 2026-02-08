@@ -130,21 +130,6 @@ Flask-Migrate needs to discover the User model to generate a migration. This req
    __all__ = ["Subscriber", "User"]
    ```
 
-2. **Open** `app/__init__.py` and **add** the User import after existing model imports so Flask-Migrate's `autogenerate` detects the new model:
-
-   > `app/__init__.py`
-
-   ```python
-   from app.data.models.user import User  # noqa: F401
-   ```
-
-   This import is needed for Flask-Migrate to detect the User model and create the migration. Without it, `flask db migrate` will report "No changes detected."
-
-> ⚠ **Common Mistakes**
->
-> - Forgetting to import User in `__init__.py` causes Flask-Migrate to generate an empty migration
-> - Not updating `__all__` makes the model harder to discover for other developers
->
 > ✓ **Quick check:** Both `Subscriber` and `User` appear in `app/data/models/__init__.py`
 
 ### **Step 3:** Run Database Migration

@@ -294,11 +294,11 @@ The admin blueprint must be registered with the Flask application factory before
    > `app/presentation/templates/base.html`
 
    ```html
-   <nav class="nav">
-       <a href="{{ url_for('public.index') }}" class="nav__link">Home</a>
-       <a href="{{ url_for('public.subscribe') }}" class="nav__link">Subscribe</a>
-       <a href="{{ url_for('admin.subscribers') }}" class="nav__link">Admin</a>
-   </nav>
+                <nav class="header__nav">
+                    <a href="{{ url_for('public.index') }}" class="header__nav-link">Home</a>
+                    <a href="{{ url_for('public.subscribe') }}" class="header__nav-link">Subscribe</a>
+                    <a href="{{ url_for('admin.subscribers') }}" class="header__nav-link">Admin</a>
+                </nav>
    ```
 
 > ℹ **Concept Deep Dive**

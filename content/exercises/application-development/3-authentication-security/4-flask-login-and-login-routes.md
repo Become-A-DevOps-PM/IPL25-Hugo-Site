@@ -405,16 +405,16 @@ The login template renders the form with CSRF protection and per-field error mes
    > `app/presentation/templates/base.html`
 
    ```html
-   <nav class="nav">
-       <a href="{{ url_for('public.index') }}" class="nav__link">Home</a>
-       <a href="{{ url_for('public.subscribe') }}" class="nav__link">Subscribe</a>
-       {% if current_user.is_authenticated %}
-       <a href="{{ url_for('admin.subscribers') }}" class="nav__link">Admin</a>
-       <a href="{{ url_for('auth.logout') }}" class="nav__link">Logout</a>
-       {% else %}
-       <a href="{{ url_for('auth.login') }}" class="nav__link">Login</a>
-       {% endif %}
-   </nav>
+                <nav class="header__nav">
+                    <a href="{{ url_for('public.index') }}" class="header__nav-link">Home</a>
+                    <a href="{{ url_for('public.subscribe') }}" class="header__nav-link">Subscribe</a>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('admin.subscribers') }}" class="header__nav-link">Admin</a>
+                    <a href="{{ url_for('auth.logout') }}" class="header__nav-link">Logout</a>
+                    {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="header__nav-link">Login</a>
+                    {% endif %}
+                </nav>
    ```
 
    **Replace** the existing `<nav>` section with the code above. The Admin link that was previously visible to everyone is now only shown to authenticated users.
